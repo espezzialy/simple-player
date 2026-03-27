@@ -1,9 +1,9 @@
 package com.espezzialy.simpleplayer.presentation.songs
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.espezzialy.simpleplayer.domain.usecase.SearchSongsUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,8 +12,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SongsViewModel(
+@HiltViewModel
+class SongsViewModel @Inject constructor(
     private val searchSongsUseCase: SearchSongsUseCase
 ) : ViewModel() {
 
@@ -85,18 +87,6 @@ class SongsViewModel(
                     }
                     _effect.send(SongsEffect.ShowError(message))
                 }
-        }
-    }
-
-    class Factory(
-        private val searchSongsUseCase: SearchSongsUseCase
-    ) : ViewModelProvider.Factory {
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(SongsViewModel::class.java)) {
-                return SongsViewModel(searchSongsUseCase) as T
-            }
-            throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
         }
     }
 }

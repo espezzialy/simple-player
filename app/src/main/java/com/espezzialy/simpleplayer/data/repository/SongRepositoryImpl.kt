@@ -3,8 +3,9 @@ package com.espezzialy.simpleplayer.data.repository
 import com.espezzialy.simpleplayer.data.remote.SongsRemoteDataSource
 import com.espezzialy.simpleplayer.domain.model.Song
 import com.espezzialy.simpleplayer.domain.repository.SongRepository
+import javax.inject.Inject
 
-class SongRepositoryImpl(
+class SongRepositoryImpl @Inject constructor(
     private val remoteDataSource: SongsRemoteDataSource
 ) : SongRepository {
 

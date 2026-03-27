@@ -2,8 +2,9 @@ package com.espezzialy.simpleplayer.domain.usecase
 
 import com.espezzialy.simpleplayer.domain.model.Song
 import com.espezzialy.simpleplayer.domain.repository.SongRepository
+import javax.inject.Inject
 
-class SearchSongsUseCase(
+class SearchSongsUseCase @Inject constructor(
     private val repository: SongRepository
 ) {
     suspend operator fun invoke(query: String): List<Song> {
