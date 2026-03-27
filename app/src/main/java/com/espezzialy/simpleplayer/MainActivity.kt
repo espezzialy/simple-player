@@ -6,7 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
-import com.espezzialy.simpleplayer.presentation.songs.SongsRoute
+import com.espezzialy.simpleplayer.presentation.navigation.SimplePlayerNavHost
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -18,7 +18,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SimplePlayerTheme {
-                SongsRoute(modifier = Modifier.fillMaxSize())
+                SimplePlayerNavHost(modifier = Modifier.fillMaxSize())
             }
         }
     }
