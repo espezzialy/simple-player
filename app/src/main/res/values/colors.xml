@@ -7,4 +7,8 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <!-- Figma Base-Gradients-Spotlight: 39deg, #000 → #0086A0 -->
+    <color name="splash_gradient_start">#FF000000</color>
+    <color name="splash_gradient_end">#001A20</color>
+    <color name="launcher_icon_background">#FF000000</color>
 </resources>
