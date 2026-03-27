@@ -1,6 +1,8 @@
 package com.espezzialy.simpleplayer.presentation.songs
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -9,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -25,11 +29,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import com.espezzialy.simpleplayer.domain.model.Song
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerTheme
 
@@ -136,6 +143,8 @@ fun SongsScreen(
     }
 }
 
+private val SongArtworkSize = 64.dp
+
 @Composable
 private fun SongCard(song: Song) {
     Card(
@@ -144,23 +153,48 @@ private fun SongCard(song: Song) {
             containerColor = MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
-        Column(modifier = Modifier.padding(14.dp)) {
-            Text(
-                text = song.trackName,
-                style = MaterialTheme.typography.titleMedium
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = song.artistName,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = song.collectionName,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (!song.artworkUrl100.isNullOrBlank()) {
+                AsyncImage(
+                    model = song.artworkUrl100,
+                    contentDescription = song.trackName,
+                    modifier = Modifier
+                        .size(SongArtworkSize)
+                        .clip(RoundedCornerShape(8.dp)),
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                Box(
+                    modifier = Modifier
+                        .size(SongArtworkSize)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(MaterialTheme.colorScheme.surface)
+                )
+            }
+            Spacer(modifier = Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = song.trackName,
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = song.artistName,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = song.collectionName,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
     }
 }
@@ -173,8 +207,20 @@ private fun SongsScreenPhonePreview() {
             state = SongsState(
                 query = "wall",
                 songs = listOf(
-                    Song(1L, "Wall", "Good Kid", "Wall - Single"),
-                    Song(2L, "Off the Wall", "Michael Jackson", "Off the Wall")
+                    Song(
+                        1L,
+                        "Wall",
+                        "Good Kid",
+                        "Wall - Single",
+                        artworkUrl100 = null
+                    ),
+                    Song(
+                        2L,
+                        "Off the Wall",
+                        "Michael Jackson",
+                        "Off the Wall",
+                        artworkUrl100 = null
+                    )
                 )
             ),
             onIntent = {}
@@ -190,8 +236,20 @@ private fun SongsScreenTabletPreview() {
             state = SongsState(
                 query = "wall",
                 songs = listOf(
-                    Song(1L, "Wall", "Good Kid", "Wall - Single"),
-                    Song(2L, "Off the Wall", "Michael Jackson", "Off the Wall")
+                    Song(
+                        1L,
+                        "Wall",
+                        "Good Kid",
+                        "Wall - Single",
+                        artworkUrl100 = null
+                    ),
+                    Song(
+                        2L,
+                        "Off the Wall",
+                        "Michael Jackson",
+                        "Off the Wall",
+                        artworkUrl100 = null
+                    )
                 )
             ),
             onIntent = {}

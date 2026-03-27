@@ -12,10 +12,11 @@ class SongRepositoryImpl @Inject constructor(
     override suspend fun searchSongs(term: String, limit: Int): List<Song> {
         return remoteDataSource.searchSongs(term = term, limit = limit).map { dto ->
             Song(
-                trackId = dto.trackId,
-                trackName = dto.trackName,
-                artistName = dto.artistName,
-                collectionName = dto.collectionName
+                trackId = dto.trackId ?: 0L,
+                trackName = dto.trackName.orEmpty(),
+                artistName = dto.artistName.orEmpty(),
+                collectionName = dto.collectionName.orEmpty(),
+                artworkUrl100 = dto.artworkUrl100?.takeIf { it.isNotBlank() }
             )
         }
     }
