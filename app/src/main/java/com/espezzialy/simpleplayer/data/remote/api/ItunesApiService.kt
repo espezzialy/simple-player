@@ -17,4 +17,12 @@ interface ItunesApiService {
         @Query("entity") entity: String,
         @Query("limit") limit: Int
     ): ItunesSearchResponseDto
+
+    /** [Lookup API](https://developer.apple.com/library/archive/documentation/AudioVideo/Conceptual/iTuneSearchAPI/Searching.html#//apple_ref/doc/uid/TP40017632-CH100-SW5) */
+    @GET("lookup")
+    suspend fun lookupAlbum(
+        @Query("id") collectionId: Long,
+        @Query("entity") entity: String,
+        @Query("limit") limit: Int
+    ): ItunesSearchResponseDto
 }

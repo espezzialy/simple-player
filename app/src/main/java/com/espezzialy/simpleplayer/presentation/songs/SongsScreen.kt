@@ -21,27 +21,37 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.espezzialy.simpleplayer.R
 import com.espezzialy.simpleplayer.domain.model.Song
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerTheme
 
 @Composable
 fun SongsRoute(
+    onNavigateToAlbum: (Long) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SongsViewModel = hiltViewModel()
 ) {
@@ -58,6 +68,7 @@ fun SongsRoute(
     SongsScreen(
         state = state,
         onIntent = viewModel::onIntent,
+        onNavigateToAlbum = onNavigateToAlbum,
         modifier = modifier
     )
 }
@@ -66,6 +77,7 @@ fun SongsRoute(
 fun SongsScreen(
     state: SongsState,
     onIntent: (SongsIntent) -> Unit,
+    onNavigateToAlbum: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val columns = if (LocalConfiguration.current.screenWidthDp >= 840) 2 else 1
@@ -135,7 +147,10 @@ fun SongsScreen(
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(state.songs, key = { it.trackId }) { song ->
-                        SongCard(song = song)
+                        SongCard(
+                            song = song,
+                            onViewAlbum = song.collectionId?.let { id -> { onNavigateToAlbum(id) } }
+                        )
                     }
                 }
             }
@@ -146,7 +161,10 @@ fun SongsScreen(
 private val SongArtworkSize = 64.dp
 
 @Composable
-private fun SongCard(song: Song) {
+private fun SongCard(
+    song: Song,
+    onViewAlbum: (() -> Unit)? = null
+) {
     Card(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
@@ -195,6 +213,30 @@ private fun SongCard(song: Song) {
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
+            if (onViewAlbum != null) {
+                var menuExpanded by remember { mutableStateOf(false) }
+                Box {
+                    IconButton(onClick = { menuExpanded = true }) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_more),
+                            contentDescription = "Mais opções",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = menuExpanded,
+                        onDismissRequest = { menuExpanded = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Ver álbum") },
+                            onClick = {
+                                menuExpanded = false
+                                onViewAlbum()
+                            }
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -212,6 +254,7 @@ private fun SongsScreenPhonePreview() {
                         "Wall",
                         "Good Kid",
                         "Wall - Single",
+                        collectionId = 1L,
                         artworkUrl100 = null
                     ),
                     Song(
@@ -219,11 +262,13 @@ private fun SongsScreenPhonePreview() {
                         "Off the Wall",
                         "Michael Jackson",
                         "Off the Wall",
+                        collectionId = 2L,
                         artworkUrl100 = null
                     )
                 )
             ),
-            onIntent = {}
+            onIntent = {},
+            onNavigateToAlbum = {}
         )
     }
 }
@@ -241,6 +286,7 @@ private fun SongsScreenTabletPreview() {
                         "Wall",
                         "Good Kid",
                         "Wall - Single",
+                        collectionId = 1L,
                         artworkUrl100 = null
                     ),
                     Song(
@@ -248,11 +294,13 @@ private fun SongsScreenTabletPreview() {
                         "Off the Wall",
                         "Michael Jackson",
                         "Off the Wall",
+                        collectionId = 2L,
                         artworkUrl100 = null
                     )
                 )
             ),
-            onIntent = {}
+            onIntent = {},
+            onNavigateToAlbum = {}
         )
     }
 }

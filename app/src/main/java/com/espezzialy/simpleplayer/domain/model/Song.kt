@@ -9,6 +9,8 @@ data class Song(
     val trackName: String,
     val artistName: String,
     val collectionName: String,
+    /** ID da coleção na iTunes (lookup do álbum). */
+    val collectionId: Long?,
     /** URL da capa 100×100 (campo `artworkUrl100` da API). */
     val artworkUrl100: String?
 )

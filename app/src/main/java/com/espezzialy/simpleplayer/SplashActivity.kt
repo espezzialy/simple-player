@@ -51,7 +51,7 @@ class SplashActivity : ComponentActivity() {
             contentAlignment = Alignment.Center
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_music_list),
+                painter = painterResource(id = R.drawable.music_note_image),
                 contentDescription = null,
                 modifier = Modifier.size(172.dp)
             )

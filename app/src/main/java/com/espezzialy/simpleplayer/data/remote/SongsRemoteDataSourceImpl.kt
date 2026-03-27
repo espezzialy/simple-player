@@ -25,8 +25,19 @@ class SongsRemoteDataSourceImpl @Inject constructor(
         }
     }
 
+    override suspend fun lookupAlbumTracks(collectionId: Long): List<ItunesSongDto> {
+        return withContext(dispatcherProvider.io) {
+            apiService.lookupAlbum(
+                collectionId = collectionId,
+                entity = ENTITY_SONG,
+                limit = LOOKUP_LIMIT
+            ).results
+        }
+    }
+
     private companion object {
         const val MEDIA_MUSIC = "music"
         const val ENTITY_SONG = "song"
+        const val LOOKUP_LIMIT = 200
     }
 }
