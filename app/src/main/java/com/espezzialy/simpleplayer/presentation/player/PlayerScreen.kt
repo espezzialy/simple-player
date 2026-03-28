@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.espezzialy.simpleplayer.core.media.toItunesArtwork600
 import com.espezzialy.simpleplayer.R
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerTheme
 
@@ -216,7 +217,7 @@ private fun PlayerArtwork(artworkUrl: String?, trackName: String) {
     ) {
         if (!artworkUrl.isNullOrBlank()) {
             AsyncImage(
-                model = artworkUrl,
+                model = artworkUrl.toItunesArtwork600() ?: artworkUrl,
                 contentDescription = trackName,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop
