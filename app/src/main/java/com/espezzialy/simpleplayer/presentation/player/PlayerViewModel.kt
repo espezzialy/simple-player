@@ -2,23 +2,35 @@ package com.espezzialy.simpleplayer.presentation.player
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import com.espezzialy.simpleplayer.domain.model.Song
+import com.espezzialy.simpleplayer.presentation.songs.SongsEffect
+import com.espezzialy.simpleplayer.presentation.songs.SongsIntent
+import com.espezzialy.simpleplayer.presentation.songs.SongsSearchRepository
+import com.espezzialy.simpleplayer.presentation.songs.SongsState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.update
-import javax.inject.Inject
 
 @HiltViewModel
 class PlayerViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    private val songsSearchRepository: SongsSearchRepository
 ) : ViewModel() {
+
+    val songsSearchState: StateFlow<SongsState> = songsSearchRepository.state
+
+    val songsSearchEffect: Flow<SongsEffect> = songsSearchRepository.effect
 
     private val totalSeconds = MOCK_TOTAL_SECONDS
     private val initialProgress = MOCK_INITIAL_ELAPSED_SECONDS.toFloat() / MOCK_TOTAL_SECONDS
 
     private val _state = MutableStateFlow(
         buildState(
+            trackId = savedStateHandle.get<Long>(PlayerNavigation.ARG_TRACK_ID) ?: 0L,
             trackName = savedStateHandle.get<String>(PlayerNavigation.ARG_TRACK_NAME).orEmpty(),
             artistName = savedStateHandle.get<String>(PlayerNavigation.ARG_ARTIST_NAME).orEmpty(),
             collectionId = savedStateHandle.get<Long>(PlayerNavigation.ARG_COLLECTION_ID)
@@ -32,6 +44,10 @@ class PlayerViewModel @Inject constructor(
     )
     val state: StateFlow<PlayerState> = _state.asStateFlow()
 
+    fun onSongsSearchIntent(intent: SongsIntent) {
+        songsSearchRepository.onIntent(intent)
+    }
+
     fun onIntent(intent: PlayerIntent) {
         when (intent) {
             is PlayerIntent.ProgressChanged -> updateProgress(intent.value)
@@ -43,6 +59,7 @@ class PlayerViewModel @Inject constructor(
             PlayerIntent.RepeatClicked -> {
                 _state.update { it.copy(repeatEnabled = !it.repeatEnabled) }
             }
+            is PlayerIntent.SongSelectedFromPlaylist -> selectSong(intent.song)
         }
     }
 
@@ -62,7 +79,25 @@ class PlayerViewModel @Inject constructor(
         }
     }
 
+    private fun selectSong(song: Song) {
+        val progress = MOCK_INITIAL_ELAPSED_SECONDS.toFloat() / MOCK_TOTAL_SECONDS
+        val (current, remaining) = PlayerTimeFormatter.labelsForProgress(progress, totalSeconds)
+        _state.update {
+            it.copy(
+                trackId = song.trackId,
+                trackName = song.trackName,
+                artistName = song.artistName,
+                collectionId = song.collectionId,
+                artworkUrl = song.artworkUrl100,
+                progress = progress,
+                currentTimeLabel = current,
+                remainingTimeLabel = remaining
+            )
+        }
+    }
+
     private fun buildState(
+        trackId: Long,
         trackName: String,
         artistName: String,
         collectionId: Long?,
@@ -73,6 +108,7 @@ class PlayerViewModel @Inject constructor(
     ): PlayerState {
         val (current, remaining) = PlayerTimeFormatter.labelsForProgress(progress, totalSeconds)
         return PlayerState(
+            trackId = trackId,
             trackName = trackName,
             artistName = artistName,
             collectionId = collectionId,

@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -35,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -50,13 +52,26 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.espezzialy.simpleplayer.R
 import com.espezzialy.simpleplayer.core.media.toItunesArtwork600
+import com.espezzialy.simpleplayer.domain.model.Song
+import com.espezzialy.simpleplayer.presentation.songs.SongsEffect
+import com.espezzialy.simpleplayer.presentation.songs.SongsIntent
+import com.espezzialy.simpleplayer.presentation.songs.SongsState
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerTheme
+
+private const val PlayerTabletMinWidthDp = 600
+
+/** Figma: phone artwork 264×264. */
+private val PlayerArtworkSizePhone = 264.dp
+
+/** Figma: tablet artwork 286×286. */
+private val PlayerArtworkSizeTablet = 286.dp
 
 @Composable
 fun PlayerRoute(
@@ -65,11 +80,23 @@ fun PlayerRoute(
     viewModel: PlayerViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val songsSearchState by viewModel.songsSearchState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.songsSearchEffect.collect { effect ->
+            when (effect) {
+                is SongsEffect.ShowError -> Unit
+            }
+        }
+    }
+
     PlayerScreen(
         state = state,
         onIntent = viewModel::onIntent,
         onBack = onBack,
-        onNavigateToAlbum = onNavigateToAlbum
+        onNavigateToAlbum = onNavigateToAlbum,
+        songsSearchState = songsSearchState,
+        onSongsSearchIntent = viewModel::onSongsSearchIntent
     )
 }
 
@@ -80,12 +107,16 @@ fun PlayerScreen(
     onIntent: (PlayerIntent) -> Unit,
     onBack: () -> Unit,
     onNavigateToAlbum: (Long) -> Unit,
+    songsSearchState: SongsState = SongsState(),
+    onSongsSearchIntent: (SongsIntent) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var overflowSheetVisible by remember { mutableStateOf(false) }
     val overflowSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
+    val isTabletLayout =
+        LocalConfiguration.current.screenWidthDp >= PlayerTabletMinWidthDp
 
     Box(
         modifier = modifier
@@ -134,51 +165,53 @@ fun PlayerScreen(
                 )
             }
         ) { innerPadding ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-                    .padding(horizontal = 24.dp)
-            ) {
-                Spacer(modifier = Modifier.height(8.dp))
-                PlayerArtwork(artworkUrl = state.artworkUrl, trackName = state.trackName)
-                Spacer(modifier = Modifier.height(28.dp))
-                Text(
-                    text = state.trackName,
-                    style = typography.headlineSmall,
-                    color = colorScheme.onBackground,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Start
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = state.artistName,
-                    style = typography.bodyLarge,
-                    color = colorScheme.onSurfaceVariant,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Start
-                )
-                Spacer(modifier = Modifier.height(28.dp))
-                PlayerSeekSection(
-                    progress = state.progress,
-                    currentLabel = state.currentTimeLabel,
-                    remainingLabel = state.remainingTimeLabel,
-                    onProgressChange = { onIntent(PlayerIntent.ProgressChanged(it)) }
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                PlayerTransportControls(
-                    isPlaying = state.isPlaying,
-                    repeatEnabled = state.repeatEnabled,
-                    onPlayPause = { onIntent(PlayerIntent.PlayPauseClicked) },
-                    onPrevious = { onIntent(PlayerIntent.SkipPreviousClicked) },
-                    onNext = { onIntent(PlayerIntent.SkipNextClicked) },
-                    onRepeat = { onIntent(PlayerIntent.RepeatClicked) }
-                )
-                Spacer(modifier = Modifier.height(16.dp))
+            if (isTabletLayout) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                        .padding(horizontal = 24.dp),
+                    horizontalArrangement = Arrangement.spacedBy(20.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                    ) {
+                        PlayerMainColumn(
+                            state = state,
+                            onIntent = onIntent,
+                            artistNameColor = colorScheme.onBackground,
+                            artworkSize = PlayerArtworkSizeTablet
+                        )
+                    }
+                    PlayerSidePlaylistPanel(
+                        songsState = songsSearchState,
+                        currentTrackId = state.trackId,
+                        isCurrentPlaying = state.isPlaying,
+                        onSongsIntent = onSongsSearchIntent,
+                        onSongClick = { song: Song ->
+                            onIntent(PlayerIntent.SongSelectedFromPlaylist(song))
+                        },
+                        modifier = Modifier
+                            .weight(0.38f)
+                            .fillMaxHeight()
+                    )
+                }
+            } else {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                        .padding(horizontal = 24.dp)
+                ) {
+                    PlayerMainColumn(
+                        state = state,
+                        onIntent = onIntent,
+                        artistNameColor = colorScheme.onSurfaceVariant,
+                        artworkSize = PlayerArtworkSizePhone
+                    )
+                }
             }
         }
 
@@ -207,13 +240,69 @@ fun PlayerScreen(
 }
 
 @Composable
-private fun PlayerArtwork(artworkUrl: String?, trackName: String) {
+private fun PlayerMainColumn(
+    state: PlayerState,
+    onIntent: (PlayerIntent) -> Unit,
+    artistNameColor: Color,
+    artworkSize: Dp
+) {
+    val colorScheme = MaterialTheme.colorScheme
+    val typography = MaterialTheme.typography
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        Spacer(modifier = Modifier.height(8.dp))
+        PlayerArtwork(
+            artworkUrl = state.artworkUrl,
+            trackName = state.trackName,
+            size = artworkSize
+        )
+        Spacer(modifier = Modifier.height(28.dp))
+        Text(
+            text = state.trackName,
+            style = typography.headlineSmall,
+            color = colorScheme.onBackground,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Start
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = state.artistName,
+            style = typography.bodyLarge,
+            color = artistNameColor,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Start
+        )
+        Spacer(modifier = Modifier.height(28.dp))
+        PlayerSeekSection(
+            progress = state.progress,
+            currentLabel = state.currentTimeLabel,
+            remainingLabel = state.remainingTimeLabel,
+            onProgressChange = { onIntent(PlayerIntent.ProgressChanged(it)) }
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        PlayerTransportControls(
+            isPlaying = state.isPlaying,
+            repeatEnabled = state.repeatEnabled,
+            onPlayPause = { onIntent(PlayerIntent.PlayPauseClicked) },
+            onPrevious = { onIntent(PlayerIntent.SkipPreviousClicked) },
+            onNext = { onIntent(PlayerIntent.SkipNextClicked) },
+            onRepeat = { onIntent(PlayerIntent.RepeatClicked) }
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+    }
+}
+
+@Composable
+private fun PlayerArtwork(artworkUrl: String?, trackName: String, size: Dp) {
     val colorScheme = MaterialTheme.colorScheme
     val shape = RoundedCornerShape(16.dp)
     Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .aspectRatio(1f)
+            .size(size)
             .clip(shape)
             .background(colorScheme.surfaceContainerHigh),
         contentAlignment = Alignment.Center
@@ -332,12 +421,59 @@ private fun PlayerTransportControls(
     }
 }
 
+@Preview(showBackground = true, backgroundColor = 0xFF000000, widthDp = 1024, heightDp = 600, name = "Player (tablet)")
+@Composable
+private fun PlayerScreenTabletPreview() {
+    SimplePlayerTheme {
+        PlayerScreen(
+            state = PlayerState(
+                trackId = 1L,
+                trackName = "Perfect",
+                artistName = "Ed Sheeran",
+                collectionId = 1L,
+                artworkUrl = null,
+                progress = 86f / 260f,
+                isPlaying = true,
+                currentTimeLabel = "1:26",
+                remainingTimeLabel = "-2:54",
+                repeatEnabled = false
+            ),
+            onIntent = {},
+            onBack = {},
+            onNavigateToAlbum = {},
+            songsSearchState = SongsState(
+                query = "sheeran",
+                songs = listOf(
+                    Song(
+                        trackId = 1L,
+                        trackName = "Perfect",
+                        artistName = "Ed Sheeran",
+                        collectionName = "÷",
+                        collectionId = 1L,
+                        artworkUrl100 = null
+                    ),
+                    Song(
+                        trackId = 2L,
+                        trackName = "Shape of You",
+                        artistName = "Ed Sheeran",
+                        collectionName = "÷",
+                        collectionId = 1L,
+                        artworkUrl100 = null
+                    )
+                )
+            ),
+            onSongsSearchIntent = {}
+        )
+    }
+}
+
 @Preview(showBackground = true, backgroundColor = 0xFF000000, widthDp = 390, heightDp = 844)
 @Composable
 private fun PlayerScreenPreview() {
     SimplePlayerTheme {
         PlayerScreen(
             state = PlayerState(
+                trackId = 1L,
                 trackName = "Get Lucky",
                 artistName = "Daft Punk feat. Pharrell Williams",
                 collectionId = 1L,

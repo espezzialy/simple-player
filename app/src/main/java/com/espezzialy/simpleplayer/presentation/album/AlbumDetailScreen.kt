@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -52,6 +53,9 @@ import com.espezzialy.simpleplayer.ui.theme.SimplePlayerTheme
 
 private val HeroArtworkSize = 240.dp
 private val RowThumbSize = 56.dp
+
+/** Material width breakpoint: at 600dp and above, album hero uses tablet (side-by-side) layout. */
+private const val TabletMinWidthDp = 600
 
 @Composable
 fun AlbumDetailRoute(
@@ -157,6 +161,8 @@ private fun AlbumContent(
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
+    val isTabletLayout =
+        LocalConfiguration.current.screenWidthDp >= TabletMinWidthDp
 
     LazyColumn(
         modifier = modifier,
@@ -164,23 +170,51 @@ private fun AlbumContent(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                AlbumHeroArtwork(album = album)
-                Spacer(modifier = Modifier.height(20.dp))
-                Text(
-                    text = album.title,
-                    style = typography.headlineSmall,
-                    color = colorScheme.onBackground
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = album.artistName,
-                    style = typography.bodyLarge,
-                    color = colorScheme.onSurfaceVariant
-                )
+            if (isTabletLayout) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start
+                ) {
+                    AlbumHeroArtwork(album = album)
+                    Spacer(modifier = Modifier.width(24.dp))
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.Start
+                    ) {
+                        Text(
+                            text = album.title,
+                            style = typography.headlineSmall,
+                            color = colorScheme.onBackground
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = album.artistName,
+                            style = typography.bodyLarge,
+                            color = colorScheme.onBackground
+                        )
+                    }
+                }
+            } else {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    AlbumHeroArtwork(album = album)
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Text(
+                        text = album.title,
+                        style = typography.headlineSmall,
+                        color = colorScheme.onBackground
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = album.artistName,
+                        style = typography.bodyLarge,
+                        color = colorScheme.onSurfaceVariant
+                    )
+                }
             }
         }
         items(
@@ -265,6 +299,31 @@ private fun AlbumTrack.toSong(album: AlbumDetail): Song =
         collectionId = album.collectionId,
         artworkUrl100 = artworkUrl100
     )
+
+@Preview(showBackground = true, widthDp = 900, heightDp = 600, name = "Album (tablet)")
+@Composable
+private fun AlbumDetailScreenTabletPreview() {
+    SimplePlayerTheme {
+        AlbumDetailScreen(
+            state = AlbumDetailState(
+                isLoading = false,
+                album = AlbumDetail(
+                    collectionId = 1L,
+                    title = "Divide",
+                    artistName = "Ed Sheeran",
+                    artworkUrl = null,
+                    tracks = listOf(
+                        AlbumTrack(1L, "Perfect", "Ed Sheeran", null),
+                        AlbumTrack(2L, "Shape of You", "Ed Sheeran", null)
+                    )
+                )
+            ),
+            onIntent = {},
+            onBack = {},
+            onNavigateToPlayer = {}
+        )
+    }
+}
 
 @Preview(showBackground = true, widthDp = 390, heightDp = 844)
 @Composable

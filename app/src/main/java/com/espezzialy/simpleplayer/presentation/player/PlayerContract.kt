@@ -1,6 +1,9 @@
 package com.espezzialy.simpleplayer.presentation.player
 
+import com.espezzialy.simpleplayer.domain.model.Song
+
 data class PlayerState(
+    val trackId: Long,
     val trackName: String,
     val artistName: String,
     /** `null` when there is no associated album (lookup). */
@@ -20,4 +23,5 @@ sealed interface PlayerIntent {
     data object SkipPreviousClicked : PlayerIntent
     data object SkipNextClicked : PlayerIntent
     data object RepeatClicked : PlayerIntent
+    data class SongSelectedFromPlaylist(val song: Song) : PlayerIntent
 }

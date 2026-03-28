@@ -10,24 +10,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -36,6 +28,7 @@ import com.espezzialy.simpleplayer.R
 import com.espezzialy.simpleplayer.domain.model.Song
 import com.espezzialy.simpleplayer.presentation.common.CenteredLoading
 import com.espezzialy.simpleplayer.presentation.common.ErrorWithRetry
+import com.espezzialy.simpleplayer.presentation.common.SongsSearchField
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerTheme
 
 /** Matches the dark Figma layout (Songs / search). */
@@ -156,55 +149,6 @@ fun SongsScreen(
             }
         }
     }
-}
-
-@Composable
-private fun SongsSearchField(
-    query: String,
-    onQueryChange: (String) -> Unit
-) {
-    val colorScheme = MaterialTheme.colorScheme
-    val typography = MaterialTheme.typography
-
-    TextField(
-        value = query,
-        onValueChange = onQueryChange,
-        modifier = Modifier.fillMaxWidth(),
-        singleLine = true,
-        shape = RoundedCornerShape(12.dp),
-        placeholder = {
-            Text(
-                text = stringResource(R.string.songs_search_placeholder),
-                style = typography.bodyLarge,
-                color = colorScheme.onSurfaceVariant
-            )
-        },
-        leadingIcon = {
-            Icon(
-                painter = painterResource(R.drawable.ic_search),
-                contentDescription = null,
-                tint = colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(22.dp)
-            )
-        },
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = colorScheme.surface,
-            unfocusedContainerColor = colorScheme.surface,
-            disabledContainerColor = colorScheme.surface,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-            disabledIndicatorColor = Color.Transparent,
-            errorIndicatorColor = Color.Transparent,
-            cursorColor = colorScheme.onSurface,
-            focusedTextColor = colorScheme.onSurface,
-            unfocusedTextColor = colorScheme.onSurface,
-            focusedLeadingIconColor = colorScheme.onSurfaceVariant,
-            unfocusedLeadingIconColor = colorScheme.onSurfaceVariant,
-            focusedPlaceholderColor = colorScheme.onSurfaceVariant,
-            unfocusedPlaceholderColor = colorScheme.onSurfaceVariant
-        ),
-        textStyle = typography.bodyLarge.merge(TextStyle(color = colorScheme.onSurface))
-    )
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFF000000, widthDp = 390, heightDp = 844)
