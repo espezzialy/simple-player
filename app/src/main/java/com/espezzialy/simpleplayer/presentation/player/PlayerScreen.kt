@@ -44,6 +44,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -53,14 +54,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import com.espezzialy.simpleplayer.core.media.toItunesArtwork600
 import com.espezzialy.simpleplayer.R
+import com.espezzialy.simpleplayer.core.media.toItunesArtwork600
+import com.espezzialy.simpleplayer.presentation.common.SimplePlayerDarkPalette
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerTheme
-
-private val PlayerBg = Color(0xFF000000)
-private val PlayerOnBg = Color(0xFFFFFFFF)
-private val PlayerMuted = Color(0xFFB3B3B3)
-private val PlayerControlSurface = Color(0xFF2C2C2C)
 
 @Composable
 fun PlayerRoute(
@@ -92,20 +89,20 @@ fun PlayerScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(PlayerBg)
+            .background(SimplePlayerDarkPalette.Background)
     ) {
         Scaffold(
             modifier = Modifier
                 .fillMaxSize()
                 .statusBarsPadding()
                 .navigationBarsPadding(),
-            containerColor = PlayerBg,
+            containerColor = SimplePlayerDarkPalette.Background,
             topBar = {
                 CenterAlignedTopAppBar(
                     title = {
                         Text(
-                            text = "Now playing",
-                            color = PlayerOnBg,
+                            text = stringResource(R.string.player_now_playing),
+                            color = SimplePlayerDarkPalette.OnBackground,
                             fontWeight = FontWeight.Medium,
                             fontSize = 17.sp
                         )
@@ -114,8 +111,8 @@ fun PlayerScreen(
                         IconButton(onClick = onBack) {
                             Icon(
                                 painter = painterResource(R.drawable.ic_arrow_left),
-                                contentDescription = "Voltar",
-                                tint = PlayerOnBg
+                                contentDescription = stringResource(R.string.content_desc_back),
+                                tint = SimplePlayerDarkPalette.OnBackground
                             )
                         }
                     },
@@ -123,16 +120,16 @@ fun PlayerScreen(
                         IconButton(onClick = { overflowSheetVisible = true }) {
                             Icon(
                                 painter = painterResource(R.drawable.ic_more),
-                                contentDescription = "Menu",
-                                tint = PlayerMuted
+                                contentDescription = stringResource(R.string.content_desc_menu),
+                                tint = SimplePlayerDarkPalette.OnBackgroundMuted
                             )
                         }
                     },
                     colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                        containerColor = PlayerBg,
-                        titleContentColor = PlayerOnBg,
-                        navigationIconContentColor = PlayerOnBg,
-                        actionIconContentColor = PlayerOnBg
+                        containerColor = SimplePlayerDarkPalette.Background,
+                        titleContentColor = SimplePlayerDarkPalette.OnBackground,
+                        navigationIconContentColor = SimplePlayerDarkPalette.OnBackground,
+                        actionIconContentColor = SimplePlayerDarkPalette.OnBackground
                     )
                 )
             }
@@ -148,7 +145,7 @@ fun PlayerScreen(
                 Spacer(modifier = Modifier.height(28.dp))
                 Text(
                     text = state.trackName,
-                    color = PlayerOnBg,
+                    color = SimplePlayerDarkPalette.OnBackground,
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
                     maxLines = 2,
@@ -159,7 +156,7 @@ fun PlayerScreen(
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = state.artistName,
-                    color = PlayerMuted,
+                    color = SimplePlayerDarkPalette.OnBackgroundMuted,
                     fontSize = 17.sp,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
@@ -191,7 +188,7 @@ fun PlayerScreen(
                 onDismissRequest = { overflowSheetVisible = false },
                 sheetState = overflowSheetState,
                 dragHandle = { BottomSheetDefaults.DragHandle() },
-                containerColor = PlayerControlSurface,
+                containerColor = SimplePlayerDarkPalette.ControlSurface,
                 shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
                 scrimColor = Color.Black.copy(alpha = 0.45f),
                 tonalElevation = 0.dp
@@ -218,7 +215,7 @@ private fun PlayerArtwork(artworkUrl: String?, trackName: String) {
             .fillMaxWidth()
             .aspectRatio(1f)
             .clip(shape)
-            .background(PlayerControlSurface),
+            .background(SimplePlayerDarkPalette.ControlSurface),
         contentAlignment = Alignment.Center
     ) {
         if (!artworkUrl.isNullOrBlank()) {
@@ -252,12 +249,12 @@ private fun PlayerSeekSection(
         ) {
             Text(
                 text = currentLabel,
-                color = PlayerMuted,
+                color = SimplePlayerDarkPalette.OnBackgroundMuted,
                 fontSize = 13.sp
             )
             Text(
                 text = remainingLabel,
-                color = PlayerMuted,
+                color = SimplePlayerDarkPalette.OnBackgroundMuted,
                 fontSize = 13.sp
             )
         }
@@ -273,6 +270,8 @@ private fun PlayerTransportControls(
     onNext: () -> Unit,
     onRepeat: () -> Unit
 ) {
+    val pauseDesc = stringResource(R.string.content_desc_pause)
+    val playDesc = stringResource(R.string.content_desc_play)
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -284,7 +283,7 @@ private fun PlayerTransportControls(
             onClick = onPlayPause,
             modifier = Modifier.size(72.dp),
             shape = CircleShape,
-            color = PlayerControlSurface
+            color = SimplePlayerDarkPalette.ControlSurface
         ) {
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -292,8 +291,8 @@ private fun PlayerTransportControls(
             ) {
                 Icon(
                     imageVector = if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
-                    contentDescription = if (isPlaying) "Pausar" else "Reproduzir",
-                    tint = PlayerOnBg,
+                    contentDescription = if (isPlaying) pauseDesc else playDesc,
+                    tint = SimplePlayerDarkPalette.OnBackground,
                     modifier = Modifier.size(36.dp)
                 )
             }
@@ -301,24 +300,28 @@ private fun PlayerTransportControls(
         IconButton(onClick = onPrevious) {
             Icon(
                 imageVector = Icons.Filled.SkipPrevious,
-                contentDescription = "Faixa anterior",
-                tint = PlayerOnBg,
+                contentDescription = stringResource(R.string.content_desc_previous_track),
+                tint = SimplePlayerDarkPalette.OnBackground,
                 modifier = Modifier.size(32.dp)
             )
         }
         IconButton(onClick = onNext) {
             Icon(
                 imageVector = Icons.Filled.SkipNext,
-                contentDescription = "Próxima faixa",
-                tint = PlayerOnBg,
+                contentDescription = stringResource(R.string.content_desc_next_track),
+                tint = SimplePlayerDarkPalette.OnBackground,
                 modifier = Modifier.size(32.dp)
             )
         }
         IconButton(onClick = onRepeat) {
             Icon(
                 imageVector = Icons.Filled.Repeat,
-                contentDescription = "Repetir",
-                tint = if (repeatEnabled) PlayerOnBg else PlayerMuted,
+                contentDescription = stringResource(R.string.content_desc_repeat),
+                tint = if (repeatEnabled) {
+                    SimplePlayerDarkPalette.OnBackground
+                } else {
+                    SimplePlayerDarkPalette.OnBackgroundMuted
+                },
                 modifier = Modifier.size(28.dp)
             )
         }

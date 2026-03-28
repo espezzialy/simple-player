@@ -4,8 +4,8 @@ import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
 /**
- * Mapeamento do objeto de faixa retornado pela [iTunes Search API](https://developer.apple.com/library/archive/documentation/AudioVideo/Conceptual/iTuneSearchAPI/Searching.html).
- * Campos opcionais na API ficam nullable; o Gson ignora chaves ausentes.
+ * Mapping for the track object returned by the [iTunes Search API](https://developer.apple.com/library/archive/documentation/AudioVideo/Conceptual/iTuneSearchAPI/Searching.html).
+ * Optional API fields are nullable; Gson ignores missing keys.
  */
 data class ItunesSongDto(
     @SerializedName("wrapperType")

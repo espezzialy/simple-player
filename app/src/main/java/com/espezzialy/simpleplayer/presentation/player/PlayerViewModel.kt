@@ -38,7 +38,7 @@ class PlayerViewModel @Inject constructor(
             PlayerIntent.PlayPauseClicked -> togglePlayPause()
             PlayerIntent.SkipPreviousClicked,
             PlayerIntent.SkipNextClicked -> {
-                // Sem fila de reprodução — mantém mock.
+                // No play queue — keep mock behavior.
             }
             PlayerIntent.RepeatClicked -> {
                 _state.update { it.copy(repeatEnabled = !it.repeatEnabled) }
@@ -86,9 +86,9 @@ class PlayerViewModel @Inject constructor(
     }
 
     private companion object {
-        /** Duração total fictícia (~4:20). */
+        /** Mock total duration (~4:20). */
         const val MOCK_TOTAL_SECONDS = 260
-        /** Posição inicial fictícia (~1:26). */
+        /** Mock initial position (~1:26). */
         const val MOCK_INITIAL_ELAPSED_SECONDS = 86
     }
 }

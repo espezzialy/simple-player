@@ -1,10 +1,13 @@
 package com.espezzialy.simpleplayer.presentation.album
 
+import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.espezzialy.simpleplayer.R
 import com.espezzialy.simpleplayer.domain.usecase.GetAlbumDetailUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,12 +18,13 @@ import javax.inject.Inject
 @HiltViewModel
 class AlbumDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val getAlbumDetailUseCase: GetAlbumDetailUseCase
+    private val getAlbumDetailUseCase: GetAlbumDetailUseCase,
+    @ApplicationContext private val appContext: Context
 ) : ViewModel() {
 
     private val collectionId: Long =
         checkNotNull(savedStateHandle.get<Long>(COLLECTION_ID_ARG)) {
-            "collectionId obrigatorio na rota"
+            "collectionId is required in route"
         }
 
     private val _state = MutableStateFlow(AlbumDetailState())
@@ -50,7 +54,7 @@ class AlbumDetailViewModel @Inject constructor(
                         it.copy(
                             album = null,
                             isLoading = false,
-                            errorMessage = e.message ?: "Não foi possível carregar o álbum."
+                            errorMessage = e.message ?: appContext.getString(R.string.error_load_album)
                         )
                     }
                 }

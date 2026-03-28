@@ -3,7 +3,7 @@ package com.espezzialy.simpleplayer.presentation.player
 import kotlin.math.roundToInt
 
 /**
- * Formatação de tempo para o slider mock (sem [android.text.format.DateUtils] para facilitar testes JVM).
+ * Time formatting for the mock slider (no [android.text.format.DateUtils] for easier JVM tests).
  */
 object PlayerTimeFormatter {
 

@@ -27,6 +27,6 @@ class SongRepositoryImpl @Inject constructor(
     override suspend fun getAlbumDetail(collectionId: Long): AlbumDetail {
         val results = remoteDataSource.lookupAlbumTracks(collectionId = collectionId)
         return ItunesAlbumMapper.mapLookupResultsToAlbumDetail(results)
-            ?: error("Não foi possível carregar o álbum.")
+            ?: error("Could not load the album.")
     }
 }

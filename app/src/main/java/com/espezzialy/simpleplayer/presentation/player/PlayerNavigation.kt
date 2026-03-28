@@ -13,10 +13,10 @@ object PlayerNavigation {
     const val ARG_ARTWORK_URL = "artworkUrl"
     const val ARG_COLLECTION_ID = "collectionId"
 
-    /** Valor sentinela na rota quando a faixa não tem álbum na API. */
+    /** Sentinel route value when the track has no album in the API. */
     const val NO_COLLECTION_ID = -1L
 
-    /** Igual ao startDestination do [com.espezzialy.simpleplayer.presentation.navigation.SimplePlayerNavHost]. */
+    /** Same as [com.espezzialy.simpleplayer.presentation.navigation.SimplePlayerNavHost] start destination. */
     const val SONGS_START_ROUTE = "songs"
 }
 
@@ -29,14 +29,14 @@ fun playerRouteFor(song: Song): String {
         collectionSegment
 }
 
-/** Empilha por cima da lista (Songs → Player). */
+/** Pushes on top of the list (Songs → Player). */
 fun NavController.navigateToPlayer(song: Song) {
     navigate(playerRouteFor(song))
 }
 
 /**
- * Abre o player a partir do álbum: volta até a lista e empilha um único Player,
- * evitando Songs → Player → Album → Player → …
+ * Opens the player from the album: pops back to the list and pushes a single Player,
+ * avoiding Songs → Player → Album → Player → …
  */
 fun NavController.navigateToPlayerFromAlbum(song: Song) {
     navigate(playerRouteFor(song)) {

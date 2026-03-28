@@ -1,3 +1,24 @@
 <resources>
     <string name="app_name">Simple Player</string>
+
+    <string name="songs_title">Songs</string>
+    <string name="songs_search_placeholder">Search</string>
+    <string name="retry">Retry</string>
+    <string name="error_search_songs">Could not search songs. Please try again.</string>
+    <string name="songs_empty_query_hint">Type something to search for songs on the Apple API.</string>
+    <string name="songs_no_results">No results found.</string>
+    <string name="view_album">View album</string>
+    <string name="content_desc_more_options">More options</string>
+
+    <string name="player_now_playing">Now playing</string>
+    <string name="content_desc_back">Back</string>
+    <string name="content_desc_menu">Menu</string>
+    <string name="content_desc_pause">Pause</string>
+    <string name="content_desc_play">Play</string>
+    <string name="content_desc_previous_track">Previous track</string>
+    <string name="content_desc_next_track">Next track</string>
+    <string name="content_desc_repeat">Repeat</string>
+
+    <string name="album_fallback_title">Album</string>
+    <string name="error_load_album">Could not load the album.</string>
 </resources>

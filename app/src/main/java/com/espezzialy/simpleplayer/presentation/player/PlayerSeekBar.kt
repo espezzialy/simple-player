@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 private val SeekInactiveTrack = Color(0xFF3A3A3C)
 private val SeekActiveAndThumb = Color(0xFFFFFFFF)
 
-/** Trilha fina + thumb circular branco (Library – Player / Figma). */
+/** Thin track + white circular thumb (Library – Player / Figma). */
 @Composable
 fun PlayerSeekBar(
     progress: Float,

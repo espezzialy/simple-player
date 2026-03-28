@@ -18,17 +18,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.espezzialy.simpleplayer.R
 
 private val SheetOnSurface = Color(0xFFFFFFFF)
 private val SheetMuted = Color(0xFFE0E0E0)
 
-/**
- * Conteúdo do action sheet (Figma: cabeçalho com faixa/artista + linha “View album”).
- */
+/** Action sheet content (Figma: track/artist header + “View album” row). */
 @Composable
 internal fun PlayerOverflowSheetContent(
     trackName: String,
@@ -76,7 +76,7 @@ internal fun PlayerOverflowSheetContent(
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 Text(
-                    text = "View album",
+                    text = stringResource(R.string.view_album),
                     color = SheetOnSurface,
                     fontSize = 17.sp
                 )

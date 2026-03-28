@@ -2,8 +2,8 @@ package com.espezzialy.simpleplayer.presentation.album
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -19,8 +19,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,8 +31,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -42,15 +40,17 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.espezzialy.simpleplayer.R
 import com.espezzialy.simpleplayer.core.media.toItunesArtwork600
 import com.espezzialy.simpleplayer.domain.model.AlbumDetail
 import com.espezzialy.simpleplayer.domain.model.AlbumTrack
 import com.espezzialy.simpleplayer.domain.model.Song
+import com.espezzialy.simpleplayer.presentation.common.ArtworkThumbnail
+import com.espezzialy.simpleplayer.presentation.common.CenteredLoading
+import com.espezzialy.simpleplayer.presentation.common.ErrorWithRetry
+import com.espezzialy.simpleplayer.presentation.common.SimplePlayerDarkPalette
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerTheme
 
-private val AlbumBackground = Color(0xFF000000)
-private val AlbumOnBackground = Color(0xFFFFFFFF)
-private val AlbumOnBackgroundMuted = Color(0xFFB3B3B3)
 private val HeroArtworkSize = 240.dp
 private val RowThumbSize = 56.dp
 
@@ -78,17 +78,18 @@ fun AlbumDetailScreen(
     onNavigateToPlayer: (Song) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val title = state.album?.title.orEmpty().ifBlank { "Álbum" }
+    val fallbackTitle = stringResource(R.string.album_fallback_title)
+    val title = state.album?.title.orEmpty().ifBlank { fallbackTitle }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        containerColor = AlbumBackground,
+        containerColor = SimplePlayerDarkPalette.Background,
         topBar = {
             TopAppBar(
                 title = {
                     Text(
                         text = title,
-                        color = AlbumOnBackground,
+                        color = SimplePlayerDarkPalette.OnBackground,
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp,
                         maxLines = 1
@@ -98,49 +99,38 @@ fun AlbumDetailScreen(
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Voltar",
-                            tint = AlbumOnBackground
+                            contentDescription = stringResource(R.string.content_desc_back),
+                            tint = SimplePlayerDarkPalette.OnBackground
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = AlbumBackground,
-                    titleContentColor = AlbumOnBackground,
-                    navigationIconContentColor = AlbumOnBackground
+                    containerColor = SimplePlayerDarkPalette.Background,
+                    titleContentColor = SimplePlayerDarkPalette.OnBackground,
+                    navigationIconContentColor = SimplePlayerDarkPalette.OnBackground
                 )
             )
         }
     ) { innerPadding ->
         when {
             state.isLoading -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(color = AlbumOnBackgroundMuted)
-                }
-            }
-
-            state.errorMessage != null -> {
-                Column(
+                CenteredLoading(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding)
-                        .padding(horizontal = 20.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = state.errorMessage,
-                        color = AlbumOnBackgroundMuted
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Button(onClick = { onIntent(AlbumDetailIntent.Retry) }) {
-                        Text("Tentar novamente")
-                    }
-                }
+                )
+            }
+
+            state.errorMessage != null -> {
+                ErrorWithRetry(
+                    message = state.errorMessage,
+                    retryLabel = stringResource(R.string.retry),
+                    onRetry = { onIntent(AlbumDetailIntent.Retry) },
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                        .padding(horizontal = 20.dp)
+                )
             }
 
             state.album != null -> {
@@ -175,34 +165,18 @@ private fun AlbumContent(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                if (!album.artworkUrl.isNullOrBlank()) {
-                    AsyncImage(
-                        model = album.artworkUrl.toItunesArtwork600() ?: album.artworkUrl,
-                        contentDescription = album.title,
-                        modifier = Modifier
-                            .size(HeroArtworkSize)
-                            .clip(RoundedCornerShape(8.dp)),
-                        contentScale = ContentScale.Crop
-                    )
-                } else {
-                    Box(
-                        modifier = Modifier
-                            .size(HeroArtworkSize)
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(Color(0xFF1A1A1A))
-                    )
-                }
+                AlbumHeroArtwork(album = album)
                 Spacer(modifier = Modifier.height(20.dp))
                 Text(
                     text = album.title,
-                    color = AlbumOnBackground,
+                    color = SimplePlayerDarkPalette.OnBackground,
                     fontWeight = FontWeight.Bold,
                     fontSize = 22.sp
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = album.artistName,
-                    color = AlbumOnBackgroundMuted,
+                    color = SimplePlayerDarkPalette.OnBackgroundMuted,
                     fontSize = 16.sp
                 )
             }
@@ -220,6 +194,28 @@ private fun AlbumContent(
 }
 
 @Composable
+private fun AlbumHeroArtwork(album: AlbumDetail) {
+    val shape = RoundedCornerShape(8.dp)
+    if (!album.artworkUrl.isNullOrBlank()) {
+        AsyncImage(
+            model = album.artworkUrl.toItunesArtwork600() ?: album.artworkUrl,
+            contentDescription = album.title,
+            modifier = Modifier
+                .size(HeroArtworkSize)
+                .clip(shape),
+            contentScale = ContentScale.Crop
+        )
+    } else {
+        Box(
+            modifier = Modifier
+                .size(HeroArtworkSize)
+                .clip(shape)
+                .background(SimplePlayerDarkPalette.ArtworkPlaceholder)
+        )
+    }
+}
+
+@Composable
 private fun TrackRow(
     track: AlbumTrack,
     onClick: () -> Unit
@@ -230,35 +226,25 @@ private fun TrackRow(
             .clickable(onClick = onClick),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (!track.artworkUrl100.isNullOrBlank()) {
-            AsyncImage(
-                model = track.artworkUrl100,
-                contentDescription = track.trackName,
-                modifier = Modifier
-                    .size(RowThumbSize)
-                    .clip(RoundedCornerShape(8.dp)),
-                contentScale = ContentScale.Crop
-            )
-        } else {
-            Box(
-                modifier = Modifier
-                    .size(RowThumbSize)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(Color(0xFF1A1A1A))
-            )
-        }
+        ArtworkThumbnail(
+            imageUrl = track.artworkUrl100,
+            contentDescription = track.trackName,
+            size = RowThumbSize,
+            cornerRadius = 8.dp,
+            placeholderColor = SimplePlayerDarkPalette.ArtworkPlaceholder
+        )
         Spacer(modifier = Modifier.width(12.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = track.trackName,
-                color = AlbumOnBackground,
+                color = SimplePlayerDarkPalette.OnBackground,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 16.sp
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = track.artistName,
-                color = AlbumOnBackgroundMuted,
+                color = SimplePlayerDarkPalette.OnBackgroundMuted,
                 fontSize = 14.sp
             )
         }

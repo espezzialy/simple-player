@@ -1,9 +1,12 @@
 package com.espezzialy.simpleplayer.presentation.songs
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.espezzialy.simpleplayer.R
 import com.espezzialy.simpleplayer.domain.usecase.SearchSongsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SongsViewModel @Inject constructor(
-    private val searchSongsUseCase: SearchSongsUseCase
+    private val searchSongsUseCase: SearchSongsUseCase,
+    @ApplicationContext private val appContext: Context
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SongsState())
@@ -77,7 +81,7 @@ class SongsViewModel @Inject constructor(
                     }
                 }
                 .onFailure {
-                    val message = "Nao foi possivel buscar musicas. Tente novamente."
+                    val message = appContext.getString(R.string.error_search_songs)
                     _state.update {
                         it.copy(
                             songs = emptyList(),
