@@ -1,6 +1,7 @@
 package com.espezzialy.simpleplayer.presentation.songs
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -63,6 +64,7 @@ private val SongsRowSpacing = 16.dp
 @Composable
 fun SongsRoute(
     onNavigateToAlbum: (Long) -> Unit,
+    onNavigateToPlayer: (Song) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SongsViewModel = hiltViewModel()
 ) {
@@ -80,6 +82,7 @@ fun SongsRoute(
         state = state,
         onIntent = viewModel::onIntent,
         onNavigateToAlbum = onNavigateToAlbum,
+        onNavigateToPlayer = onNavigateToPlayer,
         modifier = modifier
     )
 }
@@ -89,6 +92,7 @@ fun SongsScreen(
     state: SongsState,
     onIntent: (SongsIntent) -> Unit,
     onNavigateToAlbum: (Long) -> Unit,
+    onNavigateToPlayer: (Song) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -180,6 +184,7 @@ fun SongsScreen(
                     items(state.songs, key = { it.trackId }) { song ->
                         SongRow(
                             song = song,
+                            onSongClick = { onNavigateToPlayer(song) },
                             onViewAlbum = song.collectionId?.let { id -> { onNavigateToAlbum(id) } }
                         )
                     }
@@ -240,45 +245,54 @@ private val SongArtworkSize = 64.dp
 @Composable
 private fun SongRow(
     song: Song,
+    onSongClick: () -> Unit,
     onViewAlbum: (() -> Unit)? = null
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (!song.artworkUrl100.isNullOrBlank()) {
-            AsyncImage(
-                model = song.artworkUrl100,
-                contentDescription = song.trackName,
-                modifier = Modifier
-                    .size(SongArtworkSize)
-                    .clip(RoundedCornerShape(8.dp)),
-                contentScale = ContentScale.Crop
-            )
-        } else {
-            Box(
-                modifier = Modifier
-                    .size(SongArtworkSize)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(SongsSearchSurface)
-            )
-        }
-        Spacer(modifier = Modifier.width(12.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = song.trackName,
-                color = SongsOnBg,
-                fontSize = 17.sp,
-                fontWeight = FontWeight.SemiBold,
-                maxLines = 2
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = song.artistName,
-                color = SongsOnBgMuted,
-                fontSize = 15.sp,
-                maxLines = 2
-            )
+        Row(
+            modifier = Modifier
+                .weight(1f)
+                .clickable(onClick = onSongClick)
+                .padding(vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (!song.artworkUrl100.isNullOrBlank()) {
+                AsyncImage(
+                    model = song.artworkUrl100,
+                    contentDescription = song.trackName,
+                    modifier = Modifier
+                        .size(SongArtworkSize)
+                        .clip(RoundedCornerShape(8.dp)),
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                Box(
+                    modifier = Modifier
+                        .size(SongArtworkSize)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(SongsSearchSurface)
+                )
+            }
+            Spacer(modifier = Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = song.trackName,
+                    color = SongsOnBg,
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 2
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = song.artistName,
+                    color = SongsOnBgMuted,
+                    fontSize = 15.sp,
+                    maxLines = 2
+                )
+            }
         }
         if (onViewAlbum != null) {
             var menuExpanded by remember { mutableStateOf(false) }
@@ -343,7 +357,8 @@ private fun SongsScreenPhonePreview() {
                 )
             ),
             onIntent = {},
-            onNavigateToAlbum = {}
+            onNavigateToAlbum = {},
+            onNavigateToPlayer = {}
         )
     }
 }
@@ -375,7 +390,8 @@ private fun SongsScreenTabletPreview() {
                 )
             ),
             onIntent = {},
-            onNavigateToAlbum = {}
+            onNavigateToAlbum = {},
+            onNavigateToPlayer = {}
         )
     }
 }
