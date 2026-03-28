@@ -30,8 +30,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -63,7 +61,6 @@ private val PlayerBg = Color(0xFF000000)
 private val PlayerOnBg = Color(0xFFFFFFFF)
 private val PlayerMuted = Color(0xFFB3B3B3)
 private val PlayerControlSurface = Color(0xFF2C2C2C)
-private val PlayerTrackInactive = Color(0xFF3A3A3C)
 
 @Composable
 fun PlayerRoute(
@@ -243,16 +240,12 @@ private fun PlayerSeekSection(
     onProgressChange: (Float) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        Slider(
-            value = progress,
-            onValueChange = onProgressChange,
-            modifier = Modifier.fillMaxWidth(),
-            colors = SliderDefaults.colors(
-                thumbColor = PlayerOnBg,
-                activeTrackColor = PlayerOnBg,
-                inactiveTrackColor = PlayerTrackInactive
-            )
+        PlayerSeekBar(
+            progress = progress,
+            onProgressChange = onProgressChange,
+            modifier = Modifier.fillMaxWidth()
         )
+        Spacer(modifier = Modifier.height(8.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
