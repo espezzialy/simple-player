@@ -3,6 +3,8 @@ package com.espezzialy.simpleplayer.presentation.player
 data class PlayerState(
     val trackName: String,
     val artistName: String,
+    /** `null` se não houver álbum associado (lookup). */
+    val collectionId: Long?,
     val artworkUrl: String?,
     /** 0f..1f — mock até existir reprodução real. */
     val progress: Float,

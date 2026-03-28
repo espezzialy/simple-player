@@ -21,6 +21,8 @@ class PlayerViewModel @Inject constructor(
         buildState(
             trackName = savedStateHandle.get<String>(PlayerNavigation.ARG_TRACK_NAME).orEmpty(),
             artistName = savedStateHandle.get<String>(PlayerNavigation.ARG_ARTIST_NAME).orEmpty(),
+            collectionId = savedStateHandle.get<Long>(PlayerNavigation.ARG_COLLECTION_ID)
+                ?.takeUnless { it == PlayerNavigation.NO_COLLECTION_ID },
             artworkUrl = savedStateHandle.get<String>(PlayerNavigation.ARG_ARTWORK_URL)
                 ?.takeIf { it.isNotBlank() },
             progress = initialProgress,
@@ -63,6 +65,7 @@ class PlayerViewModel @Inject constructor(
     private fun buildState(
         trackName: String,
         artistName: String,
+        collectionId: Long?,
         artworkUrl: String?,
         progress: Float,
         isPlaying: Boolean,
@@ -72,6 +75,7 @@ class PlayerViewModel @Inject constructor(
         return PlayerState(
             trackName = trackName,
             artistName = artistName,
+            collectionId = collectionId,
             artworkUrl = artworkUrl,
             progress = progress,
             isPlaying = isPlaying,

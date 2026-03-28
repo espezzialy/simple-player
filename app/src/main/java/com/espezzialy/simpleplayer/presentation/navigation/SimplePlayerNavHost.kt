@@ -86,6 +86,10 @@ fun SimplePlayerNavHost(modifier: Modifier = Modifier) {
                 navArgument(PlayerNavigation.ARG_ARTWORK_URL) {
                     type = NavType.StringType
                     defaultValue = ""
+                },
+                navArgument(PlayerNavigation.ARG_COLLECTION_ID) {
+                    type = NavType.LongType
+                    defaultValue = PlayerNavigation.NO_COLLECTION_ID
                 }
             ),
             enterTransition = {
@@ -102,7 +106,10 @@ fun SimplePlayerNavHost(modifier: Modifier = Modifier) {
             }
         ) {
             PlayerRoute(
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                onNavigateToAlbum = { collectionId ->
+                    navController.navigate("album/$collectionId")
+                }
             )
         }
     }
