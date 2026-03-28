@@ -7,26 +7,27 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 
-private val SeekInactiveTrack = Color(0xFF3A3A3C)
-private val SeekActiveAndThumb = Color(0xFFFFFFFF)
-
-/** Thin track + white circular thumb (Library – Player / Figma). */
+/** Thin track + circular white thumb (Library – Player / Figma). */
 @Composable
 fun PlayerSeekBar(
     progress: Float,
     onProgressChange: (Float) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val colorScheme = MaterialTheme.colorScheme
+    val inactiveTrack = colorScheme.surfaceVariant
+    val activeAndThumb = colorScheme.primary
+
     val thumbRadius = 8.dp
     val trackHeight = 2.dp
 
@@ -60,7 +61,7 @@ fun PlayerSeekBar(
             val trackY = centerY - trackPx / 2f
 
             drawRoundRect(
-                color = SeekInactiveTrack,
+                color = inactiveTrack,
                 topLeft = Offset(0f, trackY),
                 size = Size(size.width, trackPx),
                 cornerRadius = CornerRadius(trackPx / 2f, trackPx / 2f)
@@ -68,7 +69,7 @@ fun PlayerSeekBar(
 
             val activeW = size.width * progress.coerceIn(0f, 1f)
             drawRoundRect(
-                color = SeekActiveAndThumb,
+                color = activeAndThumb,
                 topLeft = Offset(0f, trackY),
                 size = Size(activeW, trackPx),
                 cornerRadius = CornerRadius(trackPx / 2f, trackPx / 2f)
@@ -77,7 +78,7 @@ fun PlayerSeekBar(
             val thumbCenterX = (size.width * progress.coerceIn(0f, 1f))
                 .coerceIn(thumbPx, size.width - thumbPx)
             drawCircle(
-                color = SeekActiveAndThumb,
+                color = activeAndThumb,
                 radius = thumbPx,
                 center = Offset(thumbCenterX, centerY)
             )

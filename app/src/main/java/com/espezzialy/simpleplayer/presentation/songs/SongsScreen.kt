@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -27,17 +28,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.espezzialy.simpleplayer.R
 import com.espezzialy.simpleplayer.domain.model.Song
 import com.espezzialy.simpleplayer.presentation.common.CenteredLoading
 import com.espezzialy.simpleplayer.presentation.common.ErrorWithRetry
-import com.espezzialy.simpleplayer.presentation.common.SimplePlayerDarkPalette
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerTheme
 
 /** Matches the dark Figma layout (Songs / search). */
@@ -77,10 +75,13 @@ fun SongsScreen(
     onNavigateToPlayer: (Song) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val colorScheme = MaterialTheme.colorScheme
+    val typography = MaterialTheme.typography
+
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(SimplePlayerDarkPalette.Background)
+            .background(colorScheme.background)
             .statusBarsPadding()
             .navigationBarsPadding()
             .padding(horizontal = 20.dp)
@@ -88,10 +89,8 @@ fun SongsScreen(
     ) {
         Text(
             text = stringResource(R.string.songs_title),
-            color = SimplePlayerDarkPalette.OnBackground,
-            fontSize = 34.sp,
-            fontWeight = FontWeight.Bold,
-            lineHeight = 40.sp
+            style = typography.displaySmall,
+            color = colorScheme.onBackground
         )
         Spacer(modifier = Modifier.height(20.dp))
         SongsSearchField(
@@ -124,8 +123,8 @@ fun SongsScreen(
                 Text(
                     modifier = Modifier.weight(1f),
                     text = stringResource(R.string.songs_empty_query_hint),
-                    color = SimplePlayerDarkPalette.OnBackgroundMuted,
-                    fontSize = 15.sp
+                    style = typography.bodyMedium,
+                    color = colorScheme.onSurfaceVariant
                 )
             }
 
@@ -133,8 +132,8 @@ fun SongsScreen(
                 Text(
                     modifier = Modifier.weight(1f),
                     text = stringResource(R.string.songs_no_results),
-                    color = SimplePlayerDarkPalette.OnBackgroundMuted,
-                    fontSize = 15.sp
+                    style = typography.bodyMedium,
+                    color = colorScheme.onSurfaceVariant
                 )
             }
 
@@ -164,6 +163,9 @@ private fun SongsSearchField(
     query: String,
     onQueryChange: (String) -> Unit
 ) {
+    val colorScheme = MaterialTheme.colorScheme
+    val typography = MaterialTheme.typography
+
     TextField(
         value = query,
         onValueChange = onQueryChange,
@@ -173,35 +175,35 @@ private fun SongsSearchField(
         placeholder = {
             Text(
                 text = stringResource(R.string.songs_search_placeholder),
-                color = SimplePlayerDarkPalette.OnBackgroundMuted,
-                fontSize = 17.sp
+                style = typography.bodyLarge,
+                color = colorScheme.onSurfaceVariant
             )
         },
         leadingIcon = {
             Icon(
                 painter = painterResource(R.drawable.ic_search),
                 contentDescription = null,
-                tint = SimplePlayerDarkPalette.OnBackgroundMuted,
+                tint = colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(22.dp)
             )
         },
         colors = TextFieldDefaults.colors(
-            focusedContainerColor = SimplePlayerDarkPalette.Surface,
-            unfocusedContainerColor = SimplePlayerDarkPalette.Surface,
-            disabledContainerColor = SimplePlayerDarkPalette.Surface,
+            focusedContainerColor = colorScheme.surface,
+            unfocusedContainerColor = colorScheme.surface,
+            disabledContainerColor = colorScheme.surface,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
             disabledIndicatorColor = Color.Transparent,
             errorIndicatorColor = Color.Transparent,
-            cursorColor = SimplePlayerDarkPalette.OnBackground,
-            focusedTextColor = SimplePlayerDarkPalette.OnBackground,
-            unfocusedTextColor = SimplePlayerDarkPalette.OnBackground,
-            focusedLeadingIconColor = SimplePlayerDarkPalette.OnBackgroundMuted,
-            unfocusedLeadingIconColor = SimplePlayerDarkPalette.OnBackgroundMuted,
-            focusedPlaceholderColor = SimplePlayerDarkPalette.OnBackgroundMuted,
-            unfocusedPlaceholderColor = SimplePlayerDarkPalette.OnBackgroundMuted
+            cursorColor = colorScheme.onSurface,
+            focusedTextColor = colorScheme.onSurface,
+            unfocusedTextColor = colorScheme.onSurface,
+            focusedLeadingIconColor = colorScheme.onSurfaceVariant,
+            unfocusedLeadingIconColor = colorScheme.onSurfaceVariant,
+            focusedPlaceholderColor = colorScheme.onSurfaceVariant,
+            unfocusedPlaceholderColor = colorScheme.onSurfaceVariant
         ),
-        textStyle = TextStyle(fontSize = 17.sp)
+        textStyle = typography.bodyLarge.merge(TextStyle(color = colorScheme.onSurface))
     )
 }
 

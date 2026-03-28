@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -20,7 +21,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun CenteredLoading(
     modifier: Modifier = Modifier,
-    indicatorColor: Color = SimplePlayerDarkPalette.OnBackgroundMuted
+    indicatorColor: Color = MaterialTheme.colorScheme.onSurfaceVariant
 ) {
     Box(
         modifier = modifier.fillMaxSize(),
@@ -36,9 +37,9 @@ fun ErrorWithRetry(
     retryLabel: String,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
-    messageColor: Color = SimplePlayerDarkPalette.OnBackgroundMuted,
-    buttonContainerColor: Color = SimplePlayerDarkPalette.Surface,
-    buttonContentColor: Color = SimplePlayerDarkPalette.OnBackground
+    messageColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    buttonContainerColor: Color = MaterialTheme.colorScheme.surface,
+    buttonContentColor: Color = MaterialTheme.colorScheme.onSurface
 ) {
     Column(
         modifier = modifier.fillMaxSize(),

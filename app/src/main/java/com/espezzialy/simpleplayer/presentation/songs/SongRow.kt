@@ -13,6 +13,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,13 +25,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.espezzialy.simpleplayer.R
 import com.espezzialy.simpleplayer.domain.model.Song
 import com.espezzialy.simpleplayer.presentation.common.ArtworkThumbnail
-import com.espezzialy.simpleplayer.presentation.common.SimplePlayerDarkPalette
 
 private val SongArtworkSize = 64.dp
 
@@ -41,6 +39,9 @@ fun SongRow(
     onViewAlbum: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
+    val colorScheme = MaterialTheme.colorScheme
+    val typography = MaterialTheme.typography
+
     Row(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
@@ -58,22 +59,21 @@ fun SongRow(
                 size = SongArtworkSize,
                 modifier = Modifier,
                 cornerRadius = 8.dp,
-                placeholderColor = SimplePlayerDarkPalette.Surface
+                placeholderColor = colorScheme.surface
             )
             Spacer(modifier = Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = song.trackName,
-                    color = SimplePlayerDarkPalette.OnBackground,
-                    fontSize = 17.sp,
-                    fontWeight = FontWeight.SemiBold,
+                    style = typography.titleMedium,
+                    color = colorScheme.onSurface,
                     maxLines = 2
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = song.artistName,
-                    color = SimplePlayerDarkPalette.OnBackgroundMuted,
-                    fontSize = 15.sp,
+                    style = typography.bodyMedium,
+                    color = colorScheme.onSurfaceVariant,
                     maxLines = 2
                 )
             }
@@ -85,19 +85,19 @@ fun SongRow(
                     Icon(
                         painter = painterResource(R.drawable.ic_more),
                         contentDescription = stringResource(R.string.content_desc_more_options),
-                        tint = SimplePlayerDarkPalette.OnBackgroundMuted
+                        tint = colorScheme.onSurfaceVariant
                     )
                 }
                 DropdownMenu(
                     expanded = menuExpanded,
                     onDismissRequest = { menuExpanded = false },
-                    containerColor = SimplePlayerDarkPalette.Surface
+                    containerColor = colorScheme.surface
                 ) {
                     DropdownMenuItem(
                         text = {
                             Text(
                                 stringResource(R.string.view_album),
-                                color = SimplePlayerDarkPalette.OnBackground
+                                color = colorScheme.onSurface
                             )
                         },
                         onClick = {
@@ -105,7 +105,7 @@ fun SongRow(
                             onViewAlbum()
                         },
                         colors = MenuDefaults.itemColors(
-                            textColor = SimplePlayerDarkPalette.OnBackground
+                            textColor = colorScheme.onSurface
                         )
                     )
                 }

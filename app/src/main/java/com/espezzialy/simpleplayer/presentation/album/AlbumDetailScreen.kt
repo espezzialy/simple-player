@@ -2,8 +2,8 @@ package com.espezzialy.simpleplayer.presentation.album
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -22,6 +22,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -36,7 +37,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
@@ -48,7 +48,6 @@ import com.espezzialy.simpleplayer.domain.model.Song
 import com.espezzialy.simpleplayer.presentation.common.ArtworkThumbnail
 import com.espezzialy.simpleplayer.presentation.common.CenteredLoading
 import com.espezzialy.simpleplayer.presentation.common.ErrorWithRetry
-import com.espezzialy.simpleplayer.presentation.common.SimplePlayerDarkPalette
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerTheme
 
 private val HeroArtworkSize = 240.dp
@@ -80,18 +79,19 @@ fun AlbumDetailScreen(
 ) {
     val fallbackTitle = stringResource(R.string.album_fallback_title)
     val title = state.album?.title.orEmpty().ifBlank { fallbackTitle }
+    val colorScheme = MaterialTheme.colorScheme
+    val typography = MaterialTheme.typography
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        containerColor = SimplePlayerDarkPalette.Background,
+        containerColor = colorScheme.background,
         topBar = {
             TopAppBar(
                 title = {
                     Text(
                         text = title,
-                        color = SimplePlayerDarkPalette.OnBackground,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp,
+                        style = typography.titleLarge,
+                        color = colorScheme.onBackground,
                         maxLines = 1
                     )
                 },
@@ -100,14 +100,14 @@ fun AlbumDetailScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.content_desc_back),
-                            tint = SimplePlayerDarkPalette.OnBackground
+                            tint = colorScheme.onBackground
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = SimplePlayerDarkPalette.Background,
-                    titleContentColor = SimplePlayerDarkPalette.OnBackground,
-                    navigationIconContentColor = SimplePlayerDarkPalette.OnBackground
+                    containerColor = colorScheme.background,
+                    titleContentColor = colorScheme.onBackground,
+                    navigationIconContentColor = colorScheme.onBackground
                 )
             )
         }
@@ -155,6 +155,9 @@ private fun AlbumContent(
     onSongClick: (AlbumTrack) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val colorScheme = MaterialTheme.colorScheme
+    val typography = MaterialTheme.typography
+
     LazyColumn(
         modifier = modifier,
         contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 24.dp),
@@ -169,15 +172,14 @@ private fun AlbumContent(
                 Spacer(modifier = Modifier.height(20.dp))
                 Text(
                     text = album.title,
-                    color = SimplePlayerDarkPalette.OnBackground,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 22.sp
+                    style = typography.headlineSmall,
+                    color = colorScheme.onBackground
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = album.artistName,
-                    color = SimplePlayerDarkPalette.OnBackgroundMuted,
-                    fontSize = 16.sp
+                    style = typography.bodyLarge,
+                    color = colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -195,6 +197,7 @@ private fun AlbumContent(
 
 @Composable
 private fun AlbumHeroArtwork(album: AlbumDetail) {
+    val colorScheme = MaterialTheme.colorScheme
     val shape = RoundedCornerShape(8.dp)
     if (!album.artworkUrl.isNullOrBlank()) {
         AsyncImage(
@@ -210,7 +213,7 @@ private fun AlbumHeroArtwork(album: AlbumDetail) {
             modifier = Modifier
                 .size(HeroArtworkSize)
                 .clip(shape)
-                .background(SimplePlayerDarkPalette.ArtworkPlaceholder)
+                .background(colorScheme.surfaceContainerLowest)
         )
     }
 }
@@ -220,6 +223,9 @@ private fun TrackRow(
     track: AlbumTrack,
     onClick: () -> Unit
 ) {
+    val colorScheme = MaterialTheme.colorScheme
+    val typography = MaterialTheme.typography
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -231,21 +237,20 @@ private fun TrackRow(
             contentDescription = track.trackName,
             size = RowThumbSize,
             cornerRadius = 8.dp,
-            placeholderColor = SimplePlayerDarkPalette.ArtworkPlaceholder
+            placeholderColor = colorScheme.surfaceContainerLowest
         )
         Spacer(modifier = Modifier.width(12.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = track.trackName,
-                color = SimplePlayerDarkPalette.OnBackground,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 16.sp
+                style = typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
+                color = colorScheme.onBackground
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = track.artistName,
-                color = SimplePlayerDarkPalette.OnBackgroundMuted,
-                fontSize = 14.sp
+                style = typography.bodySmall,
+                color = colorScheme.onSurfaceVariant
             )
         }
     }

@@ -27,6 +27,7 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -50,13 +51,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.espezzialy.simpleplayer.R
 import com.espezzialy.simpleplayer.core.media.toItunesArtwork600
-import com.espezzialy.simpleplayer.presentation.common.SimplePlayerDarkPalette
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerTheme
 
 @Composable
@@ -85,26 +84,27 @@ fun PlayerScreen(
 ) {
     var overflowSheetVisible by remember { mutableStateOf(false) }
     val overflowSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
+    val colorScheme = MaterialTheme.colorScheme
+    val typography = MaterialTheme.typography
 
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(SimplePlayerDarkPalette.Background)
+            .background(colorScheme.background)
     ) {
         Scaffold(
             modifier = Modifier
                 .fillMaxSize()
                 .statusBarsPadding()
                 .navigationBarsPadding(),
-            containerColor = SimplePlayerDarkPalette.Background,
+            containerColor = colorScheme.background,
             topBar = {
                 CenterAlignedTopAppBar(
                     title = {
                         Text(
                             text = stringResource(R.string.player_now_playing),
-                            color = SimplePlayerDarkPalette.OnBackground,
-                            fontWeight = FontWeight.Medium,
-                            fontSize = 17.sp
+                            style = typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
+                            color = colorScheme.onBackground
                         )
                     },
                     navigationIcon = {
@@ -112,7 +112,7 @@ fun PlayerScreen(
                             Icon(
                                 painter = painterResource(R.drawable.ic_arrow_left),
                                 contentDescription = stringResource(R.string.content_desc_back),
-                                tint = SimplePlayerDarkPalette.OnBackground
+                                tint = colorScheme.onBackground
                             )
                         }
                     },
@@ -121,15 +121,15 @@ fun PlayerScreen(
                             Icon(
                                 painter = painterResource(R.drawable.ic_more),
                                 contentDescription = stringResource(R.string.content_desc_menu),
-                                tint = SimplePlayerDarkPalette.OnBackgroundMuted
+                                tint = colorScheme.onSurfaceVariant
                             )
                         }
                     },
                     colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                        containerColor = SimplePlayerDarkPalette.Background,
-                        titleContentColor = SimplePlayerDarkPalette.OnBackground,
-                        navigationIconContentColor = SimplePlayerDarkPalette.OnBackground,
-                        actionIconContentColor = SimplePlayerDarkPalette.OnBackground
+                        containerColor = colorScheme.background,
+                        titleContentColor = colorScheme.onBackground,
+                        navigationIconContentColor = colorScheme.onBackground,
+                        actionIconContentColor = colorScheme.onBackground
                     )
                 )
             }
@@ -145,9 +145,8 @@ fun PlayerScreen(
                 Spacer(modifier = Modifier.height(28.dp))
                 Text(
                     text = state.trackName,
-                    color = SimplePlayerDarkPalette.OnBackground,
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold,
+                    style = typography.headlineSmall,
+                    color = colorScheme.onBackground,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.fillMaxWidth(),
@@ -156,8 +155,8 @@ fun PlayerScreen(
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = state.artistName,
-                    color = SimplePlayerDarkPalette.OnBackgroundMuted,
-                    fontSize = 17.sp,
+                    style = typography.bodyLarge,
+                    color = colorScheme.onSurfaceVariant,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.fillMaxWidth(),
@@ -188,7 +187,7 @@ fun PlayerScreen(
                 onDismissRequest = { overflowSheetVisible = false },
                 sheetState = overflowSheetState,
                 dragHandle = { BottomSheetDefaults.DragHandle() },
-                containerColor = SimplePlayerDarkPalette.ControlSurface,
+                containerColor = colorScheme.surfaceContainerHigh,
                 shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
                 scrimColor = Color.Black.copy(alpha = 0.45f),
                 tonalElevation = 0.dp
@@ -209,13 +208,14 @@ fun PlayerScreen(
 
 @Composable
 private fun PlayerArtwork(artworkUrl: String?, trackName: String) {
+    val colorScheme = MaterialTheme.colorScheme
     val shape = RoundedCornerShape(16.dp)
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(1f)
             .clip(shape)
-            .background(SimplePlayerDarkPalette.ControlSurface),
+            .background(colorScheme.surfaceContainerHigh),
         contentAlignment = Alignment.Center
     ) {
         if (!artworkUrl.isNullOrBlank()) {
@@ -236,6 +236,9 @@ private fun PlayerSeekSection(
     remainingLabel: String,
     onProgressChange: (Float) -> Unit
 ) {
+    val colorScheme = MaterialTheme.colorScheme
+    val typography = MaterialTheme.typography
+
     Column(modifier = Modifier.fillMaxWidth()) {
         PlayerSeekBar(
             progress = progress,
@@ -249,13 +252,13 @@ private fun PlayerSeekSection(
         ) {
             Text(
                 text = currentLabel,
-                color = SimplePlayerDarkPalette.OnBackgroundMuted,
-                fontSize = 13.sp
+                style = typography.labelSmall,
+                color = colorScheme.onSurfaceVariant
             )
             Text(
                 text = remainingLabel,
-                color = SimplePlayerDarkPalette.OnBackgroundMuted,
-                fontSize = 13.sp
+                style = typography.labelSmall,
+                color = colorScheme.onSurfaceVariant
             )
         }
     }
@@ -270,6 +273,7 @@ private fun PlayerTransportControls(
     onNext: () -> Unit,
     onRepeat: () -> Unit
 ) {
+    val colorScheme = MaterialTheme.colorScheme
     val pauseDesc = stringResource(R.string.content_desc_pause)
     val playDesc = stringResource(R.string.content_desc_play)
     Row(
@@ -283,7 +287,7 @@ private fun PlayerTransportControls(
             onClick = onPlayPause,
             modifier = Modifier.size(72.dp),
             shape = CircleShape,
-            color = SimplePlayerDarkPalette.ControlSurface
+            color = colorScheme.surfaceContainerHigh
         ) {
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -292,7 +296,7 @@ private fun PlayerTransportControls(
                 Icon(
                     imageVector = if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
                     contentDescription = if (isPlaying) pauseDesc else playDesc,
-                    tint = SimplePlayerDarkPalette.OnBackground,
+                    tint = colorScheme.onSurface,
                     modifier = Modifier.size(36.dp)
                 )
             }
@@ -301,7 +305,7 @@ private fun PlayerTransportControls(
             Icon(
                 imageVector = Icons.Filled.SkipPrevious,
                 contentDescription = stringResource(R.string.content_desc_previous_track),
-                tint = SimplePlayerDarkPalette.OnBackground,
+                tint = colorScheme.onSurface,
                 modifier = Modifier.size(32.dp)
             )
         }
@@ -309,7 +313,7 @@ private fun PlayerTransportControls(
             Icon(
                 imageVector = Icons.Filled.SkipNext,
                 contentDescription = stringResource(R.string.content_desc_next_track),
-                tint = SimplePlayerDarkPalette.OnBackground,
+                tint = colorScheme.onSurface,
                 modifier = Modifier.size(32.dp)
             )
         }
@@ -318,9 +322,9 @@ private fun PlayerTransportControls(
                 imageVector = Icons.Filled.Repeat,
                 contentDescription = stringResource(R.string.content_desc_repeat),
                 tint = if (repeatEnabled) {
-                    SimplePlayerDarkPalette.OnBackground
+                    colorScheme.onSurface
                 } else {
-                    SimplePlayerDarkPalette.OnBackgroundMuted
+                    colorScheme.onSurfaceVariant
                 },
                 modifier = Modifier.size(28.dp)
             )

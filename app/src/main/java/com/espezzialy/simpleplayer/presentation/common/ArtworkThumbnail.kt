@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -20,7 +21,7 @@ fun ArtworkThumbnail(
     size: Dp,
     modifier: Modifier = Modifier,
     cornerRadius: Dp = 8.dp,
-    placeholderColor: Color = SimplePlayerDarkPalette.ArtworkPlaceholder
+    placeholderColor: Color = MaterialTheme.colorScheme.surfaceContainerLowest
 ) {
     val shape = RoundedCornerShape(cornerRadius)
     if (!imageUrl.isNullOrBlank()) {

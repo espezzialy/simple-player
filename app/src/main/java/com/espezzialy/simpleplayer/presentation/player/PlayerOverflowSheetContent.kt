@@ -13,20 +13,15 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Album
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.espezzialy.simpleplayer.R
-
-private val SheetOnSurface = Color(0xFFFFFFFF)
-private val SheetMuted = Color(0xFFE0E0E0)
 
 /** Action sheet content (Figma: track/artist header + “View album” row). */
 @Composable
@@ -37,6 +32,9 @@ internal fun PlayerOverflowSheetContent(
     onViewAlbumClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val colorScheme = MaterialTheme.colorScheme
+    val typography = MaterialTheme.typography
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -46,17 +44,16 @@ internal fun PlayerOverflowSheetContent(
     ) {
         Text(
             text = trackName,
-            color = SheetOnSurface,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
+            style = typography.headlineSmall,
+            color = colorScheme.onSurface,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(6.dp))
         Text(
             text = artistName,
-            color = SheetMuted,
-            fontSize = 15.sp,
+            style = typography.bodyMedium,
+            color = colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
@@ -71,14 +68,14 @@ internal fun PlayerOverflowSheetContent(
                 Icon(
                     imageVector = Icons.Filled.Album,
                     contentDescription = null,
-                    tint = SheetOnSurface,
+                    tint = colorScheme.onSurface,
                     modifier = Modifier.size(24.dp)
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 Text(
                     text = stringResource(R.string.view_album),
-                    color = SheetOnSurface,
-                    fontSize = 17.sp
+                    style = typography.bodyLarge,
+                    color = colorScheme.onSurface
                 )
             }
         }
