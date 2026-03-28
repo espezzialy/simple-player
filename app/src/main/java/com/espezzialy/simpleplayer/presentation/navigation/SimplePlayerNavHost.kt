@@ -1,6 +1,7 @@
 package com.espezzialy.simpleplayer.presentation.navigation
 
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
@@ -14,6 +15,7 @@ import com.espezzialy.simpleplayer.presentation.album.AlbumDetailRoute
 import com.espezzialy.simpleplayer.presentation.player.PlayerNavigation
 import com.espezzialy.simpleplayer.presentation.player.PlayerRoute
 import com.espezzialy.simpleplayer.presentation.player.navigateToPlayer
+import com.espezzialy.simpleplayer.presentation.player.navigateToPlayerFromAlbum
 import com.espezzialy.simpleplayer.presentation.songs.SongsRoute
 
 private const val ROUTE_SONGS = "songs"
@@ -48,7 +50,9 @@ fun SimplePlayerNavHost(modifier: Modifier = Modifier) {
         ) {
             SongsRoute(
                 onNavigateToAlbum = { collectionId ->
-                    navController.navigate("album/$collectionId")
+                    navController.navigate("album/$collectionId") {
+                        launchSingleTop = true
+                    }
                 },
                 onNavigateToPlayer = { song ->
                     navController.navigateToPlayer(song)
@@ -74,7 +78,10 @@ fun SimplePlayerNavHost(modifier: Modifier = Modifier) {
             }
         ) {
             AlbumDetailRoute(
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                onNavigateToPlayer = { song ->
+                    navController.navigateToPlayerFromAlbum(song)
+                }
             )
         }
         composable(
@@ -98,6 +105,15 @@ fun SimplePlayerNavHost(modifier: Modifier = Modifier) {
                     initialOffsetX = { fullWidth -> fullWidth }
                 )
             },
+            exitTransition = {
+                slideOutHorizontally(
+                    animationSpec = tween(SLIDE_DURATION_MS),
+                    targetOffsetX = { fullWidth -> -fullWidth }
+                )
+            },
+            popEnterTransition = {
+                fadeIn(animationSpec = tween(durationMillis = 0))
+            },
             popExitTransition = {
                 slideOutHorizontally(
                     animationSpec = tween(SLIDE_DURATION_MS),
@@ -108,7 +124,9 @@ fun SimplePlayerNavHost(modifier: Modifier = Modifier) {
             PlayerRoute(
                 onBack = { navController.popBackStack() },
                 onNavigateToAlbum = { collectionId ->
-                    navController.navigate("album/$collectionId")
+                    navController.navigate("album/$collectionId") {
+                        launchSingleTop = true
+                    }
                 }
             )
         }

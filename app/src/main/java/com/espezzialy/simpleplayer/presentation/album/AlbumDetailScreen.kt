@@ -1,6 +1,7 @@
 package com.espezzialy.simpleplayer.presentation.album
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,6 +45,7 @@ import coil.compose.AsyncImage
 import com.espezzialy.simpleplayer.core.media.toItunesArtwork600
 import com.espezzialy.simpleplayer.domain.model.AlbumDetail
 import com.espezzialy.simpleplayer.domain.model.AlbumTrack
+import com.espezzialy.simpleplayer.domain.model.Song
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerTheme
 
 private val AlbumBackground = Color(0xFF000000)
@@ -55,13 +57,15 @@ private val RowThumbSize = 56.dp
 @Composable
 fun AlbumDetailRoute(
     onBack: () -> Unit,
+    onNavigateToPlayer: (Song) -> Unit,
     viewModel: AlbumDetailViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     AlbumDetailScreen(
         state = state,
         onIntent = viewModel::onIntent,
-        onBack = onBack
+        onBack = onBack,
+        onNavigateToPlayer = onNavigateToPlayer
     )
 }
 
@@ -71,6 +75,7 @@ fun AlbumDetailScreen(
     state: AlbumDetailState,
     onIntent: (AlbumDetailIntent) -> Unit,
     onBack: () -> Unit,
+    onNavigateToPlayer: (Song) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val title = state.album?.title.orEmpty().ifBlank { "Álbum" }
@@ -139,8 +144,12 @@ fun AlbumDetailScreen(
             }
 
             state.album != null -> {
+                val album = state.album
                 AlbumContent(
-                    album = state.album,
+                    album = album,
+                    onSongClick = { track ->
+                        onNavigateToPlayer(track.toSong(album))
+                    },
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding)
@@ -153,6 +162,7 @@ fun AlbumDetailScreen(
 @Composable
 private fun AlbumContent(
     album: AlbumDetail,
+    onSongClick: (AlbumTrack) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -201,15 +211,23 @@ private fun AlbumContent(
             items = album.tracks,
             key = { it.trackId }
         ) { track ->
-            TrackRow(track = track)
+            TrackRow(
+                track = track,
+                onClick = { onSongClick(track) }
+            )
         }
     }
 }
 
 @Composable
-private fun TrackRow(track: AlbumTrack) {
+private fun TrackRow(
+    track: AlbumTrack,
+    onClick: () -> Unit
+) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (!track.artworkUrl100.isNullOrBlank()) {
@@ -247,6 +265,16 @@ private fun TrackRow(track: AlbumTrack) {
     }
 }
 
+private fun AlbumTrack.toSong(album: AlbumDetail): Song =
+    Song(
+        trackId = trackId,
+        trackName = trackName,
+        artistName = artistName,
+        collectionName = album.title,
+        collectionId = album.collectionId,
+        artworkUrl100 = artworkUrl100
+    )
+
 @Preview(showBackground = true, widthDp = 390, heightDp = 844)
 @Composable
 private fun AlbumDetailScreenPreview() {
@@ -266,7 +294,8 @@ private fun AlbumDetailScreenPreview() {
                 )
             ),
             onIntent = {},
-            onBack = {}
+            onBack = {},
+            onNavigateToPlayer = {}
         )
     }
 }
