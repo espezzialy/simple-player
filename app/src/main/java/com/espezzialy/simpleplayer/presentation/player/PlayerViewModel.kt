@@ -75,7 +75,7 @@ class PlayerViewModel @Inject constructor(
             artworkUrl = savedStateHandle.get<String>(PlayerNavigation.ARG_ARTWORK_URL)
                 ?.takeIf { it.isNotBlank() },
             progress = initialProgress,
-            isPlaying = false,
+            isPlaying = true,
             repeatEnabled = false
         )
     )
@@ -128,7 +128,8 @@ class PlayerViewModel @Inject constructor(
                 artworkUrl = song.artworkUrl100,
                 progress = progress,
                 currentTimeLabel = current,
-                remainingTimeLabel = remaining
+                remainingTimeLabel = remaining,
+                isPlaying = true
             )
         }
     }
