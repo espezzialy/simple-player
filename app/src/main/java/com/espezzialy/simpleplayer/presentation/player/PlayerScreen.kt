@@ -148,6 +148,8 @@ fun PlayerScreen(
         if (isTabletLayout) PlayerSeekTrackHeightTablet else PlayerSeekTrackHeightPhone
     val isInMultiWindowMode = rememberIsInMultiWindowMode()
     val showSidePanel = isTabletLayout && !isInMultiWindowMode
+    val isTabletLandscape =
+        configuration.screenHeightDp < configuration.screenWidthDp
 
     Box(
         modifier = modifier
@@ -203,7 +205,13 @@ fun PlayerScreen(
                         onIntent(PlayerIntent.SongSelectedFromPlaylist(song))
                     },
                     modifier = Modifier
-                        .width(PlayerSidePanelWidth)
+                        .then(
+                            if (isTabletLandscape) {
+                                Modifier.weight(0.38f)
+                            } else {
+                                Modifier.width(PlayerSidePanelWidth)
+                            }
+                        )
                         .fillMaxHeight()
                         .padding(end = 24.dp)
                 )
