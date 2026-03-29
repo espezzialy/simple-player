@@ -1,5 +1,8 @@
 package com.espezzialy.simpleplayer.presentation.player
 
+import android.content.Context
+import android.content.ContextWrapper
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,6 +36,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,6 +47,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -53,6 +58,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.core.app.MultiWindowModeChangedInfo
+import androidx.core.util.Consumer
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.espezzialy.simpleplayer.R
@@ -63,6 +70,9 @@ import com.espezzialy.simpleplayer.presentation.songs.SongsIntent
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerTheme
 
 private const val PlayerTabletMinWidthDp = 600
+
+/** Figma tablet (ex.: 834px wide): painel lateral com largura fixa 288px. */
+private val PlayerSidePanelWidth = 288.dp
 
 /** Figma: phone artwork 264×264. */
 private val PlayerArtworkSizePhone = 264.dp
@@ -136,13 +146,15 @@ fun PlayerScreen(
         configuration.screenWidthDp >= PlayerTabletMinWidthDp
     val seekTrackHeight =
         if (isTabletLayout) PlayerSeekTrackHeightTablet else PlayerSeekTrackHeightPhone
+    val isInMultiWindowMode = rememberIsInMultiWindowMode()
+    val showSidePanel = isTabletLayout && !isInMultiWindowMode
 
     Box(
         modifier = modifier
             .fillMaxSize()
             .background(colorScheme.background)
     ) {
-        if (isTabletLayout) {
+        if (isTabletLayout && showSidePanel) {
             Row(
                 modifier = Modifier
                     .fillMaxSize()
@@ -191,9 +203,31 @@ fun PlayerScreen(
                         onIntent(PlayerIntent.SongSelectedFromPlaylist(song))
                     },
                     modifier = Modifier
-                        .weight(0.38f)
+                        .width(PlayerSidePanelWidth)
                         .fillMaxHeight()
                         .padding(end = 24.dp)
+                )
+            }
+        } else if (isTabletLayout) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .statusBarsPadding()
+                    .navigationBarsPadding()
+                    .padding(horizontal = 24.dp)
+            ) {
+                PlayerTabletTopBar(
+                    onBack = onBack,
+                    title = stringResource(R.string.player_now_playing),
+                    onOverflowClick = { overflowSheetVisible = true }
+                )
+                PlayerMainColumn(
+                    state = state,
+                    onIntent = onIntent,
+                    artistNameColor = colorScheme.onBackground,
+                    artworkSize = PlayerArtworkSizeTablet,
+                    contentPaddingTop = PlayerTabletMainPaddingBelowTopBar,
+                    seekTrackHeight = seekTrackHeight
                 )
             }
         } else {
@@ -284,7 +318,8 @@ fun PlayerScreen(
 @Composable
 private fun PlayerTabletTopBar(
     onBack: () -> Unit,
-    title: String
+    title: String,
+    onOverflowClick: (() -> Unit)? = null
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
@@ -308,8 +343,47 @@ private fun PlayerTabletTopBar(
             overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center
         )
-        Spacer(modifier = Modifier.width(48.dp))
+        if (onOverflowClick != null) {
+            IconButton(onClick = onOverflowClick) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_more),
+                    contentDescription = stringResource(R.string.content_desc_menu),
+                    tint = colorScheme.onSurfaceVariant
+                )
+            }
+        } else {
+            Spacer(modifier = Modifier.width(48.dp))
+        }
     }
+}
+
+private tailrec fun findComponentActivity(context: Context): ComponentActivity? {
+    return when (context) {
+        is ComponentActivity -> context
+        is ContextWrapper -> findComponentActivity(context.baseContext)
+        else -> null
+    }
+}
+
+@Composable
+private fun rememberIsInMultiWindowMode(): Boolean {
+    val context = LocalContext.current
+    val activity = remember(context) { findComponentActivity(context) }
+    var inMultiWindow by remember(activity) {
+        mutableStateOf(activity?.isInMultiWindowMode == true)
+    }
+    DisposableEffect(activity) {
+        val act = activity ?: return@DisposableEffect onDispose { }
+        val listener = Consumer<MultiWindowModeChangedInfo> { info ->
+            inMultiWindow = info.isInMultiWindowMode
+        }
+        act.addOnMultiWindowModeChangedListener(listener)
+        inMultiWindow = act.isInMultiWindowMode
+        onDispose {
+            act.removeOnMultiWindowModeChangedListener(listener)
+        }
+    }
+    return inMultiWindow
 }
 
 @Composable
