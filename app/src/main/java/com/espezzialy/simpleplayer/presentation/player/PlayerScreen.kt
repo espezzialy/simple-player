@@ -73,6 +73,12 @@ private val PlayerArtworkSizePhone = 264.dp
 /** Figma: tablet artwork 286×286. */
 private val PlayerArtworkSizeTablet = 286.dp
 
+/** Figma: padding above player content on phone. */
+private val PlayerContentPaddingTopPhone = 90.dp
+
+/** Figma: padding above player content on tablet. */
+private val PlayerContentPaddingTopTablet = 62.dp
+
 @Composable
 fun PlayerRoute(
     onBack: () -> Unit,
@@ -182,7 +188,8 @@ fun PlayerScreen(
                             state = state,
                             onIntent = onIntent,
                             artistNameColor = colorScheme.onBackground,
-                            artworkSize = PlayerArtworkSizeTablet
+                            artworkSize = PlayerArtworkSizeTablet,
+                            contentPaddingTop = PlayerContentPaddingTopTablet
                         )
                     }
                     PlayerSidePlaylistPanel(
@@ -209,7 +216,8 @@ fun PlayerScreen(
                         state = state,
                         onIntent = onIntent,
                         artistNameColor = colorScheme.onSurfaceVariant,
-                        artworkSize = PlayerArtworkSizePhone
+                        artworkSize = PlayerArtworkSizePhone,
+                        contentPaddingTop = PlayerContentPaddingTopPhone
                     )
                 }
             }
@@ -244,46 +252,59 @@ private fun PlayerMainColumn(
     state: PlayerState,
     onIntent: (PlayerIntent) -> Unit,
     artistNameColor: Color,
-    artworkSize: Dp
+    artworkSize: Dp,
+    contentPaddingTop: Dp
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        Spacer(modifier = Modifier.height(8.dp))
-        PlayerArtwork(
-            artworkUrl = state.artworkUrl,
-            trackName = state.trackName,
-            size = artworkSize
-        )
-        Spacer(modifier = Modifier.height(28.dp))
-        Text(
-            text = state.trackName,
-            style = typography.headlineSmall,
-            color = colorScheme.onBackground,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Start
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = state.artistName,
-            style = typography.bodyLarge,
-            color = artistNameColor,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Start
-        )
-        Spacer(modifier = Modifier.height(28.dp))
-        PlayerSeekSection(
-            progress = state.progress,
-            currentLabel = state.currentTimeLabel,
-            remainingLabel = state.remainingTimeLabel,
-            onProgressChange = { onIntent(PlayerIntent.ProgressChanged(it)) }
-        )
-        Spacer(modifier = Modifier.weight(1f))
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = contentPaddingTop),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            PlayerArtwork(
+                artworkUrl = state.artworkUrl,
+                trackName = state.trackName,
+                size = artworkSize
+            )
+        }
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = state.trackName,
+                style = typography.headlineSmall,
+                color = colorScheme.onBackground,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Start
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = state.artistName,
+                style = typography.bodyLarge,
+                color = artistNameColor,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Start
+            )
+            Spacer(modifier = Modifier.height(28.dp))
+            PlayerSeekSection(
+                progress = state.progress,
+                currentLabel = state.currentTimeLabel,
+                remainingLabel = state.remainingTimeLabel,
+                onProgressChange = { onIntent(PlayerIntent.ProgressChanged(it)) }
+            )
+        }
+        Spacer(modifier = Modifier.height(24.dp))
         PlayerTransportControls(
             isPlaying = state.isPlaying,
             repeatEnabled = state.repeatEnabled,
