@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.CircleShape
@@ -78,6 +79,9 @@ private val PlayerContentPaddingTopPhone = 90.dp
 /** Figma: padding above player content on tablet. */
 private val PlayerContentPaddingTopTablet = 62.dp
 
+/** Espaço entre a barra (voltar + título) e o conteúdo principal no tablet. */
+private val PlayerTabletMainPaddingBelowTopBar = 16.dp
+
 @Composable
 fun PlayerRoute(
     onBack: () -> Unit,
@@ -135,83 +139,102 @@ fun PlayerScreen(
             .fillMaxSize()
             .background(colorScheme.background)
     ) {
-        Scaffold(
-            modifier = Modifier
-                .fillMaxSize()
-                .statusBarsPadding()
-                .navigationBarsPadding(),
-            containerColor = colorScheme.background,
-            topBar = {
-                CenterAlignedTopAppBar(
-                    title = {
-                        Text(
-                            text = stringResource(R.string.player_now_playing),
-                            style = typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
-                            color = colorScheme.onBackground
-                        )
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = onBack) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_arrow_left),
-                                contentDescription = stringResource(R.string.content_desc_back),
-                                tint = colorScheme.onBackground
-                            )
-                        }
-                    },
-                    actions = {
-                        IconButton(onClick = { overflowSheetVisible = true }) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_more),
-                                contentDescription = stringResource(R.string.content_desc_menu),
-                                tint = colorScheme.onSurfaceVariant
-                            )
-                        }
-                    },
-                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                        containerColor = colorScheme.background,
-                        titleContentColor = colorScheme.onBackground,
-                        navigationIconContentColor = colorScheme.onBackground,
-                        actionIconContentColor = colorScheme.onBackground
-                    )
-                )
-            }
-        ) { innerPadding ->
-            if (isTabletLayout) {
-                Row(
+        if (isTabletLayout) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .statusBarsPadding()
+                    .navigationBarsPadding()
+                    .padding(start = 24.dp),
+                verticalAlignment = Alignment.Top
+            ) {
+                Column(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
-                        .padding(horizontal = 24.dp),
-                    horizontalArrangement = Arrangement.spacedBy(20.dp)
+                        .weight(1f)
+                        .fillMaxHeight()
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxHeight()
-                    ) {
-                        PlayerMainColumn(
-                            state = state,
-                            onIntent = onIntent,
-                            artistNameColor = colorScheme.onBackground,
-                            artworkSize = PlayerArtworkSizeTablet,
-                            contentPaddingTop = PlayerContentPaddingTopTablet
-                        )
-                    }
-                    PlayerSidePlaylistPanel(
-                        sidePanel = sidePanelUiState,
-                        currentTrackId = state.trackId,
-                        isCurrentPlaying = state.isPlaying,
-                        onRetrySearch = onRetrySearch,
-                        onSongClick = { song: Song ->
-                            onIntent(PlayerIntent.SongSelectedFromPlaylist(song))
-                        },
-                        modifier = Modifier
-                            .weight(0.38f)
-                            .fillMaxHeight()
+                    PlayerTabletTopBar(
+                        onBack = onBack,
+                        title = stringResource(R.string.player_now_playing)
+                    )
+                    PlayerMainColumn(
+                        state = state,
+                        onIntent = onIntent,
+                        artistNameColor = colorScheme.onBackground,
+                        artworkSize = PlayerArtworkSizeTablet,
+                        contentPaddingTop = PlayerTabletMainPaddingBelowTopBar
                     )
                 }
-            } else {
+                IconButton(
+                    onClick = { overflowSheetVisible = true },
+                    modifier = Modifier
+                        .align(Alignment.Top)
+                        .padding(top = 8.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_more),
+                        contentDescription = stringResource(R.string.content_desc_menu),
+                        tint = colorScheme.onSurfaceVariant
+                    )
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+                PlayerSidePlaylistPanel(
+                    sidePanel = sidePanelUiState,
+                    currentTrackId = state.trackId,
+                    isCurrentPlaying = state.isPlaying,
+                    onRetrySearch = onRetrySearch,
+                    onSongClick = { song: Song ->
+                        onIntent(PlayerIntent.SongSelectedFromPlaylist(song))
+                    },
+                    modifier = Modifier
+                        .weight(0.38f)
+                        .fillMaxHeight()
+                        .padding(end = 24.dp)
+                )
+            }
+        } else {
+            Scaffold(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .statusBarsPadding()
+                    .navigationBarsPadding(),
+                containerColor = colorScheme.background,
+                topBar = {
+                    CenterAlignedTopAppBar(
+                        title = {
+                            Text(
+                                text = stringResource(R.string.player_now_playing),
+                                style = typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
+                                color = colorScheme.onBackground
+                            )
+                        },
+                        navigationIcon = {
+                            IconButton(onClick = onBack) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_arrow_left),
+                                    contentDescription = stringResource(R.string.content_desc_back),
+                                    tint = colorScheme.onBackground
+                                )
+                            }
+                        },
+                        actions = {
+                            IconButton(onClick = { overflowSheetVisible = true }) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_more),
+                                    contentDescription = stringResource(R.string.content_desc_menu),
+                                    tint = colorScheme.onSurfaceVariant
+                                )
+                            }
+                        },
+                        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                            containerColor = colorScheme.background,
+                            titleContentColor = colorScheme.onBackground,
+                            navigationIconContentColor = colorScheme.onBackground,
+                            actionIconContentColor = colorScheme.onBackground
+                        )
+                    )
+                }
+            ) { innerPadding ->
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -250,6 +273,37 @@ fun PlayerScreen(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun PlayerTabletTopBar(
+    onBack: () -> Unit,
+    title: String
+) {
+    val colorScheme = MaterialTheme.colorScheme
+    val typography = MaterialTheme.typography
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        IconButton(onClick = onBack) {
+            Icon(
+                painter = painterResource(R.drawable.ic_arrow_left),
+                contentDescription = stringResource(R.string.content_desc_back),
+                tint = colorScheme.onBackground
+            )
+        }
+        Text(
+            text = title,
+            style = typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
+            color = colorScheme.onBackground,
+            modifier = Modifier.weight(1f),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.width(48.dp))
     }
 }
 
