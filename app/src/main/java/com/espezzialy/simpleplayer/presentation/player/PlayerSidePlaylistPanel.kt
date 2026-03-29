@@ -27,24 +27,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.espezzialy.simpleplayer.R
 import com.espezzialy.simpleplayer.domain.model.Song
 import com.espezzialy.simpleplayer.presentation.common.ArtworkThumbnail
 import com.espezzialy.simpleplayer.presentation.common.CenteredLoading
 import com.espezzialy.simpleplayer.presentation.common.ErrorWithRetry
-import com.espezzialy.simpleplayer.presentation.common.SongsSearchField
-import com.espezzialy.simpleplayer.presentation.songs.SongsIntent
-import com.espezzialy.simpleplayer.presentation.songs.SongsState
 
 private val SideRowThumbSize = 56.dp
 
 @Composable
 fun PlayerSidePlaylistPanel(
-    songsState: SongsState,
+    sidePanel: PlayerSidePanelUiState,
     currentTrackId: Long,
     isCurrentPlaying: Boolean,
-    onSongsIntent: (SongsIntent) -> Unit,
+    onRetrySearch: () -> Unit,
     onSongClick: (Song) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -65,7 +63,7 @@ fun PlayerSidePlaylistPanel(
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(bottom = 12.dp)
+                modifier = Modifier.padding(bottom = if (sidePanel.panelTitle != null) 8.dp else 12.dp)
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_music_list),
@@ -74,14 +72,21 @@ fun PlayerSidePlaylistPanel(
                     modifier = Modifier.size(22.dp)
                 )
             }
-            SongsSearchField(
-                query = songsState.query,
-                onQueryChange = { onSongsIntent(SongsIntent.QueryChanged(it)) }
-            )
-            Spacer(modifier = Modifier.height(12.dp))
+            sidePanel.panelTitle?.let { title ->
+                Text(
+                    text = title,
+                    style = typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
+                    color = colorScheme.onBackground,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 12.dp)
+                )
+            }
 
             when {
-                songsState.isLoading -> {
+                sidePanel.isSearchMode && sidePanel.isLoading -> {
                     CenteredLoading(
                         modifier = Modifier
                             .weight(1f)
@@ -89,18 +94,18 @@ fun PlayerSidePlaylistPanel(
                     )
                 }
 
-                songsState.errorMessage != null -> {
+                sidePanel.isSearchMode && sidePanel.errorMessage != null -> {
                     ErrorWithRetry(
-                        message = songsState.errorMessage,
+                        message = sidePanel.errorMessage,
                         retryLabel = stringResource(R.string.retry),
-                        onRetry = { onSongsIntent(SongsIntent.RetrySearch) },
+                        onRetry = onRetrySearch,
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxWidth()
                     )
                 }
 
-                songsState.query.isBlank() -> {
+                sidePanel.isSearchMode && sidePanel.showEmptyQueryHint -> {
                     Text(
                         modifier = Modifier.weight(1f),
                         text = stringResource(R.string.songs_empty_query_hint),
@@ -109,10 +114,19 @@ fun PlayerSidePlaylistPanel(
                     )
                 }
 
-                songsState.songs.isEmpty() -> {
+                sidePanel.isSearchMode && sidePanel.songs.isEmpty() -> {
                     Text(
                         modifier = Modifier.weight(1f),
                         text = stringResource(R.string.songs_no_results),
+                        style = typography.bodyMedium,
+                        color = colorScheme.onSurfaceVariant
+                    )
+                }
+
+                sidePanel.songs.isEmpty() -> {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = stringResource(R.string.player_side_panel_empty_album),
                         style = typography.bodyMedium,
                         color = colorScheme.onSurfaceVariant
                     )
@@ -125,7 +139,7 @@ fun PlayerSidePlaylistPanel(
                             .fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        items(songsState.songs, key = { it.trackId }) { song ->
+                        items(sidePanel.songs, key = { it.trackId }) { song ->
                             PlayerSidePlaylistRow(
                                 song = song,
                                 showPlayingIndicator = song.trackId == currentTrackId && isCurrentPlaying,

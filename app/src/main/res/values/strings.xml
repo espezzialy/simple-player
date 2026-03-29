@@ -19,6 +19,7 @@
     <string name="content_desc_next_track">Next track</string>
     <string name="content_desc_repeat">Repeat</string>
     <string name="content_desc_playing_indicator">Now playing</string>
+    <string name="player_side_panel_empty_album">No tracks in this album.</string>
 
     <string name="album_fallback_title">Album</string>
     <string name="error_load_album">Could not load the album.</string>

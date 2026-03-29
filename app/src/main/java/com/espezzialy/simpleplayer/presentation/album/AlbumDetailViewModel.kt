@@ -5,7 +5,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.espezzialy.simpleplayer.R
+import com.espezzialy.simpleplayer.domain.model.AlbumDetail
+import com.espezzialy.simpleplayer.domain.model.Song
 import com.espezzialy.simpleplayer.domain.usecase.GetAlbumDetailUseCase
+import com.espezzialy.simpleplayer.presentation.player.PlayerSidePanelSession
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,6 +22,7 @@ import javax.inject.Inject
 class AlbumDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getAlbumDetailUseCase: GetAlbumDetailUseCase,
+    private val playerSidePanelSession: PlayerSidePanelSession,
     @ApplicationContext private val appContext: Context
 ) : ViewModel() {
 
@@ -38,6 +42,21 @@ class AlbumDetailViewModel @Inject constructor(
         when (intent) {
             AlbumDetailIntent.Retry -> load()
         }
+    }
+
+    /** Ao abrir o player a partir do álbum, o painel (tablet) lista as faixas do álbum. */
+    fun preparePlayerFromAlbum(album: AlbumDetail) {
+        val songs = album.tracks.map { track ->
+            Song(
+                trackId = track.trackId,
+                trackName = track.trackName,
+                artistName = track.artistName,
+                collectionName = album.title,
+                collectionId = album.collectionId,
+                artworkUrl100 = track.artworkUrl100
+            )
+        }
+        playerSidePanelSession.setAlbumTracks(album.title, songs)
     }
 
     private fun load() {

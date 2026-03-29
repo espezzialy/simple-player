@@ -55,7 +55,10 @@ fun SongsRoute(
         state = state,
         onIntent = viewModel::onIntent,
         onNavigateToAlbum = onNavigateToAlbum,
-        onNavigateToPlayer = onNavigateToPlayer,
+        onNavigateToPlayer = { song ->
+            viewModel.preparePlayerFromSearch()
+            onNavigateToPlayer(song)
+        },
         modifier = modifier
     )
 }

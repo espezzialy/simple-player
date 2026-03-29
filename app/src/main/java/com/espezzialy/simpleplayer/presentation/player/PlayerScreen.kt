@@ -62,7 +62,6 @@ import com.espezzialy.simpleplayer.core.media.toItunesArtwork600
 import com.espezzialy.simpleplayer.domain.model.Song
 import com.espezzialy.simpleplayer.presentation.songs.SongsEffect
 import com.espezzialy.simpleplayer.presentation.songs.SongsIntent
-import com.espezzialy.simpleplayer.presentation.songs.SongsState
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerTheme
 
 private const val PlayerTabletMinWidthDp = 600
@@ -86,7 +85,7 @@ fun PlayerRoute(
     viewModel: PlayerViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val songsSearchState by viewModel.songsSearchState.collectAsStateWithLifecycle()
+    val sidePanelUiState by viewModel.sidePanelUiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.songsSearchEffect.collect { effect ->
@@ -101,8 +100,8 @@ fun PlayerRoute(
         onIntent = viewModel::onIntent,
         onBack = onBack,
         onNavigateToAlbum = onNavigateToAlbum,
-        songsSearchState = songsSearchState,
-        onSongsSearchIntent = viewModel::onSongsSearchIntent
+        sidePanelUiState = sidePanelUiState,
+        onRetrySearch = { viewModel.onSongsSearchIntent(SongsIntent.RetrySearch) }
     )
 }
 
@@ -113,8 +112,15 @@ fun PlayerScreen(
     onIntent: (PlayerIntent) -> Unit,
     onBack: () -> Unit,
     onNavigateToAlbum: (Long) -> Unit,
-    songsSearchState: SongsState = SongsState(),
-    onSongsSearchIntent: (SongsIntent) -> Unit = {},
+    sidePanelUiState: PlayerSidePanelUiState = PlayerSidePanelUiState(
+        songs = emptyList(),
+        panelTitle = null,
+        isSearchMode = true,
+        isLoading = false,
+        errorMessage = null,
+        showEmptyQueryHint = true
+    ),
+    onRetrySearch: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var overflowSheetVisible by remember { mutableStateOf(false) }
@@ -193,10 +199,10 @@ fun PlayerScreen(
                         )
                     }
                     PlayerSidePlaylistPanel(
-                        songsState = songsSearchState,
+                        sidePanel = sidePanelUiState,
                         currentTrackId = state.trackId,
                         isCurrentPlaying = state.isPlaying,
-                        onSongsIntent = onSongsSearchIntent,
+                        onRetrySearch = onRetrySearch,
                         onSongClick = { song: Song ->
                             onIntent(PlayerIntent.SongSelectedFromPlaylist(song))
                         },
@@ -462,8 +468,7 @@ private fun PlayerScreenTabletPreview() {
             onIntent = {},
             onBack = {},
             onNavigateToAlbum = {},
-            songsSearchState = SongsState(
-                query = "sheeran",
+            sidePanelUiState = PlayerSidePanelUiState(
                 songs = listOf(
                     Song(
                         trackId = 1L,
@@ -481,9 +486,14 @@ private fun PlayerScreenTabletPreview() {
                         collectionId = 1L,
                         artworkUrl100 = null
                     )
-                )
+                ),
+                panelTitle = "÷",
+                isSearchMode = false,
+                isLoading = false,
+                errorMessage = null,
+                showEmptyQueryHint = false
             ),
-            onSongsSearchIntent = {}
+            onRetrySearch = {}
         )
     }
 }

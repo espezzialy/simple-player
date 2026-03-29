@@ -68,7 +68,8 @@ fun AlbumDetailRoute(
         state = state,
         onIntent = viewModel::onIntent,
         onBack = onBack,
-        onNavigateToPlayer = onNavigateToPlayer
+        onNavigateToPlayer = onNavigateToPlayer,
+        onBeforeNavigateToPlayerFromAlbum = viewModel::preparePlayerFromAlbum
     )
 }
 
@@ -79,6 +80,7 @@ fun AlbumDetailScreen(
     onIntent: (AlbumDetailIntent) -> Unit,
     onBack: () -> Unit,
     onNavigateToPlayer: (Song) -> Unit,
+    onBeforeNavigateToPlayerFromAlbum: (AlbumDetail) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val fallbackTitle = stringResource(R.string.album_fallback_title)
@@ -142,6 +144,7 @@ fun AlbumDetailScreen(
                 AlbumContent(
                     album = album,
                     onSongClick = { track ->
+                        onBeforeNavigateToPlayerFromAlbum(album)
                         onNavigateToPlayer(track.toSong(album))
                     },
                     modifier = Modifier

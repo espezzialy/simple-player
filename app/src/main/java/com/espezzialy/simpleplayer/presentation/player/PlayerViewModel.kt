@@ -2,26 +2,63 @@ package com.espezzialy.simpleplayer.presentation.player
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.espezzialy.simpleplayer.domain.model.Song
 import com.espezzialy.simpleplayer.presentation.songs.SongsEffect
 import com.espezzialy.simpleplayer.presentation.songs.SongsIntent
 import com.espezzialy.simpleplayer.presentation.songs.SongsSearchRepository
-import com.espezzialy.simpleplayer.presentation.songs.SongsState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
 @HiltViewModel
 class PlayerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val songsSearchRepository: SongsSearchRepository
+    private val songsSearchRepository: SongsSearchRepository,
+    private val sidePanelSession: PlayerSidePanelSession
 ) : ViewModel() {
 
-    val songsSearchState: StateFlow<SongsState> = songsSearchRepository.state
+    val sidePanelUiState: StateFlow<PlayerSidePanelUiState> = combine(
+        sidePanelSession.source,
+        songsSearchRepository.state
+    ) { source, search ->
+        when (source) {
+            is PlayerSidePanelSource.AlbumTracks -> PlayerSidePanelUiState(
+                songs = source.songs,
+                panelTitle = source.albumTitle,
+                isSearchMode = false,
+                isLoading = false,
+                errorMessage = null,
+                showEmptyQueryHint = false
+            )
+            PlayerSidePanelSource.SearchResults -> PlayerSidePanelUiState(
+                songs = search.songs,
+                panelTitle = null,
+                isSearchMode = true,
+                isLoading = search.isLoading,
+                errorMessage = search.errorMessage,
+                showEmptyQueryHint = search.query.isBlank()
+            )
+        }
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5_000),
+        PlayerSidePanelUiState(
+            songs = emptyList(),
+            panelTitle = null,
+            isSearchMode = true,
+            isLoading = false,
+            errorMessage = null,
+            showEmptyQueryHint = true
+        )
+    )
 
     val songsSearchEffect: Flow<SongsEffect> = songsSearchRepository.effect
 
