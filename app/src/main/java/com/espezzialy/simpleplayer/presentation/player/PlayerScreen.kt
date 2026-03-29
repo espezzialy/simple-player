@@ -20,9 +20,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Repeat
-import androidx.compose.material.icons.filled.SkipNext
-import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -82,6 +79,9 @@ private val PlayerContentPaddingTopTablet = 62.dp
 /** Espaço entre a barra (voltar + título) e o conteúdo principal no tablet. */
 private val PlayerTabletMainPaddingBelowTopBar = 16.dp
 
+private val PlayerSeekTrackHeightPhone = 4.dp
+private val PlayerSeekTrackHeightTablet = 8.dp
+
 @Composable
 fun PlayerRoute(
     onBack: () -> Unit,
@@ -131,8 +131,11 @@ fun PlayerScreen(
     val overflowSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
+    val configuration = LocalConfiguration.current
     val isTabletLayout =
-        LocalConfiguration.current.screenWidthDp >= PlayerTabletMinWidthDp
+        configuration.screenWidthDp >= PlayerTabletMinWidthDp
+    val seekTrackHeight =
+        if (isTabletLayout) PlayerSeekTrackHeightTablet else PlayerSeekTrackHeightPhone
 
     Box(
         modifier = modifier
@@ -162,7 +165,8 @@ fun PlayerScreen(
                         onIntent = onIntent,
                         artistNameColor = colorScheme.onBackground,
                         artworkSize = PlayerArtworkSizeTablet,
-                        contentPaddingTop = PlayerTabletMainPaddingBelowTopBar
+                        contentPaddingTop = PlayerTabletMainPaddingBelowTopBar,
+                        seekTrackHeight = seekTrackHeight
                     )
                 }
                 IconButton(
@@ -246,7 +250,8 @@ fun PlayerScreen(
                         onIntent = onIntent,
                         artistNameColor = colorScheme.onSurfaceVariant,
                         artworkSize = PlayerArtworkSizePhone,
-                        contentPaddingTop = PlayerContentPaddingTopPhone
+                        contentPaddingTop = PlayerContentPaddingTopPhone,
+                        seekTrackHeight = seekTrackHeight
                     )
                 }
             }
@@ -313,7 +318,8 @@ private fun PlayerMainColumn(
     onIntent: (PlayerIntent) -> Unit,
     artistNameColor: Color,
     artworkSize: Dp,
-    contentPaddingTop: Dp
+    contentPaddingTop: Dp,
+    seekTrackHeight: Dp
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
@@ -361,7 +367,8 @@ private fun PlayerMainColumn(
                 progress = state.progress,
                 currentLabel = state.currentTimeLabel,
                 remainingLabel = state.remainingTimeLabel,
-                onProgressChange = { onIntent(PlayerIntent.ProgressChanged(it)) }
+                onProgressChange = { onIntent(PlayerIntent.ProgressChanged(it)) },
+                trackHeight = seekTrackHeight
             )
         }
         Spacer(modifier = Modifier.height(24.dp))
@@ -404,7 +411,8 @@ private fun PlayerSeekSection(
     progress: Float,
     currentLabel: String,
     remainingLabel: String,
-    onProgressChange: (Float) -> Unit
+    onProgressChange: (Float) -> Unit,
+    trackHeight: Dp
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
@@ -413,7 +421,8 @@ private fun PlayerSeekSection(
         PlayerSeekBar(
             progress = progress,
             onProgressChange = onProgressChange,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            trackHeight = trackHeight
         )
         Spacer(modifier = Modifier.height(8.dp))
         Row(
@@ -453,48 +462,53 @@ private fun PlayerTransportControls(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Surface(
-            onClick = onPlayPause,
-            modifier = Modifier.size(72.dp),
-            shape = CircleShape,
-            color = colorScheme.surfaceContainerHigh
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+            Surface(
+                onClick = onPlayPause,
+                modifier = Modifier.size(72.dp),
+                shape = CircleShape,
+                color = colorScheme.surfaceContainerHigh
             ) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
+                        contentDescription = if (isPlaying) pauseDesc else playDesc,
+                        tint = colorScheme.onSurface,
+                        modifier = Modifier.size(36.dp)
+                    )
+                }
+            }
+            IconButton(onClick = onPrevious) {
                 Icon(
-                    imageVector = if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
-                    contentDescription = if (isPlaying) pauseDesc else playDesc,
+                    painter = painterResource(R.drawable.ic_backward_bar_fill),
+                    contentDescription = stringResource(R.string.content_desc_previous_track),
                     tint = colorScheme.onSurface,
-                    modifier = Modifier.size(36.dp)
+                    modifier = Modifier.size(32.dp)
+                )
+            }
+            IconButton(onClick = onNext) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_forward_bar_fill),
+                    contentDescription = stringResource(R.string.content_desc_next_track),
+                    tint = colorScheme.onSurface,
+                    modifier = Modifier.size(32.dp)
                 )
             }
         }
-        IconButton(onClick = onPrevious) {
-            Icon(
-                imageVector = Icons.Filled.SkipPrevious,
-                contentDescription = stringResource(R.string.content_desc_previous_track),
-                tint = colorScheme.onSurface,
-                modifier = Modifier.size(32.dp)
-            )
-        }
-        IconButton(onClick = onNext) {
-            Icon(
-                imageVector = Icons.Filled.SkipNext,
-                contentDescription = stringResource(R.string.content_desc_next_track),
-                tint = colorScheme.onSurface,
-                modifier = Modifier.size(32.dp)
-            )
-        }
         IconButton(onClick = onRepeat) {
             Icon(
-                imageVector = Icons.Filled.Repeat,
+                painter = painterResource(R.drawable.ic_play_on_repeat),
                 contentDescription = stringResource(R.string.content_desc_repeat),
                 tint = if (repeatEnabled) {
                     colorScheme.onSurface
                 } else {
-                    colorScheme.onSurfaceVariant
+                    colorScheme.onSurface
                 },
                 modifier = Modifier.size(28.dp)
             )

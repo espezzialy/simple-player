@@ -15,21 +15,22 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-/** Thin track + circular white thumb (Library – Player / Figma). */
+/** Track + circular thumb (Library – Player / Figma). [trackHeight] 4dp phone, 8dp tablet. */
 @Composable
 fun PlayerSeekBar(
     progress: Float,
     onProgressChange: (Float) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    trackHeight: Dp = 4.dp
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val inactiveTrack = colorScheme.surfaceVariant
     val activeAndThumb = colorScheme.primary
 
     val thumbRadius = 8.dp
-    val trackHeight = 2.dp
 
     BoxWithConstraints(
         modifier = modifier
