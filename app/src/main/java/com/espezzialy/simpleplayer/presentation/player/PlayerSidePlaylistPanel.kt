@@ -1,13 +1,13 @@
 package com.espezzialy.simpleplayer.presentation.player
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -36,7 +36,11 @@ import com.espezzialy.simpleplayer.presentation.common.ArtworkThumbnail
 import com.espezzialy.simpleplayer.presentation.common.CenteredLoading
 import com.espezzialy.simpleplayer.presentation.common.ErrorWithRetry
 
-private val SideRowThumbSize = 56.dp
+private val SideRowThumbSize = 52.dp
+private val SidePanelListPaddingTop = 20.dp
+private val SideRowVerticalPadding = 8.dp
+private val SideRowTextStartSpacing = 16.dp
+private val SideRowTextSpacing = 4.dp
 
 @Composable
 fun PlayerSidePlaylistPanel(
@@ -64,7 +68,7 @@ fun PlayerSidePlaylistPanel(
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(bottom = if (sidePanel.panelTitle != null) 8.dp else 12.dp)
+                modifier = Modifier.padding(bottom = if (sidePanel.panelTitle != null) 8.dp else 0.dp)
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_music_list),
@@ -82,7 +86,7 @@ fun PlayerSidePlaylistPanel(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 12.dp)
+                        .padding(bottom = 0.dp)
                 )
             }
 
@@ -138,7 +142,7 @@ fun PlayerSidePlaylistPanel(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                        contentPadding = PaddingValues(top = SidePanelListPaddingTop)
                     ) {
                         items(sidePanel.songs, key = { it.trackId }) { song ->
                             PlayerSidePlaylistRow(
@@ -166,7 +170,8 @@ private fun PlayerSidePlaylistRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick),
+            .clickable(onClick = onClick)
+            .padding(vertical = SideRowVerticalPadding),
         verticalAlignment = Alignment.CenterVertically
     ) {
         ArtworkThumbnail(
@@ -176,7 +181,7 @@ private fun PlayerSidePlaylistRow(
             cornerRadius = 8.dp,
             placeholderColor = colorScheme.surfaceContainerLowest
         )
-        Spacer(modifier = Modifier.width(12.dp))
+        Spacer(modifier = Modifier.width(SideRowTextStartSpacing))
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = song.trackName,
@@ -186,9 +191,10 @@ private fun PlayerSidePlaylistRow(
                     fontWeight = FontWeight.SemiBold
                 ),
                 color = colorScheme.onBackground,
-                maxLines = 2
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(SideRowTextSpacing))
             Text(
                 text = song.artistName,
                 style = typography.bodySmall.copy(
@@ -196,7 +202,8 @@ private fun PlayerSidePlaylistRow(
                     lineHeight = 16.8.sp
                 ),
                 color = colorScheme.onSurfaceVariant,
-                maxLines = 2
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
         if (showPlayingIndicator) {
