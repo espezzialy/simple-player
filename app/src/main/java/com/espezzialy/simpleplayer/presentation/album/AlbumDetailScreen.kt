@@ -49,6 +49,7 @@ import com.espezzialy.simpleplayer.domain.model.Song
 import com.espezzialy.simpleplayer.presentation.common.ArtworkThumbnail
 import com.espezzialy.simpleplayer.presentation.common.CenteredLoading
 import com.espezzialy.simpleplayer.presentation.common.ErrorWithRetry
+import com.espezzialy.simpleplayer.presentation.common.TabletBackIconButton
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerTheme
 
 private val HeroArtworkSize = 240.dp
@@ -87,6 +88,8 @@ fun AlbumDetailScreen(
     val title = state.album?.title.orEmpty().ifBlank { fallbackTitle }
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
+    val isTabletLayout =
+        LocalConfiguration.current.screenWidthDp >= TabletMinWidthDp
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -102,12 +105,22 @@ fun AlbumDetailScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    if (isTabletLayout) {
+                        TabletBackIconButton(
+                            onClick = onBack,
                             contentDescription = stringResource(R.string.content_desc_back),
-                            tint = colorScheme.onBackground
+                            tint = colorScheme.onBackground,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            iconSize = 28.dp
                         )
+                    } else {
+                        IconButton(onClick = onBack) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(R.string.content_desc_back),
+                                tint = colorScheme.onBackground
+                            )
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(

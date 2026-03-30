@@ -18,19 +18,20 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-/** Track + circular thumb (Library – Player / Figma). [trackHeight] 4dp phone, 8dp tablet. */
+/** Track + circular thumb (Library – Player / Figma). [trackHeight] 4dp phone, 8dp tablet. [thumbDiameter] 16dp phone, 24dp tablet. */
 @Composable
 fun PlayerSeekBar(
     progress: Float,
     onProgressChange: (Float) -> Unit,
     modifier: Modifier = Modifier,
-    trackHeight: Dp = 4.dp
+    trackHeight: Dp = 4.dp,
+    thumbDiameter: Dp = 16.dp
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val inactiveTrack = colorScheme.surfaceVariant
     val activeAndThumb = colorScheme.primary
 
-    val thumbRadius = 8.dp
+    val thumbRadius = thumbDiameter / 2
 
     BoxWithConstraints(
         modifier = modifier

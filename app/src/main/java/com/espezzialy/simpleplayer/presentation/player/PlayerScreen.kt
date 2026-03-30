@@ -64,6 +64,7 @@ import com.espezzialy.simpleplayer.R
 import com.espezzialy.simpleplayer.core.media.toItunesArtwork600
 import com.espezzialy.simpleplayer.domain.model.Song
 import com.espezzialy.simpleplayer.presentation.songs.SongsEffect
+import com.espezzialy.simpleplayer.presentation.common.TabletBackIconButton
 import com.espezzialy.simpleplayer.presentation.songs.SongsIntent
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerTheme
 
@@ -96,6 +97,9 @@ private val PlayerTopBarTitleInsetAfterBackPhone = 4.dp
 
 private val PlayerSeekTrackHeightPhone = 4.dp
 private val PlayerSeekTrackHeightTablet = 8.dp
+
+private val PlayerSeekThumbDiameterPhone = 16.dp
+private val PlayerSeekThumbDiameterTablet = 24.dp
 
 @Composable
 fun PlayerRoute(
@@ -150,6 +154,8 @@ fun PlayerScreen(
         configuration.screenWidthDp >= PlayerTabletMinWidthDp
     val seekTrackHeight =
         if (isTabletLayout) PlayerSeekTrackHeightTablet else PlayerSeekTrackHeightPhone
+    val seekThumbDiameter =
+        if (isTabletLayout) PlayerSeekThumbDiameterTablet else PlayerSeekThumbDiameterPhone
     val isInMultiWindowMode = rememberIsInMultiWindowMode()
     val showSidePanel = isTabletLayout && !isInMultiWindowMode
     val isTabletLandscape =
@@ -184,7 +190,8 @@ fun PlayerScreen(
                         artistNameColor = colorScheme.onBackground,
                         artworkSize = PlayerArtworkSizeTablet,
                         contentPaddingTop = PlayerTabletMainPaddingBelowTopBar,
-                        seekTrackHeight = seekTrackHeight
+                        seekTrackHeight = seekTrackHeight,
+                        seekThumbDiameter = seekThumbDiameter
                     )
                 }
                 IconButton(
@@ -239,7 +246,8 @@ fun PlayerScreen(
                     artistNameColor = colorScheme.onBackground,
                     artworkSize = PlayerArtworkSizeTablet,
                     contentPaddingTop = PlayerTabletMainPaddingBelowTopBar,
-                    seekTrackHeight = seekTrackHeight
+                    seekTrackHeight = seekTrackHeight,
+                    seekThumbDiameter = seekThumbDiameter
                 )
             }
         } else {
@@ -269,7 +277,8 @@ fun PlayerScreen(
                         artistNameColor = colorScheme.onSurfaceVariant,
                         artworkSize = PlayerArtworkSizePhone,
                         contentPaddingTop = PlayerContentPaddingTopPhone,
-                        seekTrackHeight = seekTrackHeight
+                        seekTrackHeight = seekTrackHeight,
+                        seekThumbDiameter = seekThumbDiameter
                     )
                 }
             }
@@ -328,7 +337,7 @@ private fun PlayerPhoneTopBar(
             color = colorScheme.onBackground,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Start
         )
         IconButton(onClick = onOverflowClick) {
             Icon(
@@ -354,13 +363,13 @@ private fun PlayerTabletTopBar(
             .padding(top = PlayerTabletTopBarPaddingTop),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        IconButton(onClick = onBack) {
-            Icon(
-                painter = painterResource(R.drawable.ic_arrow_left),
-                contentDescription = stringResource(R.string.content_desc_back),
-                tint = colorScheme.onBackground
-            )
-        }
+        TabletBackIconButton(
+            onClick = onBack,
+            contentDescription = stringResource(R.string.content_desc_back),
+            tint = colorScheme.onBackground,
+            painter = painterResource(R.drawable.ic_arrow_left),
+            iconSize = 28.dp
+        )
         Spacer(modifier = Modifier.width(PlayerTopBarTitleInsetAfterBackTablet))
         Text(
             text = title,
@@ -369,7 +378,7 @@ private fun PlayerTabletTopBar(
             modifier = Modifier.weight(1f),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Start
         )
         if (onOverflowClick != null) {
             IconButton(onClick = onOverflowClick) {
@@ -421,7 +430,8 @@ private fun PlayerMainColumn(
     artistNameColor: Color,
     artworkSize: Dp,
     contentPaddingTop: Dp,
-    seekTrackHeight: Dp
+    seekTrackHeight: Dp,
+    seekThumbDiameter: Dp
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
@@ -470,7 +480,8 @@ private fun PlayerMainColumn(
                 currentLabel = state.currentTimeLabel,
                 remainingLabel = state.remainingTimeLabel,
                 onProgressChange = { onIntent(PlayerIntent.ProgressChanged(it)) },
-                trackHeight = seekTrackHeight
+                trackHeight = seekTrackHeight,
+                thumbDiameter = seekThumbDiameter
             )
         }
         Spacer(modifier = Modifier.height(24.dp))
@@ -514,7 +525,8 @@ private fun PlayerSeekSection(
     currentLabel: String,
     remainingLabel: String,
     onProgressChange: (Float) -> Unit,
-    trackHeight: Dp
+    trackHeight: Dp,
+    thumbDiameter: Dp
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
@@ -524,7 +536,8 @@ private fun PlayerSeekSection(
             progress = progress,
             onProgressChange = onProgressChange,
             modifier = Modifier.fillMaxWidth(),
-            trackHeight = trackHeight
+            trackHeight = trackHeight,
+            thumbDiameter = thumbDiameter
         )
         Spacer(modifier = Modifier.height(8.dp))
         Row(
