@@ -1,5 +1,6 @@
 package com.espezzialy.simpleplayer.presentation.songs
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -25,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -40,6 +43,9 @@ import com.espezzialy.simpleplayer.presentation.common.SongListCellArtworkSizePh
 import com.espezzialy.simpleplayer.presentation.common.SongListCellArtworkSizeTablet
 import com.espezzialy.simpleplayer.presentation.common.SongListCellTabletMinWidthDp
 import com.espezzialy.simpleplayer.presentation.common.SongListCellTitleStyleTablet
+
+private val SongRowMenuOpenCellBackground = Color(0x14FFFFFF)
+private val SongRowMenuOpenCellShape = RoundedCornerShape(8.dp)
 
 @Composable
 fun SongRow(
@@ -60,8 +66,21 @@ fun SongRow(
         song.artworkUrl100
     }
 
+    var menuExpanded by remember { mutableStateOf(false) }
+
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .then(
+                if (menuExpanded && onViewAlbum != null) {
+                    Modifier.background(
+                        color = SongRowMenuOpenCellBackground,
+                        shape = SongRowMenuOpenCellShape
+                    )
+                } else {
+                    Modifier
+                }
+            ),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(
@@ -115,7 +134,6 @@ fun SongRow(
             }
         }
         if (onViewAlbum != null) {
-            var menuExpanded by remember { mutableStateOf(false) }
             Box {
                 IconButton(onClick = { menuExpanded = true }) {
                     Icon(
