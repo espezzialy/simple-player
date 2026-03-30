@@ -13,9 +13,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -35,10 +37,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
@@ -57,6 +62,7 @@ import com.espezzialy.simpleplayer.presentation.common.SongListCellArtworkSizeTa
 import com.espezzialy.simpleplayer.presentation.common.SongListCellTabletMinWidthDp
 import com.espezzialy.simpleplayer.presentation.common.SongListCellTitleStyleTablet
 import com.espezzialy.simpleplayer.presentation.common.TabletBackIconButton
+import com.espezzialy.simpleplayer.ui.theme.ArticulatCfFamily
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerTheme
 
 private val HeroArtworkSize = 240.dp
@@ -64,6 +70,39 @@ private val RowThumbSize = 56.dp
 
 /** Material width breakpoint: at 600dp and above, album hero uses tablet (side-by-side) layout. */
 private const val TabletMinWidthDp = 600
+
+private val AlbumTabletNavPaddingTop = 54.dp
+private val AlbumTabletNavPaddingStart = 25.dp
+private val AlbumTabletNavIconToTitle = 10.dp
+
+private val AlbumTabletNavTitleStyle = TextStyle(
+    fontFamily = ArticulatCfFamily,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 18.sp,
+    lineHeight = 19.44.sp
+)
+
+private val AlbumTabletHeroArtworkSize = 120.dp
+private val AlbumTabletHeroArtworkCornerRadius = 16.dp
+private val AlbumTabletContentPaddingStart = 40.dp
+private val AlbumTabletHeroPaddingTop = 48.dp
+private val AlbumTabletHeroImageToText = 34.dp
+private val AlbumTabletTracksTopSpacer = 56.dp
+private val AlbumTabletTrackSpacing = 24.dp
+
+private val AlbumTabletHeroTitleStyle = TextStyle(
+    fontFamily = ArticulatCfFamily,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 56.sp,
+    lineHeight = 67.2.sp
+)
+
+private val AlbumTabletHeroArtistStyle = TextStyle(
+    fontFamily = ArticulatCfFamily,
+    fontWeight = FontWeight.Medium,
+    fontSize = 28.sp,
+    lineHeight = 33.6.sp
+)
 
 @Composable
 fun AlbumDetailRoute(
@@ -102,25 +141,19 @@ fun AlbumDetailScreen(
         modifier = modifier.fillMaxSize(),
         containerColor = colorScheme.background,
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = title,
-                        style = typography.titleLarge,
-                        color = colorScheme.onBackground,
-                        maxLines = 1
-                    )
-                },
-                navigationIcon = {
-                    if (isTabletLayout) {
-                        TabletBackIconButton(
-                            onClick = onBack,
-                            contentDescription = stringResource(R.string.content_desc_back),
-                            tint = colorScheme.onBackground,
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            iconSize = 28.dp
+            if (isTabletLayout) {
+                AlbumTabletTopBar(onBack = onBack)
+            } else {
+                TopAppBar(
+                    title = {
+                        Text(
+                            text = title,
+                            style = typography.titleLarge,
+                            color = colorScheme.onBackground,
+                            maxLines = 1
                         )
-                    } else {
+                    },
+                    navigationIcon = {
                         IconButton(onClick = onBack) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -128,14 +161,14 @@ fun AlbumDetailScreen(
                                 tint = colorScheme.onBackground
                             )
                         }
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = colorScheme.background,
-                    titleContentColor = colorScheme.onBackground,
-                    navigationIconContentColor = colorScheme.onBackground
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = colorScheme.background,
+                        titleContentColor = colorScheme.onBackground,
+                        navigationIconContentColor = colorScheme.onBackground
+                    )
                 )
-            )
+            }
         }
     ) { innerPadding ->
         when {
@@ -177,6 +210,35 @@ fun AlbumDetailScreen(
 }
 
 @Composable
+private fun AlbumTabletTopBar(onBack: () -> Unit) {
+    val colorScheme = MaterialTheme.colorScheme
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .statusBarsPadding()
+            .padding(
+                start = AlbumTabletNavPaddingStart,
+                top = AlbumTabletNavPaddingTop
+            ),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        TabletBackIconButton(
+            onClick = onBack,
+            contentDescription = stringResource(R.string.content_desc_back),
+            tint = colorScheme.onBackground,
+            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+            iconSize = 28.dp
+        )
+        Spacer(modifier = Modifier.width(AlbumTabletNavIconToTitle))
+        Text(
+            text = stringResource(R.string.album_fallback_title),
+            style = AlbumTabletNavTitleStyle,
+            color = colorScheme.onBackground
+        )
+    }
+}
+
+@Composable
 private fun AlbumContent(
     album: AlbumDetail,
     onSongClick: (AlbumTrack) -> Unit,
@@ -187,39 +249,41 @@ private fun AlbumContent(
     val isTabletLayout =
         LocalConfiguration.current.screenWidthDp >= TabletMinWidthDp
 
-    LazyColumn(
-        modifier = modifier,
-        contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 24.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        item {
-            if (isTabletLayout) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    AlbumHeroArtwork(album = album)
-                    Spacer(modifier = Modifier.width(24.dp))
-                    Column(
-                        modifier = Modifier.weight(1f),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.Start
-                    ) {
-                        Text(
-                            text = album.title,
-                            style = typography.headlineSmall,
-                            color = colorScheme.onBackground
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = album.artistName,
-                            style = typography.bodyLarge,
-                            color = colorScheme.onBackground
-                        )
+    if (isTabletLayout) {
+        LazyColumn(
+            modifier = modifier,
+            contentPadding = PaddingValues(
+                start = AlbumTabletContentPaddingStart,
+                end = 20.dp,
+                bottom = 24.dp
+            )
+        ) {
+            item {
+                AlbumTabletHeroSection(album = album)
+                Spacer(modifier = Modifier.height(AlbumTabletTracksTopSpacer))
+            }
+            itemsIndexed(
+                items = album.tracks,
+                key = { _, track -> track.trackId }
+            ) { index, track ->
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    TrackRow(
+                        track = track,
+                        onClick = { onSongClick(track) }
+                    )
+                    if (index < album.tracks.lastIndex) {
+                        Spacer(modifier = Modifier.height(AlbumTabletTrackSpacing))
                     }
                 }
-            } else {
+            }
+        }
+    } else {
+        LazyColumn(
+            modifier = modifier,
+            contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            item {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -239,36 +303,74 @@ private fun AlbumContent(
                     )
                 }
             }
+            items(
+                items = album.tracks,
+                key = { it.trackId }
+            ) { track ->
+                TrackRow(
+                    track = track,
+                    onClick = { onSongClick(track) }
+                )
+            }
         }
-        items(
-            items = album.tracks,
-            key = { it.trackId }
-        ) { track ->
-            TrackRow(
-                track = track,
-                onClick = { onSongClick(track) }
+    }
+}
+
+@Composable
+private fun AlbumTabletHeroSection(album: AlbumDetail) {
+    val colorScheme = MaterialTheme.colorScheme
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = AlbumTabletHeroPaddingTop),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        AlbumHeroArtwork(
+            album = album,
+            size = AlbumTabletHeroArtworkSize,
+            cornerRadius = AlbumTabletHeroArtworkCornerRadius
+        )
+        Spacer(modifier = Modifier.width(AlbumTabletHeroImageToText))
+        Column(
+            modifier = Modifier.weight(1f),
+            horizontalAlignment = Alignment.Start
+        ) {
+            Text(
+                text = album.title,
+                style = AlbumTabletHeroTitleStyle,
+                color = colorScheme.onBackground
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = album.artistName,
+                style = AlbumTabletHeroArtistStyle,
+                color = colorScheme.onBackground
             )
         }
     }
 }
 
 @Composable
-private fun AlbumHeroArtwork(album: AlbumDetail) {
+private fun AlbumHeroArtwork(
+    album: AlbumDetail,
+    size: Dp = HeroArtworkSize,
+    cornerRadius: Dp = 8.dp
+) {
     val colorScheme = MaterialTheme.colorScheme
-    val shape = RoundedCornerShape(8.dp)
+    val shape = RoundedCornerShape(cornerRadius)
     if (!album.artworkUrl.isNullOrBlank()) {
         AsyncImage(
             model = album.artworkUrl.toItunesArtwork600() ?: album.artworkUrl,
             contentDescription = album.title,
             modifier = Modifier
-                .size(HeroArtworkSize)
+                .size(size)
                 .clip(shape),
             contentScale = ContentScale.Crop
         )
     } else {
         Box(
             modifier = Modifier
-                .size(HeroArtworkSize)
+                .size(size)
                 .clip(shape)
                 .background(colorScheme.surfaceContainerLowest)
         )
