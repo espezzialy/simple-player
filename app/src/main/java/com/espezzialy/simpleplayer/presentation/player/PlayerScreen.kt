@@ -24,7 +24,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.BottomSheetDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,7 +32,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -89,6 +87,13 @@ private val PlayerContentPaddingTopTablet = 62.dp
 /** Espaço entre a barra (voltar + título) e o conteúdo principal no tablet. */
 private val PlayerTabletMainPaddingBelowTopBar = 16.dp
 
+/** Padding superior só da barra (voltar + título + menu) no tablet. */
+private val PlayerTabletTopBarPaddingTop = 34.dp
+
+/** Espaço entre o botão voltar e o título "Now playing". */
+private val PlayerTopBarTitleInsetAfterBackTablet = 10.dp
+private val PlayerTopBarTitleInsetAfterBackPhone = 4.dp
+
 private val PlayerSeekTrackHeightPhone = 4.dp
 private val PlayerSeekTrackHeightTablet = 8.dp
 
@@ -140,7 +145,6 @@ fun PlayerScreen(
     var overflowSheetVisible by remember { mutableStateOf(false) }
     val overflowSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
     val colorScheme = MaterialTheme.colorScheme
-    val typography = MaterialTheme.typography
     val configuration = LocalConfiguration.current
     val isTabletLayout =
         configuration.screenWidthDp >= PlayerTabletMinWidthDp
@@ -187,7 +191,7 @@ fun PlayerScreen(
                     onClick = { overflowSheetVisible = true },
                     modifier = Modifier
                         .align(Alignment.Top)
-                        .padding(top = 8.dp)
+                        .padding(top = PlayerTabletTopBarPaddingTop)
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_more),
@@ -246,38 +250,10 @@ fun PlayerScreen(
                     .navigationBarsPadding(),
                 containerColor = colorScheme.background,
                 topBar = {
-                    CenterAlignedTopAppBar(
-                        title = {
-                            Text(
-                                text = stringResource(R.string.player_now_playing),
-                                style = typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
-                                color = colorScheme.onBackground
-                            )
-                        },
-                        navigationIcon = {
-                            IconButton(onClick = onBack) {
-                                Icon(
-                                    painter = painterResource(R.drawable.ic_arrow_left),
-                                    contentDescription = stringResource(R.string.content_desc_back),
-                                    tint = colorScheme.onBackground
-                                )
-                            }
-                        },
-                        actions = {
-                            IconButton(onClick = { overflowSheetVisible = true }) {
-                                Icon(
-                                    painter = painterResource(R.drawable.ic_more),
-                                    contentDescription = stringResource(R.string.content_desc_menu),
-                                    tint = colorScheme.onSurfaceVariant
-                                )
-                            }
-                        },
-                        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                            containerColor = colorScheme.background,
-                            titleContentColor = colorScheme.onBackground,
-                            navigationIconContentColor = colorScheme.onBackground,
-                            actionIconContentColor = colorScheme.onBackground
-                        )
+                    PlayerPhoneTopBar(
+                        onBack = onBack,
+                        title = stringResource(R.string.player_now_playing),
+                        onOverflowClick = { overflowSheetVisible = true }
                     )
                 }
             ) { innerPadding ->
@@ -324,15 +300,17 @@ fun PlayerScreen(
 }
 
 @Composable
-private fun PlayerTabletTopBar(
+private fun PlayerPhoneTopBar(
     onBack: () -> Unit,
     title: String,
-    onOverflowClick: (() -> Unit)? = null
+    onOverflowClick: () -> Unit
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(onClick = onBack) {
@@ -342,6 +320,48 @@ private fun PlayerTabletTopBar(
                 tint = colorScheme.onBackground
             )
         }
+        Spacer(modifier = Modifier.width(PlayerTopBarTitleInsetAfterBackPhone))
+        Text(
+            text = title,
+            modifier = Modifier.weight(1f),
+            style = typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
+            color = colorScheme.onBackground,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center
+        )
+        IconButton(onClick = onOverflowClick) {
+            Icon(
+                painter = painterResource(R.drawable.ic_more),
+                contentDescription = stringResource(R.string.content_desc_menu),
+                tint = colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+private fun PlayerTabletTopBar(
+    onBack: () -> Unit,
+    title: String,
+    onOverflowClick: (() -> Unit)? = null
+) {
+    val colorScheme = MaterialTheme.colorScheme
+    val typography = MaterialTheme.typography
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = PlayerTabletTopBarPaddingTop),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        IconButton(onClick = onBack) {
+            Icon(
+                painter = painterResource(R.drawable.ic_arrow_left),
+                contentDescription = stringResource(R.string.content_desc_back),
+                tint = colorScheme.onBackground
+            )
+        }
+        Spacer(modifier = Modifier.width(PlayerTopBarTitleInsetAfterBackTablet))
         Text(
             text = title,
             style = typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
