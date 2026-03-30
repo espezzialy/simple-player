@@ -29,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.espezzialy.simpleplayer.R
 import com.espezzialy.simpleplayer.domain.model.Song
 import com.espezzialy.simpleplayer.presentation.common.ArtworkThumbnail
@@ -179,14 +180,21 @@ private fun PlayerSidePlaylistRow(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = song.trackName,
-                style = typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+                style = typography.titleMedium.copy(
+                    fontSize = 16.sp,
+                    lineHeight = 19.2.sp,
+                    fontWeight = FontWeight.SemiBold
+                ),
                 color = colorScheme.onBackground,
                 maxLines = 2
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = song.artistName,
-                style = typography.bodySmall,
+                style = typography.bodySmall.copy(
+                    fontSize = 12.sp,
+                    lineHeight = 16.8.sp
+                ),
                 color = colorScheme.onSurfaceVariant,
                 maxLines = 2
             )

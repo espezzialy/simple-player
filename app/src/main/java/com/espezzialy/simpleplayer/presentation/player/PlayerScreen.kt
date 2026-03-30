@@ -55,6 +55,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.core.app.MultiWindowModeChangedInfo
 import androidx.core.util.Consumer
@@ -191,7 +192,8 @@ fun PlayerScreen(
                         artworkSize = PlayerArtworkSizeTablet,
                         contentPaddingTop = PlayerTabletMainPaddingBelowTopBar,
                         seekTrackHeight = seekTrackHeight,
-                        seekThumbDiameter = seekThumbDiameter
+                        seekThumbDiameter = seekThumbDiameter,
+                        isTabletLayout = true
                     )
                 }
                 IconButton(
@@ -247,7 +249,8 @@ fun PlayerScreen(
                     artworkSize = PlayerArtworkSizeTablet,
                     contentPaddingTop = PlayerTabletMainPaddingBelowTopBar,
                     seekTrackHeight = seekTrackHeight,
-                    seekThumbDiameter = seekThumbDiameter
+                    seekThumbDiameter = seekThumbDiameter,
+                    isTabletLayout = true
                 )
             }
         } else {
@@ -278,7 +281,8 @@ fun PlayerScreen(
                         artworkSize = PlayerArtworkSizePhone,
                         contentPaddingTop = PlayerContentPaddingTopPhone,
                         seekTrackHeight = seekTrackHeight,
-                        seekThumbDiameter = seekThumbDiameter
+                        seekThumbDiameter = seekThumbDiameter,
+                        isTabletLayout = false
                     )
                 }
             }
@@ -343,7 +347,7 @@ private fun PlayerPhoneTopBar(
             Icon(
                 painter = painterResource(R.drawable.ic_more),
                 contentDescription = stringResource(R.string.content_desc_menu),
-                tint = colorScheme.onSurfaceVariant
+                tint = colorScheme.onSurface
             )
         }
     }
@@ -431,10 +435,21 @@ private fun PlayerMainColumn(
     artworkSize: Dp,
     contentPaddingTop: Dp,
     seekTrackHeight: Dp,
-    seekThumbDiameter: Dp
+    seekThumbDiameter: Dp,
+    isTabletLayout: Boolean
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
+    val trackNameStyle = if (isTabletLayout) {
+        typography.headlineSmall.copy(fontSize = 40.sp, lineHeight = 48.sp)
+    } else {
+        typography.headlineSmall.copy(fontSize = 32.sp, lineHeight = 38.4.sp)
+    }
+    val artistNameStyle = if (isTabletLayout) {
+        typography.bodyLarge.copy(fontSize = 20.sp, lineHeight = 24.sp)
+    } else {
+        typography.bodyLarge.copy(fontSize = 16.sp, lineHeight = 19.2.sp)
+    }
 
     Column(
         modifier = Modifier
@@ -457,7 +472,7 @@ private fun PlayerMainColumn(
         Column(modifier = Modifier.fillMaxWidth()) {
             Text(
                 text = state.trackName,
-                style = typography.headlineSmall,
+                style = trackNameStyle,
                 color = colorScheme.onBackground,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
@@ -467,7 +482,7 @@ private fun PlayerMainColumn(
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = state.artistName,
-                style = typography.bodyLarge,
+                style = artistNameStyle,
                 color = artistNameColor,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
