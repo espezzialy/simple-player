@@ -2,7 +2,7 @@
     <string name="app_name">Simple Player</string>
 
     <string name="songs_title">Songs</string>
-    <string name="songs_search_placeholder">Search</string>
+    <string name="songs_search_placeholder">Search your library</string>
     <string name="retry">Retry</string>
     <string name="error_search_songs">Could not search songs. Please try again.</string>
     <string name="songs_empty_query_hint">Type something to search for songs on the Apple API.</string>
