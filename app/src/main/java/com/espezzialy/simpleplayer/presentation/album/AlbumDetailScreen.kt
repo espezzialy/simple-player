@@ -36,12 +36,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.espezzialy.simpleplayer.R
+import com.espezzialy.simpleplayer.core.media.toItunesArtwork200
 import com.espezzialy.simpleplayer.core.media.toItunesArtwork600
 import com.espezzialy.simpleplayer.domain.model.AlbumDetail
 import com.espezzialy.simpleplayer.domain.model.AlbumTrack
@@ -49,6 +51,11 @@ import com.espezzialy.simpleplayer.domain.model.Song
 import com.espezzialy.simpleplayer.presentation.common.ArtworkThumbnail
 import com.espezzialy.simpleplayer.presentation.common.CenteredLoading
 import com.espezzialy.simpleplayer.presentation.common.ErrorWithRetry
+import com.espezzialy.simpleplayer.presentation.common.SongListCellArtistColorTablet
+import com.espezzialy.simpleplayer.presentation.common.SongListCellArtistStyleTablet
+import com.espezzialy.simpleplayer.presentation.common.SongListCellArtworkSizeTablet
+import com.espezzialy.simpleplayer.presentation.common.SongListCellTabletMinWidthDp
+import com.espezzialy.simpleplayer.presentation.common.SongListCellTitleStyleTablet
 import com.espezzialy.simpleplayer.presentation.common.TabletBackIconButton
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerTheme
 
@@ -275,6 +282,14 @@ private fun TrackRow(
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
+    val isTabletLayout =
+        LocalConfiguration.current.screenWidthDp >= SongListCellTabletMinWidthDp
+    val thumbSize = if (isTabletLayout) SongListCellArtworkSizeTablet else RowThumbSize
+    val artworkUrl = if (isTabletLayout) {
+        track.artworkUrl100.toItunesArtwork200()
+    } else {
+        track.artworkUrl100
+    }
 
     Row(
         modifier = Modifier
@@ -283,25 +298,43 @@ private fun TrackRow(
         verticalAlignment = Alignment.CenterVertically
     ) {
         ArtworkThumbnail(
-            imageUrl = track.artworkUrl100,
+            imageUrl = artworkUrl,
             contentDescription = track.trackName,
-            size = RowThumbSize,
+            size = thumbSize,
             cornerRadius = 8.dp,
             placeholderColor = colorScheme.surfaceContainerLowest
         )
         Spacer(modifier = Modifier.width(12.dp))
         Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = track.trackName,
-                style = typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
-                color = colorScheme.onBackground
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = track.artistName,
-                style = typography.bodySmall,
-                color = colorScheme.onSurfaceVariant
-            )
+            if (isTabletLayout) {
+                Text(
+                    text = track.trackName,
+                    style = SongListCellTitleStyleTablet,
+                    color = colorScheme.onBackground,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = track.artistName,
+                    style = SongListCellArtistStyleTablet,
+                    color = SongListCellArtistColorTablet,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+            } else {
+                Text(
+                    text = track.trackName,
+                    style = typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
+                    color = colorScheme.onBackground
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = track.artistName,
+                    style = typography.bodySmall,
+                    color = colorScheme.onSurfaceVariant
+                )
+            }
         }
     }
 }

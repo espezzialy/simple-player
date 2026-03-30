@@ -25,15 +25,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.espezzialy.simpleplayer.R
+import com.espezzialy.simpleplayer.core.media.toItunesArtwork200
 import com.espezzialy.simpleplayer.domain.model.Song
 import com.espezzialy.simpleplayer.presentation.common.ArtworkThumbnail
-
-private val SongArtworkSize = 64.dp
+import com.espezzialy.simpleplayer.presentation.common.SongListCellArtistColorTablet
+import com.espezzialy.simpleplayer.presentation.common.SongListCellArtistStyleTablet
+import com.espezzialy.simpleplayer.presentation.common.SongListCellArtworkSizePhone
+import com.espezzialy.simpleplayer.presentation.common.SongListCellArtworkSizeTablet
+import com.espezzialy.simpleplayer.presentation.common.SongListCellTabletMinWidthDp
+import com.espezzialy.simpleplayer.presentation.common.SongListCellTitleStyleTablet
 
 @Composable
 fun SongRow(
@@ -44,6 +50,15 @@ fun SongRow(
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
+    val isTabletLayout =
+        LocalConfiguration.current.screenWidthDp >= SongListCellTabletMinWidthDp
+    val artworkSize =
+        if (isTabletLayout) SongListCellArtworkSizeTablet else SongListCellArtworkSizePhone
+    val artworkUrl = if (isTabletLayout) {
+        song.artworkUrl100.toItunesArtwork200()
+    } else {
+        song.artworkUrl100
+    }
 
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -57,28 +72,46 @@ fun SongRow(
             verticalAlignment = Alignment.CenterVertically
         ) {
             ArtworkThumbnail(
-                imageUrl = song.artworkUrl100,
+                imageUrl = artworkUrl,
                 contentDescription = song.trackName,
-                size = SongArtworkSize,
+                size = artworkSize,
                 modifier = Modifier,
                 cornerRadius = 8.dp,
                 placeholderColor = colorScheme.surface
             )
             Spacer(modifier = Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = song.trackName,
-                    style = typography.titleMedium,
-                    color = colorScheme.onSurface,
-                    maxLines = 2
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = song.artistName,
-                    style = typography.bodyMedium,
-                    color = colorScheme.onSurfaceVariant,
-                    maxLines = 2
-                )
+                if (isTabletLayout) {
+                    Text(
+                        text = song.trackName,
+                        style = SongListCellTitleStyleTablet,
+                        color = colorScheme.onSurface,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = song.artistName,
+                        style = SongListCellArtistStyleTablet,
+                        color = SongListCellArtistColorTablet,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                } else {
+                    Text(
+                        text = song.trackName,
+                        style = typography.titleMedium,
+                        color = colorScheme.onSurface,
+                        maxLines = 2
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = song.artistName,
+                        style = typography.bodyMedium,
+                        color = colorScheme.onSurfaceVariant,
+                        maxLines = 2
+                    )
+                }
             }
         }
         if (onViewAlbum != null) {
