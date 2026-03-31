@@ -9,8 +9,8 @@ import com.espezzialy.simpleplayer.presentation.songs.SongsIntent
 import com.espezzialy.simpleplayer.presentation.songs.SongsSearchRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -79,6 +79,7 @@ class PlayerViewModel @Inject constructor(
             repeatEnabled = false
         )
     )
+
     val state: StateFlow<PlayerState> = _state.asStateFlow()
 
     fun onSongsSearchIntent(intent: SongsIntent) {
@@ -89,10 +90,8 @@ class PlayerViewModel @Inject constructor(
         when (intent) {
             is PlayerIntent.ProgressChanged -> updateProgress(intent.value)
             PlayerIntent.PlayPauseClicked -> togglePlayPause()
-            PlayerIntent.SkipPreviousClicked,
-            PlayerIntent.SkipNextClicked -> {
-                // No play queue — keep mock behavior.
-            }
+            PlayerIntent.SkipPreviousClicked -> skipInQueue(delta = -1)
+            PlayerIntent.SkipNextClicked -> skipInQueue(delta = 1)
             PlayerIntent.RepeatClicked -> {
                 _state.update { it.copy(repeatEnabled = !it.repeatEnabled) }
             }
@@ -114,6 +113,16 @@ class PlayerViewModel @Inject constructor(
                 remainingTimeLabel = remaining
             )
         }
+    }
+
+    private fun skipInQueue(delta: Int) {
+        val queue = sidePanelUiState.value.songs
+        if (queue.isEmpty()) return
+        val idx = queue.indexOfFirst { it.trackId == _state.value.trackId }
+        if (idx < 0) return
+        val newIdx = idx + delta
+        if (newIdx !in queue.indices) return
+        selectSong(queue[newIdx])
     }
 
     private fun selectSong(song: Song) {
