@@ -1,3 +1,5 @@
+@file:OptIn(androidx.compose.material.ExperimentalMaterialApi::class)
+
 package com.espezzialy.simpleplayer.presentation.songs
 
 import androidx.compose.foundation.background
@@ -16,6 +18,8 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -115,99 +119,136 @@ fun SongsScreen(
         )
         Spacer(modifier = Modifier.height(20.dp))
 
-        when {
-            state.isLoading && state.songs.isEmpty() -> {
-                CenteredLoading(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                )
-            }
-
-            state.errorMessage != null && state.songs.isEmpty() -> {
-                ErrorWithRetry(
-                    message = state.errorMessage,
-                    retryLabel = stringResource(R.string.retry),
-                    onRetry = { onIntent(SongsIntent.RetrySearch) },
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                )
-            }
-
-            state.query.isBlank() -> {
-                Text(
-                    modifier = Modifier.weight(1f),
-                    text = stringResource(R.string.songs_empty_query_hint),
-                    style = typography.bodyMedium,
-                    color = colorScheme.onSurfaceVariant
-                )
-            }
-
-            state.songs.isEmpty() && !state.isLoading -> {
-                Text(
-                    modifier = Modifier.weight(1f),
-                    text = stringResource(R.string.songs_no_results),
-                    style = typography.bodyMedium,
-                    color = colorScheme.onSurfaceVariant
-                )
-            }
-
-            else -> {
-                val listState = rememberLazyListState()
-                LaunchedEffect(
-                    listState,
-                    state.query,
-                    state.hasMore,
-                    state.isLoadingMore,
-                    state.isLoading,
-                    state.songs.size
-                ) {
-                    if (!state.hasMore || state.isLoadingMore || state.isLoading) {
-                        return@LaunchedEffect
-                    }
-                    snapshotFlow {
-                        val layoutInfo = listState.layoutInfo
-                        val total = layoutInfo.totalItemsCount
-                        if (total == 0) return@snapshotFlow false
-                        val lastVisible =
-                            layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
-                        lastVisible >= total - LOAD_MORE_FROM_END_ITEM_COUNT
-                    }
-                        .distinctUntilChanged()
-                        .filter { it }
-                        .collect { onIntent(SongsIntent.LoadMore) }
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+        ) {
+            when {
+                state.isLoading && state.songs.isEmpty() -> {
+                    CenteredLoading(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .fillMaxWidth()
+                    )
                 }
 
-                LazyColumn(
-                    state = listState,
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth(),
-                    contentPadding = PaddingValues(bottom = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(SongsRowSpacing)
-                ) {
-                    items(state.songs, key = { it.trackId }) { song ->
-                        SongRow(
-                            song = song,
-                            onSongClick = { onNavigateToPlayer(song) },
-                            onViewAlbum = song.collectionId?.let { id -> { onNavigateToAlbum(id) } }
-                        )
-                    }
-                    if (state.isLoadingMore) {
-                        item(key = "loading_more") {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 16.dp),
-                                contentAlignment = Alignment.Center
+                state.errorMessage != null && state.songs.isEmpty() -> {
+                    ErrorWithRetry(
+                        message = state.errorMessage,
+                        retryLabel = stringResource(R.string.retry),
+                        onRetry = { onIntent(SongsIntent.RetrySearch) },
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .fillMaxWidth()
+                    )
+                }
+
+                state.query.isBlank() -> {
+                    Text(
+                        modifier = Modifier.fillMaxSize(),
+                        text = stringResource(R.string.songs_empty_query_hint),
+                        style = typography.bodyMedium,
+                        color = colorScheme.onSurfaceVariant
+                    )
+                }
+
+                state.songs.isEmpty() && !state.isLoading -> {
+                    Text(
+                        modifier = Modifier.fillMaxSize(),
+                        text = stringResource(R.string.songs_no_results),
+                        style = typography.bodyMedium,
+                        color = colorScheme.onSurfaceVariant
+                    )
+                }
+
+                else -> {
+                    val listState = rememberLazyListState()
+                    val pullRefreshEnabled =
+                        state.query.isNotBlank() && !(state.isLoading && state.songs.isEmpty())
+                    val pullRefreshState = rememberPullRefreshState(
+                        refreshing = state.isRefreshing,
+                        onRefresh = { onIntent(SongsIntent.Refresh) }
+                    )
+                    val pullRefreshLabel = stringResource(R.string.content_desc_pull_to_refresh)
+
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        LaunchedEffect(
+                            listState,
+                            state.query,
+                            state.hasMore,
+                            state.isLoadingMore,
+                            state.isLoading,
+                            state.isRefreshing,
+                            state.songs.size
+                        ) {
+                            if (!state.hasMore || state.isLoadingMore || state.isLoading ||
+                                state.isRefreshing
                             ) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(28.dp),
-                                    color = colorScheme.primary,
-                                    strokeWidth = 2.dp
+                                return@LaunchedEffect
+                            }
+                            snapshotFlow {
+                                val layoutInfo = listState.layoutInfo
+                                val total = layoutInfo.totalItemsCount
+                                if (total == 0) return@snapshotFlow false
+                                val lastVisible =
+                                    layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+                                lastVisible >= total - LOAD_MORE_FROM_END_ITEM_COUNT
+                            }
+                                .distinctUntilChanged()
+                                .filter { it }
+                                .collect { onIntent(SongsIntent.LoadMore) }
+                        }
+
+                        LazyColumn(
+                            state = listState,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .fillMaxWidth()
+                                .then(
+                                    if (pullRefreshEnabled) {
+                                        Modifier.pullRefresh(pullRefreshState)
+                                    } else {
+                                        Modifier
+                                    }
+                                ),
+                            contentPadding = PaddingValues(bottom = 8.dp),
+                            verticalArrangement = Arrangement.spacedBy(SongsRowSpacing)
+                        ) {
+                            items(state.songs, key = { it.trackId }) { song ->
+                                SongRow(
+                                    song = song,
+                                    onSongClick = { onNavigateToPlayer(song) },
+                                    onViewAlbum = song.collectionId?.let { id -> { onNavigateToAlbum(id) } }
                                 )
                             }
+                            if (state.isLoadingMore) {
+                                item(key = "loading_more") {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = 16.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        CircularProgressIndicator(
+                                            modifier = Modifier.size(28.dp),
+                                            color = colorScheme.primary,
+                                            strokeWidth = 2.dp
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        if (pullRefreshEnabled) {
+                            SongsPullRefreshIndicator(
+                                pullRefreshState = pullRefreshState,
+                                isRefreshing = state.isRefreshing,
+                                contentDescription = pullRefreshLabel,
+                                modifier = Modifier
+                                    .align(Alignment.TopCenter)
+                                    .padding(top = 4.dp)
+                            )
                         }
                     }
                 }

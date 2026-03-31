@@ -65,7 +65,8 @@ class SongsSearchRepository @Inject constructor(
     fun onIntent(intent: SongsIntent) {
         when (intent) {
             is SongsIntent.QueryChanged -> onQueryChanged(intent.value)
-            SongsIntent.RetrySearch -> triggerSearch(reset = true)
+            SongsIntent.RetrySearch -> triggerSearch(debounce = false, reset = true, isPullToRefresh = false)
+            SongsIntent.Refresh -> refresh()
             SongsIntent.LoadMore -> loadMore()
         }
     }
@@ -87,6 +88,7 @@ class SongsSearchRepository @Inject constructor(
                     songs = emptyList(),
                     fullResults = emptyList(),
                     isLoading = false,
+                    isRefreshing = false,
                     isLoadingMore = false,
                     hasMore = false,
                     errorMessage = null
@@ -95,7 +97,14 @@ class SongsSearchRepository @Inject constructor(
             return
         }
 
-        triggerSearch(debounce = true, reset = true)
+        triggerSearch(debounce = true, reset = true, isPullToRefresh = false)
+    }
+
+    private fun refresh() {
+        val q = _state.value.query.trim()
+        if (q.isBlank()) return
+        val pullStyle = _state.value.songs.isNotEmpty()
+        triggerSearch(debounce = false, reset = true, isPullToRefresh = pullStyle)
     }
 
     private fun resetSearchData() {
@@ -103,7 +112,11 @@ class SongsSearchRepository @Inject constructor(
         fullCatalogLoaded = false
     }
 
-    private fun triggerSearch(debounce: Boolean = false, reset: Boolean = true) {
+    private fun triggerSearch(
+        debounce: Boolean = false,
+        reset: Boolean = true,
+        isPullToRefresh: Boolean = false
+    ) {
         searchJob?.cancel()
         loadMoreJob?.cancel()
         searchJob = scope.launch {
@@ -113,16 +126,28 @@ class SongsSearchRepository @Inject constructor(
             if (query.isBlank()) return@launch
 
             if (reset) {
-                resetSearchData()
+                if (isPullToRefresh) {
+                    fullCatalogLoaded = false
+                } else {
+                    resetSearchData()
+                }
             }
 
             _state.update {
-                it.copy(
-                    isLoading = true,
-                    isLoadingMore = false,
-                    errorMessage = null,
-                    hasMore = false
-                )
+                if (isPullToRefresh) {
+                    it.copy(
+                        isRefreshing = true,
+                        errorMessage = null
+                    )
+                } else {
+                    it.copy(
+                        isLoading = true,
+                        isRefreshing = false,
+                        isLoadingMore = false,
+                        errorMessage = null,
+                        hasMore = false
+                    )
+                }
             }
 
             try {
@@ -139,38 +164,50 @@ class SongsSearchRepository @Inject constructor(
                         songs = first,
                         fullResults = allSongs,
                         isLoading = false,
+                        isRefreshing = false,
                         isLoadingMore = false,
                         hasMore = mayHaveMore,
                         errorMessage = null
                     )
                 }
             } catch (e: CancellationException) {
+                _state.update { it.copy(isRefreshing = false, isLoading = false) }
                 throw e
             } catch (_: Exception) {
-                emitSearchFailure()
+                emitSearchFailure(isPullToRefresh = isPullToRefresh)
             }
         }
     }
 
-    private fun emitSearchFailure() {
+    private fun emitSearchFailure(isPullToRefresh: Boolean = false) {
         val message = appContext.getString(R.string.error_search_songs)
-        resetSearchData()
-        _state.update {
-            it.copy(
-                songs = emptyList(),
-                fullResults = emptyList(),
-                isLoading = false,
-                isLoadingMore = false,
-                hasMore = false,
-                errorMessage = message
-            )
+        if (isPullToRefresh) {
+            _state.update {
+                it.copy(
+                    isRefreshing = false,
+                    errorMessage = message
+                )
+            }
+        } else {
+            resetSearchData()
+            _state.update {
+                it.copy(
+                    songs = emptyList(),
+                    fullResults = emptyList(),
+                    isLoading = false,
+                    isRefreshing = false,
+                    isLoadingMore = false,
+                    hasMore = false,
+                    errorMessage = message
+                )
+            }
         }
         _effect.tryEmit(SongsEffect.ShowError(message))
     }
 
     private fun loadMore() {
         val s = _state.value
-        if (!s.hasMore || s.isLoadingMore || s.isLoading || s.query.isBlank()) return
+        if (!s.hasMore || s.isLoadingMore || s.isLoading || s.isRefreshing || s.query.isBlank()) return
 
         val query = s.query.trim()
 

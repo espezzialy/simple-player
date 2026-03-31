@@ -11,6 +11,7 @@ data class SongsState(
      */
     val fullResults: List<Song> = emptyList(),
     val isLoading: Boolean = false,
+    val isRefreshing: Boolean = false,
     val isLoadingMore: Boolean = false,
     val hasMore: Boolean = false,
     val errorMessage: String? = null
@@ -19,6 +20,8 @@ data class SongsState(
 sealed interface SongsIntent {
     data class QueryChanged(val value: String) : SongsIntent
     data object RetrySearch : SongsIntent
+    /** Atualiza a pesquisa atual (pull-to-refresh na tela Songs). */
+    data object Refresh : SongsIntent
     data object LoadMore : SongsIntent
 }
 
