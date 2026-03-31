@@ -11,17 +11,22 @@ class SongsRemoteDataSourceImpl @Inject constructor(
     private val dispatcherProvider: DispatcherProvider
 ) : SongsRemoteDataSource {
 
-    override suspend fun searchSongs(term: String, limit: Int): List<ItunesSongDto> {
+    override suspend fun searchSongs(term: String, limit: Int, offset: Int): RemoteSearchSongsPage {
         return withContext(dispatcherProvider.io) {
-            apiService
+            val raw = apiService
                 .searchSongs(
                     term = term,
                     media = MEDIA_MUSIC,
                     entity = ENTITY_SONG,
-                    limit = limit
+                    limit = limit,
+                    offset = offset
                 )
                 .results
-                .filter { it.kind == "song" }
+            val filtered = raw.filter { it.kind == "song" }
+            RemoteSearchSongsPage(
+                dtos = filtered,
+                apiConsumedCount = raw.size
+            )
         }
     }
 

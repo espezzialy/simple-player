@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.espezzialy.simpleplayer.presentation.player.PlayerSidePanelSession
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 
 @HiltViewModel
@@ -14,7 +15,7 @@ class SongsViewModel @Inject constructor(
 
     val state: StateFlow<SongsState> = songsSearchRepository.state
 
-    val effect = songsSearchRepository.effect
+    val effect: SharedFlow<SongsEffect> = songsSearchRepository.effect
 
     fun onIntent(intent: SongsIntent) {
         songsSearchRepository.onIntent(intent)

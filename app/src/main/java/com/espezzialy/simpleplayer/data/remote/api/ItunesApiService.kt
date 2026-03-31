@@ -15,7 +15,8 @@ interface ItunesApiService {
         @Query("term") term: String,
         @Query("media") media: String,
         @Query("entity") entity: String,
-        @Query("limit") limit: Int
+        @Query("limit") limit: Int,
+        @Query("offset") offset: Int
     ): ItunesSearchResponseDto
 
     /** [Lookup API](https://developer.apple.com/library/archive/documentation/AudioVideo/Conceptual/iTuneSearchAPI/Searching.html#//apple_ref/doc/uid/TP40017632-CH100-SW5) */

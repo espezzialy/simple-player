@@ -97,7 +97,7 @@ fun PlayerSidePlaylistPanel(
             }
 
             when {
-                sidePanel.isSearchMode && sidePanel.isLoading -> {
+                sidePanel.isSearchMode && sidePanel.isLoading && sidePanel.songs.isEmpty() -> {
                     CenteredLoading(
                         modifier = Modifier
                             .weight(1f)
@@ -105,7 +105,7 @@ fun PlayerSidePlaylistPanel(
                     )
                 }
 
-                sidePanel.isSearchMode && sidePanel.errorMessage != null -> {
+                sidePanel.isSearchMode && sidePanel.errorMessage != null && sidePanel.songs.isEmpty() -> {
                     ErrorWithRetry(
                         message = sidePanel.errorMessage,
                         retryLabel = stringResource(R.string.retry),

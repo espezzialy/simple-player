@@ -9,7 +9,7 @@ import com.espezzialy.simpleplayer.presentation.songs.SongsIntent
 import com.espezzialy.simpleplayer.presentation.songs.SongsSearchRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -39,10 +39,10 @@ class PlayerViewModel @Inject constructor(
                 showEmptyQueryHint = false
             )
             PlayerSidePanelSource.SearchResults -> PlayerSidePanelUiState(
-                songs = search.songs,
+                songs = search.fullResults.ifEmpty { search.songs },
                 panelTitle = null,
                 isSearchMode = true,
-                isLoading = search.isLoading,
+                isLoading = search.isLoading && search.songs.isEmpty(),
                 errorMessage = search.errorMessage,
                 showEmptyQueryHint = search.query.isBlank()
             )
@@ -60,7 +60,7 @@ class PlayerViewModel @Inject constructor(
         )
     )
 
-    val songsSearchEffect: Flow<SongsEffect> = songsSearchRepository.effect
+    val songsSearchEffect: SharedFlow<SongsEffect> = songsSearchRepository.effect
 
     private val totalSeconds = MOCK_TOTAL_SECONDS
     private val initialProgress = MOCK_INITIAL_ELAPSED_SECONDS.toFloat() / MOCK_TOTAL_SECONDS
