@@ -10,8 +10,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Album
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -67,7 +65,7 @@ internal fun PlayerOverflowSheetContent(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    imageVector = Icons.Filled.Album,
+                    painter = painterResource(R.drawable.ic_setlist),
                     contentDescription = null,
                     tint = colorScheme.onSurface,
                     modifier = Modifier.size(24.dp)

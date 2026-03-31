@@ -32,6 +32,8 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -65,6 +67,7 @@ import com.espezzialy.simpleplayer.R
 import com.espezzialy.simpleplayer.core.media.toItunesArtwork600
 import com.espezzialy.simpleplayer.domain.model.Song
 import com.espezzialy.simpleplayer.presentation.songs.SongsEffect
+import com.espezzialy.simpleplayer.presentation.common.PhoneContentPaddingBelowTopBar
 import com.espezzialy.simpleplayer.presentation.common.TabletBackIconButton
 import com.espezzialy.simpleplayer.presentation.common.TabletNavBarPaddingTop
 import com.espezzialy.simpleplayer.presentation.songs.SongsIntent
@@ -81,9 +84,6 @@ private val PlayerArtworkSizePhone = 264.dp
 /** Figma: tablet artwork 286×286. */
 private val PlayerArtworkSizeTablet = 286.dp
 
-/** Figma: padding above player content on phone. */
-private val PlayerContentPaddingTopPhone = 90.dp
-
 /** Figma: padding above player content on tablet. */
 private val PlayerContentPaddingTopTablet = 62.dp
 
@@ -92,7 +92,6 @@ private val PlayerTabletMainPaddingBelowTopBar = 16.dp
 
 /** Espaço entre o botão voltar e o título "Now playing". */
 private val PlayerTopBarTitleInsetAfterBackTablet = 10.dp
-private val PlayerTopBarTitleInsetAfterBackPhone = 4.dp
 
 private val PlayerSeekTrackHeightPhone = 4.dp
 private val PlayerSeekTrackHeightTablet = 8.dp
@@ -255,7 +254,6 @@ fun PlayerScreen(
             Scaffold(
                 modifier = Modifier
                     .fillMaxSize()
-                    .statusBarsPadding()
                     .navigationBarsPadding(),
                 containerColor = colorScheme.background,
                 topBar = {
@@ -277,7 +275,7 @@ fun PlayerScreen(
                         onIntent = onIntent,
                         artistNameColor = colorScheme.onSurfaceVariant,
                         artworkSize = PlayerArtworkSizePhone,
-                        contentPaddingTop = PlayerContentPaddingTopPhone,
+                        contentPaddingTop = PhoneContentPaddingBelowTopBar,
                         seekTrackHeight = seekTrackHeight,
                         seekThumbDiameter = seekThumbDiameter,
                         isTabletLayout = false
@@ -310,6 +308,7 @@ fun PlayerScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PlayerPhoneTopBar(
     onBack: () -> Unit,
@@ -318,37 +317,40 @@ private fun PlayerPhoneTopBar(
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 4.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        IconButton(onClick = onBack) {
-            Icon(
-                painter = painterResource(R.drawable.ic_arrow_left),
-                contentDescription = stringResource(R.string.content_desc_back),
-                tint = colorScheme.onBackground
+    TopAppBar(
+        title = {
+            Text(
+                text = title,
+                style = typography.titleLarge,
+                color = colorScheme.onBackground,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
-        }
-        Spacer(modifier = Modifier.width(PlayerTopBarTitleInsetAfterBackPhone))
-        Text(
-            text = title,
-            modifier = Modifier.weight(1f),
-            style = typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
-            color = colorScheme.onBackground,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            textAlign = TextAlign.Start
+        },
+        navigationIcon = {
+            IconButton(onClick = onBack) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_arrow_left),
+                    contentDescription = stringResource(R.string.content_desc_back),
+                    tint = colorScheme.onBackground
+                )
+            }
+        },
+        actions = {
+            IconButton(onClick = onOverflowClick) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_more),
+                    contentDescription = stringResource(R.string.content_desc_menu),
+                    tint = colorScheme.onSurface
+                )
+            }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = colorScheme.background,
+            titleContentColor = colorScheme.onBackground,
+            navigationIconContentColor = colorScheme.onBackground
         )
-        IconButton(onClick = onOverflowClick) {
-            Icon(
-                painter = painterResource(R.drawable.ic_more),
-                contentDescription = stringResource(R.string.content_desc_menu),
-                tint = colorScheme.onSurface
-            )
-        }
-    }
+    )
 }
 
 @Composable

@@ -2,7 +2,6 @@ package com.espezzialy.simpleplayer.presentation.album
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -39,6 +38,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -68,6 +68,31 @@ import com.espezzialy.simpleplayer.ui.theme.SimplePlayerTheme
 
 private val HeroArtworkSize = 240.dp
 private val RowThumbSize = 56.dp
+
+/** Telefone — hero abaixo do título da app bar (Figma). */
+private val AlbumPhoneHeroPaddingTop = 24.dp
+private val AlbumPhoneHeroArtworkSize = 120.dp
+private val AlbumPhoneHeroArtworkCornerRadius = 16.dp
+private val AlbumPhoneTitlePaddingTopAfterImage = 16.dp
+private val AlbumPhoneArtistPaddingTopAfterTitle = 8.dp
+/** Espaço entre o nome do artista e a primeira faixa. */
+private val AlbumPhoneTracksPaddingTopAfterArtist = 60.dp
+
+private val AlbumPhoneHeroTitleStyle = TextStyle(
+    fontFamily = ArticulatCfFamily,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 20.sp,
+    lineHeight = 24.sp,
+    textAlign = TextAlign.Center
+)
+
+private val AlbumPhoneHeroArtistStyle = TextStyle(
+    fontFamily = ArticulatCfFamily,
+    fontWeight = FontWeight.Medium,
+    fontSize = 14.sp,
+    lineHeight = 16.8.sp,
+    textAlign = TextAlign.Center
+)
 
 /** Material width breakpoint: at 600dp and above, album hero uses tablet (side-by-side) layout. */
 private const val TabletMinWidthDp = 600
@@ -280,37 +305,57 @@ private fun AlbumContent(
     } else {
         LazyColumn(
             modifier = modifier,
-            contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            contentPadding = PaddingValues(
+                start = 20.dp,
+                end = 20.dp,
+                top = AlbumPhoneHeroPaddingTop,
+                bottom = 24.dp
+            )
         ) {
             item {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    AlbumHeroArtwork(album = album)
-                    Spacer(modifier = Modifier.height(20.dp))
+                    AlbumHeroArtwork(
+                        album = album,
+                        size = AlbumPhoneHeroArtworkSize,
+                        cornerRadius = AlbumPhoneHeroArtworkCornerRadius
+                    )
+                    Spacer(modifier = Modifier.height(AlbumPhoneTitlePaddingTopAfterImage))
                     Text(
                         text = album.title,
-                        style = typography.headlineSmall,
-                        color = colorScheme.onBackground
+                        modifier = Modifier.fillMaxWidth(),
+                        style = AlbumPhoneHeroTitleStyle,
+                        color = colorScheme.onBackground,
+                        maxLines = 3,
+                        overflow = TextOverflow.Ellipsis
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(AlbumPhoneArtistPaddingTopAfterTitle))
                     Text(
                         text = album.artistName,
-                        style = typography.bodyLarge,
-                        color = colorScheme.onSurfaceVariant
+                        modifier = Modifier.fillMaxWidth(),
+                        style = AlbumPhoneHeroArtistStyle,
+                        color = colorScheme.onBackground,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
                     )
+                    Spacer(modifier = Modifier.height(AlbumPhoneTracksPaddingTopAfterArtist))
                 }
             }
-            items(
+            itemsIndexed(
                 items = album.tracks,
-                key = { it.trackId }
-            ) { track ->
-                TrackRow(
-                    track = track,
-                    onClick = { onSongClick(track) }
-                )
+                key = { _, track -> track.trackId }
+            ) { index, track ->
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    TrackRow(
+                        track = track,
+                        onClick = { onSongClick(track) }
+                    )
+                    if (index < album.tracks.lastIndex) {
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+                }
             }
         }
     }
