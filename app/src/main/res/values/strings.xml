@@ -5,6 +5,8 @@
     <string name="songs_search_placeholder">Search your library</string>
     <string name="retry">Retry</string>
     <string name="error_search_songs">Could not search songs. Please try again.</string>
+    <string name="songs_recent_title">Recent Songs</string>
+    <string name="songs_clear_recent">Clear Recent</string>
     <string name="songs_empty_query_hint">Type something to search for songs on the Apple API.</string>
     <string name="songs_no_results">No results found.</string>
     <string name="view_album">View album</string>

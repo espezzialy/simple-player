@@ -68,6 +68,8 @@ class SongsSearchRepository @Inject constructor(
             SongsIntent.RetrySearch -> triggerSearch(debounce = false, reset = true, isPullToRefresh = false)
             SongsIntent.Refresh -> refresh()
             SongsIntent.LoadMore -> loadMore()
+            // Roteado em [SongsViewModel]; mantido para exaustividade de [SongsIntent].
+            SongsIntent.ClearRecentSongs -> Unit
         }
     }
 

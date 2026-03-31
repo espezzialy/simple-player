@@ -2,11 +2,13 @@
 
 package com.espezzialy.simpleplayer.presentation.songs
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -74,9 +77,10 @@ fun SongsRoute(
         state = state,
         onIntent = viewModel::onIntent,
         onNavigateToAlbum = onNavigateToAlbum,
-        onNavigateToPlayer = { song ->
-            viewModel.preparePlayerFromSearch()
-            onNavigateToPlayer(song)
+        onNavigateToPlayer = { song, fromRecentSection ->
+            viewModel.onSongSelectedForPlayer(song, fromRecentSection) {
+                onNavigateToPlayer(song)
+            }
         },
         modifier = modifier
     )
@@ -87,7 +91,8 @@ fun SongsScreen(
     state: SongsState,
     onIntent: (SongsIntent) -> Unit,
     onNavigateToAlbum: (Long) -> Unit,
-    onNavigateToPlayer: (Song) -> Unit,
+    /** `fromRecentSection` define a fila do painel do player (tablet) e a persistência de recentes. */
+    onNavigateToPlayer: (Song, fromRecentSection: Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val colorScheme = MaterialTheme.colorScheme
@@ -145,12 +150,57 @@ fun SongsScreen(
                 }
 
                 state.query.isBlank() -> {
-                    Text(
-                        modifier = Modifier.fillMaxSize(),
-                        text = stringResource(R.string.songs_empty_query_hint),
-                        style = typography.bodyMedium,
-                        color = colorScheme.onSurfaceVariant
-                    )
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        if (state.recentSongs.isEmpty()) {
+                            Text(
+                                text = stringResource(R.string.songs_empty_query_hint),
+                                style = typography.bodyMedium,
+                                color = colorScheme.onSurfaceVariant
+                            )
+                        } else {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.songs_recent_title),
+                                    style = typography.titleMedium,
+                                    color = colorScheme.onBackground,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                Text(
+                                    text = stringResource(R.string.songs_clear_recent),
+                                    modifier = Modifier
+                                        .clickable {
+                                            onIntent(SongsIntent.ClearRecentSongs)
+                                        },
+                                    style = typography.bodyMedium.copy(
+                                        textDecoration = TextDecoration.Underline
+                                    ),
+                                    color = colorScheme.primary
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(12.dp))
+                            LazyColumn(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxWidth(),
+                                contentPadding = PaddingValues(bottom = 8.dp),
+                                verticalArrangement = Arrangement.spacedBy(SongsRowSpacing)
+                            ) {
+                                items(state.recentSongs, key = { it.trackId }) { song ->
+                                    SongRow(
+                                        song = song,
+                                        onSongClick = { onNavigateToPlayer(song, true) },
+                                        onViewAlbum = song.collectionId?.let { id ->
+                                            { onNavigateToAlbum(id) }
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
 
                 state.songs.isEmpty() && !state.isLoading -> {
@@ -218,7 +268,7 @@ fun SongsScreen(
                             items(state.songs, key = { it.trackId }) { song ->
                                 SongRow(
                                     song = song,
-                                    onSongClick = { onNavigateToPlayer(song) },
+                                    onSongClick = { onNavigateToPlayer(song, false) },
                                     onViewAlbum = song.collectionId?.let { id -> { onNavigateToAlbum(id) } }
                                 )
                             }
@@ -285,7 +335,7 @@ private fun SongsScreenPhonePreview() {
             ),
             onIntent = {},
             onNavigateToAlbum = {},
-            onNavigateToPlayer = {}
+            onNavigateToPlayer = { _, _ -> }
         )
     }
 }
@@ -318,7 +368,7 @@ private fun SongsScreenTabletPreview() {
             ),
             onIntent = {},
             onNavigateToAlbum = {},
-            onNavigateToPlayer = {}
+            onNavigateToPlayer = { _, _ -> }
         )
     }
 }

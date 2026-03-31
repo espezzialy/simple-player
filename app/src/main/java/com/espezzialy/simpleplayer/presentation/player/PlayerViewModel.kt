@@ -1,9 +1,12 @@
 package com.espezzialy.simpleplayer.presentation.player
 
+import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.espezzialy.simpleplayer.R
 import com.espezzialy.simpleplayer.domain.model.Song
+import dagger.hilt.android.qualifiers.ApplicationContext
 import com.espezzialy.simpleplayer.presentation.songs.SongsEffect
 import com.espezzialy.simpleplayer.presentation.songs.SongsIntent
 import com.espezzialy.simpleplayer.presentation.songs.SongsSearchRepository
@@ -25,7 +28,8 @@ import kotlinx.coroutines.flow.update
 class PlayerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val songsSearchRepository: SongsSearchRepository,
-    private val sidePanelSession: PlayerSidePanelSession
+    private val sidePanelSession: PlayerSidePanelSession,
+    @ApplicationContext private val appContext: Context
 ) : ViewModel() {
 
     val sidePanelUiState: StateFlow<PlayerSidePanelUiState> = combine(
@@ -36,6 +40,14 @@ class PlayerViewModel @Inject constructor(
             is PlayerSidePanelSource.AlbumTracks -> PlayerSidePanelUiState(
                 songs = source.songs,
                 panelTitle = source.albumTitle,
+                isSearchMode = false,
+                isLoading = false,
+                errorMessage = null,
+                showEmptyQueryHint = false
+            )
+            is PlayerSidePanelSource.RecentSongs -> PlayerSidePanelUiState(
+                songs = source.songs,
+                panelTitle = appContext.getString(R.string.songs_recent_title),
                 isSearchMode = false,
                 isLoading = false,
                 errorMessage = null,

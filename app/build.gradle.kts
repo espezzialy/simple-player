@@ -59,6 +59,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.coil.compose)
     implementation(libs.lottie.compose)
+    implementation(libs.androidx.datastore.preferences)
     implementation(libs.squareup.retrofit)
     implementation(libs.squareup.retrofit.converter.gson)
     implementation(libs.google.gson)
