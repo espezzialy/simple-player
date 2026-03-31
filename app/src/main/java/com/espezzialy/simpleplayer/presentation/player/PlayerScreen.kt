@@ -66,6 +66,7 @@ import com.espezzialy.simpleplayer.core.media.toItunesArtwork600
 import com.espezzialy.simpleplayer.domain.model.Song
 import com.espezzialy.simpleplayer.presentation.songs.SongsEffect
 import com.espezzialy.simpleplayer.presentation.common.TabletBackIconButton
+import com.espezzialy.simpleplayer.presentation.common.TabletNavBarPaddingTop
 import com.espezzialy.simpleplayer.presentation.songs.SongsIntent
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerTheme
 
@@ -88,9 +89,6 @@ private val PlayerContentPaddingTopTablet = 62.dp
 
 /** Espaço entre a barra (voltar + título) e o conteúdo principal no tablet. */
 private val PlayerTabletMainPaddingBelowTopBar = 16.dp
-
-/** Padding superior só da barra (voltar + título + menu) no tablet. */
-private val PlayerTabletTopBarPaddingTop = 34.dp
 
 /** Espaço entre o botão voltar e o título "Now playing". */
 private val PlayerTopBarTitleInsetAfterBackTablet = 10.dp
@@ -200,7 +198,7 @@ fun PlayerScreen(
                     onClick = { overflowSheetVisible = true },
                     modifier = Modifier
                         .align(Alignment.Top)
-                        .padding(top = PlayerTabletTopBarPaddingTop)
+                        .padding(top = TabletNavBarPaddingTop)
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_more),
@@ -364,7 +362,7 @@ private fun PlayerTabletTopBar(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = PlayerTabletTopBarPaddingTop),
+            .padding(top = TabletNavBarPaddingTop),
         verticalAlignment = Alignment.CenterVertically
     ) {
         TabletBackIconButton(

@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -28,11 +29,14 @@ import com.espezzialy.simpleplayer.R
 import com.espezzialy.simpleplayer.domain.model.Song
 import com.espezzialy.simpleplayer.presentation.common.CenteredLoading
 import com.espezzialy.simpleplayer.presentation.common.ErrorWithRetry
+import com.espezzialy.simpleplayer.presentation.common.SongListCellTabletMinWidthDp
 import com.espezzialy.simpleplayer.presentation.common.SongsSearchField
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerTheme
 
 /** Matches the dark Figma layout (Songs / search). */
 private val SongsRowSpacing = 16.dp
+
+private val SongsScreenTitlePaddingTopTablet = 32.dp
 
 @Composable
 fun SongsRoute(
@@ -73,6 +77,8 @@ fun SongsScreen(
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
+    val isTabletLayout =
+        LocalConfiguration.current.screenWidthDp >= SongListCellTabletMinWidthDp
 
     Column(
         modifier = modifier
@@ -81,7 +87,10 @@ fun SongsScreen(
             .statusBarsPadding()
             .navigationBarsPadding()
             .padding(horizontal = 20.dp)
-            .padding(top = 8.dp, bottom = 16.dp)
+            .padding(
+                top = if (isTabletLayout) SongsScreenTitlePaddingTopTablet else 8.dp,
+                bottom = 16.dp
+            )
     ) {
         Text(
             text = stringResource(R.string.songs_title),

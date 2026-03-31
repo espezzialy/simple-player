@@ -62,6 +62,7 @@ import com.espezzialy.simpleplayer.presentation.common.SongListCellArtworkSizeTa
 import com.espezzialy.simpleplayer.presentation.common.SongListCellTabletMinWidthDp
 import com.espezzialy.simpleplayer.presentation.common.SongListCellTitleStyleTablet
 import com.espezzialy.simpleplayer.presentation.common.TabletBackIconButton
+import com.espezzialy.simpleplayer.presentation.common.TabletNavBarPaddingTop
 import com.espezzialy.simpleplayer.ui.theme.ArticulatCfFamily
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerTheme
 
@@ -71,7 +72,6 @@ private val RowThumbSize = 56.dp
 /** Material width breakpoint: at 600dp and above, album hero uses tablet (side-by-side) layout. */
 private const val TabletMinWidthDp = 600
 
-private val AlbumTabletNavPaddingTop = 54.dp
 private val AlbumTabletNavPaddingStart = 25.dp
 private val AlbumTabletNavIconToTitle = 10.dp
 
@@ -218,7 +218,7 @@ private fun AlbumTabletTopBar(onBack: () -> Unit) {
             .statusBarsPadding()
             .padding(
                 start = AlbumTabletNavPaddingStart,
-                top = AlbumTabletNavPaddingTop
+                top = TabletNavBarPaddingTop
             ),
         verticalAlignment = Alignment.CenterVertically
     ) {
