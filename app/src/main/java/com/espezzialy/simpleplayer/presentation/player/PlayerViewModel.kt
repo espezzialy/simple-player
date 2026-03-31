@@ -16,6 +16,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.update
 
 @HiltViewModel
@@ -63,7 +66,6 @@ class PlayerViewModel @Inject constructor(
     val songsSearchEffect: SharedFlow<SongsEffect> = songsSearchRepository.effect
 
     private val totalSeconds = MOCK_TOTAL_SECONDS
-    private val initialProgress = MOCK_INITIAL_ELAPSED_SECONDS.toFloat() / MOCK_TOTAL_SECONDS
 
     private val _state = MutableStateFlow(
         buildState(
@@ -74,7 +76,7 @@ class PlayerViewModel @Inject constructor(
                 ?.takeUnless { it == PlayerNavigation.NO_COLLECTION_ID },
             artworkUrl = savedStateHandle.get<String>(PlayerNavigation.ARG_ARTWORK_URL)
                 ?.takeIf { it.isNotBlank() },
-            progress = initialProgress,
+            progress = 0f,
             isPlaying = true,
             repeatEnabled = false
         )
@@ -82,13 +84,30 @@ class PlayerViewModel @Inject constructor(
 
     val state: StateFlow<PlayerState> = _state.asStateFlow()
 
+    init {
+        viewModelScope.launch {
+            while (isActive) {
+                delay(MOCK_PROGRESS_TICK_MS)
+                val s = _state.value
+                if (!s.isPlaying || s.progress >= 1f) continue
+                val delta = MOCK_PROGRESS_TICK_MS.toFloat() / 1000f / totalSeconds
+                val newP = (s.progress + delta).coerceAtMost(1f)
+                if (newP >= 1f) {
+                    onPlaybackReachedEnd()
+                } else {
+                    applyProgress(newP)
+                }
+            }
+        }
+    }
+
     fun onSongsSearchIntent(intent: SongsIntent) {
         songsSearchRepository.onIntent(intent)
     }
 
     fun onIntent(intent: PlayerIntent) {
         when (intent) {
-            is PlayerIntent.ProgressChanged -> updateProgress(intent.value)
+            is PlayerIntent.ProgressChanged -> onUserProgressChanged(intent.value)
             PlayerIntent.PlayPauseClicked -> togglePlayPause()
             PlayerIntent.SkipPreviousClicked -> skipInQueue(delta = -1)
             PlayerIntent.SkipNextClicked -> skipInQueue(delta = 1)
@@ -103,15 +122,33 @@ class PlayerViewModel @Inject constructor(
         _state.update { it.copy(isPlaying = !it.isPlaying) }
     }
 
-    private fun updateProgress(value: Float) {
-        val p = value.coerceIn(0f, 1f)
-        val (current, remaining) = PlayerTimeFormatter.labelsForProgress(p, totalSeconds)
+    private fun applyProgress(p: Float) {
+        val clamped = p.coerceIn(0f, 1f)
+        val (current, remaining) = PlayerTimeFormatter.labelsForProgress(clamped, totalSeconds)
         _state.update {
             it.copy(
-                progress = p,
+                progress = clamped,
                 currentTimeLabel = current,
                 remainingTimeLabel = remaining
             )
+        }
+    }
+
+    private fun onUserProgressChanged(value: Float) {
+        val p = value.coerceIn(0f, 1f)
+        applyProgress(p)
+        if (p >= 1f && _state.value.isPlaying) {
+            onPlaybackReachedEnd()
+        }
+    }
+
+    /** Ao terminar a duração mocada (ou seek ao fim com reprodução ativa), avança como o botão forward. */
+    private fun onPlaybackReachedEnd() {
+        val beforeId = _state.value.trackId
+        skipInQueue(1)
+        if (_state.value.trackId == beforeId) {
+            applyProgress(1f)
+            _state.update { it.copy(isPlaying = false) }
         }
     }
 
@@ -126,8 +163,7 @@ class PlayerViewModel @Inject constructor(
     }
 
     private fun selectSong(song: Song) {
-        val progress = MOCK_INITIAL_ELAPSED_SECONDS.toFloat() / MOCK_TOTAL_SECONDS
-        val (current, remaining) = PlayerTimeFormatter.labelsForProgress(progress, totalSeconds)
+        val (current, remaining) = PlayerTimeFormatter.labelsForProgress(0f, totalSeconds)
         _state.update {
             it.copy(
                 trackId = song.trackId,
@@ -135,7 +171,7 @@ class PlayerViewModel @Inject constructor(
                 artistName = song.artistName,
                 collectionId = song.collectionId,
                 artworkUrl = song.artworkUrl100,
-                progress = progress,
+                progress = 0f,
                 currentTimeLabel = current,
                 remainingTimeLabel = remaining,
                 isPlaying = true
@@ -171,7 +207,7 @@ class PlayerViewModel @Inject constructor(
     private companion object {
         /** Mock total duration (~4:20). */
         const val MOCK_TOTAL_SECONDS = 260
-        /** Mock initial position (~1:26). */
-        const val MOCK_INITIAL_ELAPSED_SECONDS = 86
+        /** Atualização do progresso em reprodução (ms). */
+        const val MOCK_PROGRESS_TICK_MS = 250L
     }
 }
