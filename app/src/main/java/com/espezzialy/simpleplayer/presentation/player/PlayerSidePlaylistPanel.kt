@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.GraphicEq
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -23,12 +21,20 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.espezzialy.simpleplayer.R
 import com.espezzialy.simpleplayer.domain.model.Song
 import com.espezzialy.simpleplayer.presentation.common.ArtworkThumbnail
@@ -40,6 +46,7 @@ private val SidePanelListPaddingTop = 20.dp
 private val SideRowVerticalPadding = 8.dp
 private val SideRowTextStartSpacing = 16.dp
 private val SideRowTextSpacing = 4.dp
+private val SidePanelPlayingIndicatorSize = 36.dp
 
 @Composable
 fun PlayerSidePlaylistPanel(
@@ -63,7 +70,7 @@ fun PlayerSidePlaylistPanel(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(top = 20.dp, start = 16.dp, end = 16.dp, bottom = 16.dp)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -73,7 +80,7 @@ fun PlayerSidePlaylistPanel(
                     painter = painterResource(R.drawable.ic_music_list),
                     contentDescription = null,
                     tint = colorScheme.onBackground,
-                    modifier = Modifier.size(22.dp)
+                    modifier = Modifier.size(24.dp)
                 )
             }
             sidePanel.panelTitle?.let { title ->
@@ -165,6 +172,7 @@ private fun PlayerSidePlaylistRow(
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
+    val playingIndicatorDesc = stringResource(R.string.content_desc_playing_indicator)
 
     Row(
         modifier = Modifier
@@ -206,12 +214,29 @@ private fun PlayerSidePlaylistRow(
             )
         }
         if (showPlayingIndicator) {
-            Icon(
-                imageVector = Icons.Filled.GraphicEq,
-                contentDescription = stringResource(R.string.content_desc_playing_indicator),
-                tint = colorScheme.onBackground,
-                modifier = Modifier.size(24.dp)
+            SidePanelPlayingIndicator(
+                modifier = Modifier.semantics {
+                    contentDescription = playingIndicatorDesc
+                }
             )
         }
     }
+}
+
+@Composable
+private fun SidePanelPlayingIndicator(modifier: Modifier = Modifier) {
+    val compositionResult = rememberLottieComposition(
+        LottieCompositionSpec.RawRes(R.raw.live_bars)
+    )
+    val composition = compositionResult.value
+    val animationState = animateLottieCompositionAsState(
+        composition = composition,
+        iterations = LottieConstants.IterateForever
+    )
+    LottieAnimation(
+        composition = composition,
+        progress = { animationState.progress },
+        modifier = modifier.size(SidePanelPlayingIndicatorSize),
+        contentScale = ContentScale.Fit
+    )
 }
