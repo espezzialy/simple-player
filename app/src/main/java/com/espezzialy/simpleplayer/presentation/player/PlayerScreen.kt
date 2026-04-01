@@ -1,5 +1,6 @@
 package com.espezzialy.simpleplayer.presentation.player
 
+import android.content.res.Configuration as AndroidConfiguration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -264,53 +266,68 @@ fun PlayerScreen(
     }
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFF000000, widthDp = 1024, heightDp = 600, name = "Player (tablet)")
+private const val TabletPreviewWidthDp = 1024
+private const val TabletPreviewHeightDp = 600
+
+@Preview(
+    showBackground = true,
+    backgroundColor = 0xFF000000,
+    widthDp = TabletPreviewWidthDp,
+    heightDp = TabletPreviewHeightDp,
+    name = "Player (tablet)"
+)
 @Composable
 private fun PlayerScreenTabletPreview() {
-    SimplePlayerTheme {
-        PlayerScreen(
-            state = PlayerUiState(
-                trackId = 1L,
-                trackName = "Perfect",
-                artistName = "Ed Sheeran",
-                collectionId = 1L,
-                artworkUrl = null,
-                progress = 0f,
-                isPlaying = true,
-                currentTimeLabel = "0:00",
-                remainingTimeLabel = "-4:20",
-                repeatEnabled = false
-            ),
-            onIntent = {},
-            onBack = {},
-            onNavigateToAlbum = {},
-            sidePanelUiState = PlayerSidePanelUiState(
-                songs = listOf(
-                    Song(
-                        trackId = 1L,
-                        trackName = "Perfect",
-                        artistName = "Ed Sheeran",
-                        collectionName = "÷",
-                        collectionId = 1L,
-                        artworkUrl100 = null
-                    ),
-                    Song(
-                        trackId = 2L,
-                        trackName = "Shape of You",
-                        artistName = "Ed Sheeran",
-                        collectionName = "÷",
-                        collectionId = 1L,
-                        artworkUrl100 = null
-                    )
+    val tabletConfiguration = AndroidConfiguration(LocalConfiguration.current).apply {
+        screenWidthDp = TabletPreviewWidthDp
+        screenHeightDp = TabletPreviewHeightDp
+    }
+    CompositionLocalProvider(LocalConfiguration provides tabletConfiguration) {
+        SimplePlayerTheme {
+            PlayerScreen(
+                state = PlayerUiState(
+                    trackId = 1L,
+                    trackName = "Perfect",
+                    artistName = "Ed Sheeran",
+                    collectionId = 1L,
+                    artworkUrl = null,
+                    progress = 0f,
+                    isPlaying = true,
+                    currentTimeLabel = "0:00",
+                    remainingTimeLabel = "-4:20",
+                    repeatEnabled = false
                 ),
-                panelTitle = "÷",
-                isSearchMode = false,
-                isLoading = false,
-                errorMessage = null,
-                showEmptyQueryHint = false
-            ),
-            onRetrySearch = {}
-        )
+                onIntent = {},
+                onBack = {},
+                onNavigateToAlbum = {},
+                sidePanelUiState = PlayerSidePanelUiState(
+                    songs = listOf(
+                        Song(
+                            trackId = 1L,
+                            trackName = "Perfect",
+                            artistName = "Ed Sheeran",
+                            collectionName = "÷",
+                            collectionId = 1L,
+                            artworkUrl100 = null
+                        ),
+                        Song(
+                            trackId = 2L,
+                            trackName = "Shape of You",
+                            artistName = "Ed Sheeran",
+                            collectionName = "÷",
+                            collectionId = 1L,
+                            artworkUrl100 = null
+                        )
+                    ),
+                    panelTitle = "÷",
+                    isSearchMode = false,
+                    isLoading = false,
+                    errorMessage = null,
+                    showEmptyQueryHint = false
+                ),
+                onRetrySearch = {}
+            )
+        }
     }
 }
 
