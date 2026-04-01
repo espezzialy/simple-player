@@ -172,7 +172,11 @@ class PlayerViewModel @Inject constructor(
         if (queue.isEmpty()) return
         val idx = queue.indexOfFirst { it.trackId == _state.value.trackId }
         if (idx < 0) return
-        val newIdx = idx + delta
+        val repeat = _state.value.repeatEnabled
+        val newIdx = when {
+            delta > 0 && idx == queue.lastIndex && repeat -> 0
+            else -> idx + delta
+        }
         if (newIdx !in queue.indices) return
         selectSong(queue[newIdx])
     }

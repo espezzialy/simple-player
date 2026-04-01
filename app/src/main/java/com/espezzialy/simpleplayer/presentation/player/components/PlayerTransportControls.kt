@@ -18,9 +18,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.espezzialy.simpleplayer.R
+import com.espezzialy.simpleplayer.ui.theme.SimplePlayerColors
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerDimens
 
 @Composable
@@ -86,9 +88,9 @@ fun PlayerTransportControls(
                 painter = painterResource(R.drawable.ic_play_on_repeat),
                 contentDescription = stringResource(R.string.content_desc_repeat),
                 tint = if (repeatEnabled) {
-                    colorScheme.onSurface
+                    SimplePlayerColors.PlayerRepeatActive
                 } else {
-                    colorScheme.onSurface
+                    Color.White
                 },
                 modifier = Modifier.size(SimplePlayerDimens.Player.repeatIconSize)
             )
