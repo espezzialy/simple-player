@@ -1,8 +1,6 @@
-package com.espezzialy.simpleplayer.presentation.songs
+package com.espezzialy.simpleplayer.domain.model
 
-import com.espezzialy.simpleplayer.domain.model.Song
-
-data class SongsState(
+data class SongsUiState(
     val query: String = "",
     val recentSongs: List<Song> = emptyList(),
     val songs: List<Song> = emptyList(),

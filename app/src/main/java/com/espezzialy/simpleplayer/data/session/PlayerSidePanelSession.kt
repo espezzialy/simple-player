@@ -1,4 +1,4 @@
-package com.espezzialy.simpleplayer.presentation.player
+package com.espezzialy.simpleplayer.data.session
 
 import com.espezzialy.simpleplayer.domain.model.Song
 import javax.inject.Inject
@@ -31,12 +31,3 @@ class PlayerSidePanelSession @Inject constructor() {
         _source.value = PlayerSidePanelSource.RecentSongs(songs)
     }
 }
-
-data class PlayerSidePanelUiState(
-    val songs: List<Song>,
-    val panelTitle: String?,
-    val isSearchMode: Boolean,
-    val isLoading: Boolean,
-    val errorMessage: String?,
-    val showEmptyQueryHint: Boolean
-)

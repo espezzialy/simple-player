@@ -1,4 +1,4 @@
-package com.espezzialy.simpleplayer.presentation.player
+package com.espezzialy.simpleplayer.presentation.navigation
 
 import android.net.Uri
 import androidx.navigation.NavController
@@ -32,7 +32,6 @@ fun NavController.navigateToPlayer(song: Song) {
 
 fun NavController.navigateToPlayerFromAlbum(song: Song) {
     navigate(playerRouteFor(song)) {
-        // Drop Album (and any Player) from the stack so "back" from Player returns to the list, not to a stacked Player.
         popUpTo(PlayerNavigation.SONGS_START_ROUTE) { inclusive = false }
     }
 }

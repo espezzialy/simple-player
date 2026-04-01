@@ -1,6 +1,6 @@
 @file:OptIn(androidx.compose.material.ExperimentalMaterialApi::class)
 
-package com.espezzialy.simpleplayer.presentation.songs
+package com.espezzialy.simpleplayer.presentation.songs.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

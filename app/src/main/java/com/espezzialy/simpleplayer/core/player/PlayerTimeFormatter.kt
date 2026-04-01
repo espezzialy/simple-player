@@ -1,4 +1,4 @@
-package com.espezzialy.simpleplayer.presentation.player
+package com.espezzialy.simpleplayer.core.player
 
 import kotlin.math.roundToInt
 

@@ -2,19 +2,6 @@ package com.espezzialy.simpleplayer.presentation.player
 
 import com.espezzialy.simpleplayer.domain.model.Song
 
-data class PlayerState(
-    val trackId: Long,
-    val trackName: String,
-    val artistName: String,
-    val collectionId: Long?,
-    val artworkUrl: String?,
-    val progress: Float,
-    val isPlaying: Boolean,
-    val currentTimeLabel: String,
-    val remainingTimeLabel: String,
-    val repeatEnabled: Boolean
-)
-
 sealed interface PlayerIntent {
     data class ProgressChanged(val value: Float) : PlayerIntent
     data object PlayPauseClicked : PlayerIntent

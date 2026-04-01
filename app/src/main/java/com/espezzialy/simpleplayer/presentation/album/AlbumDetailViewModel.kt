@@ -5,18 +5,18 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.espezzialy.simpleplayer.R
+import com.espezzialy.simpleplayer.data.session.PlayerSidePanelSession
 import com.espezzialy.simpleplayer.domain.model.AlbumDetail
 import com.espezzialy.simpleplayer.domain.model.Song
 import com.espezzialy.simpleplayer.domain.usecase.GetAlbumDetailUseCase
-import com.espezzialy.simpleplayer.presentation.player.PlayerSidePanelSession
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
 class AlbumDetailViewModel @Inject constructor(
@@ -31,8 +31,8 @@ class AlbumDetailViewModel @Inject constructor(
             "collectionId is required in route"
         }
 
-    private val _state = MutableStateFlow(AlbumDetailState())
-    val state: StateFlow<AlbumDetailState> = _state.asStateFlow()
+    private val _state = MutableStateFlow(AlbumDetailUiState())
+    val state: StateFlow<AlbumDetailUiState> = _state.asStateFlow()
 
     init {
         load()

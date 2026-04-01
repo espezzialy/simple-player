@@ -1,10 +1,6 @@
 package com.espezzialy.simpleplayer.presentation.player
 
-import android.content.Context
-import android.content.ContextWrapper
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,17 +8,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -30,13 +20,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,32 +29,24 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.core.app.MultiWindowModeChangedInfo
-import androidx.core.util.Consumer
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.AsyncImage
 import com.espezzialy.simpleplayer.R
-import com.espezzialy.simpleplayer.core.media.toItunesArtwork600
 import com.espezzialy.simpleplayer.domain.model.Song
-import com.espezzialy.simpleplayer.presentation.songs.SongsEffect
-import com.espezzialy.simpleplayer.presentation.common.TabletBackIconButton
-import com.espezzialy.simpleplayer.presentation.common.TabletNavBarPaddingTop
-import com.espezzialy.simpleplayer.presentation.songs.SongsIntent
-import com.espezzialy.simpleplayer.ui.theme.PlayerNowPlayingTextStyles
+import com.espezzialy.simpleplayer.domain.model.SongsEffect
+import com.espezzialy.simpleplayer.domain.model.SongsIntent
+import com.espezzialy.simpleplayer.presentation.common.components.TabletNavBarPaddingTop
+import com.espezzialy.simpleplayer.presentation.player.components.PlayerMainColumn
+import com.espezzialy.simpleplayer.presentation.player.components.rememberIsInMultiWindowMode
+import com.espezzialy.simpleplayer.presentation.player.components.PlayerOverflowSheetContent
+import com.espezzialy.simpleplayer.presentation.player.components.PlayerPhoneTopBar
+import com.espezzialy.simpleplayer.presentation.player.components.PlayerSidePlaylistPanel
+import com.espezzialy.simpleplayer.presentation.player.components.PlayerTabletTopBar
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerBreakpoints
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerColors
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerDimens
@@ -105,7 +82,7 @@ fun PlayerRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayerScreen(
-    state: PlayerState,
+    state: PlayerUiState,
     onIntent: (PlayerIntent) -> Unit,
     onBack: () -> Unit,
     onNavigateToAlbum: (Long) -> Unit,
@@ -287,366 +264,12 @@ fun PlayerScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun PlayerPhoneTopBar(
-    onBack: () -> Unit,
-    title: String,
-    onOverflowClick: () -> Unit
-) {
-    val colorScheme = MaterialTheme.colorScheme
-    val typography = MaterialTheme.typography
-    TopAppBar(
-        title = {
-            Text(
-                text = title,
-                style = typography.titleLarge,
-                color = colorScheme.onBackground,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        },
-        navigationIcon = {
-            IconButton(onClick = onBack) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_arrow_left),
-                    contentDescription = stringResource(R.string.content_desc_back),
-                    tint = colorScheme.onBackground
-                )
-            }
-        },
-        actions = {
-            IconButton(onClick = onOverflowClick) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_more),
-                    contentDescription = stringResource(R.string.content_desc_menu),
-                    tint = colorScheme.onSurface
-                )
-            }
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = colorScheme.background,
-            titleContentColor = colorScheme.onBackground,
-            navigationIconContentColor = colorScheme.onBackground
-        )
-    )
-}
-
-@Composable
-private fun PlayerTabletTopBar(
-    onBack: () -> Unit,
-    title: String,
-    onOverflowClick: (() -> Unit)? = null
-) {
-    val colorScheme = MaterialTheme.colorScheme
-    val typography = MaterialTheme.typography
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = TabletNavBarPaddingTop),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        TabletBackIconButton(
-            onClick = onBack,
-            contentDescription = stringResource(R.string.content_desc_back),
-            tint = colorScheme.onBackground,
-            painter = painterResource(R.drawable.ic_arrow_left),
-            iconSize = 28.dp
-        )
-        Spacer(modifier = Modifier.width(SimplePlayerDimens.Player.topBarTitleInsetAfterBackTablet))
-        Text(
-            text = title,
-            style = typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
-            color = colorScheme.onBackground,
-            modifier = Modifier.weight(1f),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            textAlign = TextAlign.Start
-        )
-        if (onOverflowClick != null) {
-            IconButton(onClick = onOverflowClick) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_more),
-                    contentDescription = stringResource(R.string.content_desc_menu),
-                    tint = colorScheme.onSurfaceVariant
-                )
-            }
-        } else {
-            Spacer(modifier = Modifier.width(SimplePlayerDimens.Player.tabletOverflowPlaceholderWidth))
-        }
-    }
-}
-
-private tailrec fun findComponentActivity(context: Context): ComponentActivity? {
-    return when (context) {
-        is ComponentActivity -> context
-        is ContextWrapper -> findComponentActivity(context.baseContext)
-        else -> null
-    }
-}
-
-@Composable
-private fun rememberIsInMultiWindowMode(): Boolean {
-    val context = LocalContext.current
-    val activity = remember(context) { findComponentActivity(context) }
-    var inMultiWindow by remember(activity) {
-        mutableStateOf(activity?.isInMultiWindowMode == true)
-    }
-    DisposableEffect(activity) {
-        val act = activity ?: return@DisposableEffect onDispose { }
-        val listener = Consumer<MultiWindowModeChangedInfo> { info ->
-            inMultiWindow = info.isInMultiWindowMode
-        }
-        act.addOnMultiWindowModeChangedListener(listener)
-        inMultiWindow = act.isInMultiWindowMode
-        onDispose {
-            act.removeOnMultiWindowModeChangedListener(listener)
-        }
-    }
-    return inMultiWindow
-}
-
-@Composable
-private fun PlayerMainColumn(
-    state: PlayerState,
-    onIntent: (PlayerIntent) -> Unit,
-    artistNameColor: Color,
-    artworkSize: Dp,
-    contentPaddingTop: Dp,
-    seekTrackHeight: Dp,
-    seekThumbDiameter: Dp,
-    isTabletLayout: Boolean
-) {
-    val colorScheme = MaterialTheme.colorScheme
-    val trackNameStyle = if (isTabletLayout) {
-        PlayerNowPlayingTextStyles.trackTablet
-    } else {
-        PlayerNowPlayingTextStyles.trackPhone
-    }
-    val artistNameStyle = if (isTabletLayout) {
-        PlayerNowPlayingTextStyles.artistTablet
-    } else {
-        PlayerNowPlayingTextStyles.artistPhone
-    }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(top = contentPaddingTop),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        if (isTabletLayout) {
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                PlayerArtwork(
-                    artworkUrl = state.artworkUrl,
-                    trackName = state.trackName,
-                    size = artworkSize
-                )
-            }
-        } else {
-            PlayerArtwork(
-                artworkUrl = state.artworkUrl,
-                trackName = state.trackName,
-                size = artworkSize
-            )
-            Spacer(modifier = Modifier.weight(1f))
-        }
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Text(
-                text = state.trackName,
-                style = trackNameStyle,
-                color = colorScheme.onBackground,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Start
-            )
-            Spacer(modifier = Modifier.height(SimplePlayerDimens.Player.spacerTitleToArtist))
-            Text(
-                text = state.artistName,
-                style = artistNameStyle,
-                color = artistNameColor,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Start
-            )
-            Spacer(modifier = Modifier.height(SimplePlayerDimens.Player.spacerArtistToSeek))
-            PlayerSeekSection(
-                progress = state.progress,
-                currentLabel = state.currentTimeLabel,
-                remainingLabel = state.remainingTimeLabel,
-                onProgressChange = { onIntent(PlayerIntent.ProgressChanged(it)) },
-                trackHeight = seekTrackHeight,
-                thumbDiameter = seekThumbDiameter
-            )
-        }
-        Spacer(
-            modifier = Modifier.height(
-                if (isTabletLayout) {
-                    SimplePlayerDimens.Player.spacerSeekToTransportTablet
-                } else {
-                    SimplePlayerDimens.Player.spacerSeekToTransportPhone
-                }
-            )
-        )
-        PlayerTransportControls(
-            isPlaying = state.isPlaying,
-            repeatEnabled = state.repeatEnabled,
-            onPlayPause = { onIntent(PlayerIntent.PlayPauseClicked) },
-            onPrevious = { onIntent(PlayerIntent.SkipPreviousClicked) },
-            onNext = { onIntent(PlayerIntent.SkipNextClicked) },
-            onRepeat = { onIntent(PlayerIntent.RepeatClicked) }
-        )
-        Spacer(modifier = Modifier.height(SimplePlayerDimens.Player.spacerAfterTransport))
-    }
-}
-
-@Composable
-private fun PlayerArtwork(artworkUrl: String?, trackName: String, size: Dp) {
-    val colorScheme = MaterialTheme.colorScheme
-    val shape = RoundedCornerShape(SimplePlayerDimens.Player.artworkCornerRadius)
-    Box(
-        modifier = Modifier
-            .size(size)
-            .clip(shape)
-            .background(colorScheme.surfaceContainerHigh),
-        contentAlignment = Alignment.Center
-    ) {
-        if (!artworkUrl.isNullOrBlank()) {
-            AsyncImage(
-                model = artworkUrl.toItunesArtwork600() ?: artworkUrl,
-                contentDescription = trackName,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
-        }
-    }
-}
-
-@Composable
-private fun PlayerSeekSection(
-    progress: Float,
-    currentLabel: String,
-    remainingLabel: String,
-    onProgressChange: (Float) -> Unit,
-    trackHeight: Dp,
-    thumbDiameter: Dp
-) {
-    val colorScheme = MaterialTheme.colorScheme
-    val typography = MaterialTheme.typography
-
-    Column(modifier = Modifier.fillMaxWidth()) {
-        PlayerSeekBar(
-            progress = progress,
-            onProgressChange = onProgressChange,
-            modifier = Modifier.fillMaxWidth(),
-            trackHeight = trackHeight,
-            thumbDiameter = thumbDiameter
-        )
-        Spacer(modifier = Modifier.height(SimplePlayerDimens.Player.seekTimeRowSpacing))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = currentLabel,
-                style = typography.labelSmall,
-                color = colorScheme.onSurfaceVariant
-            )
-            Text(
-                text = remainingLabel,
-                style = typography.labelSmall,
-                color = colorScheme.onSurfaceVariant
-            )
-        }
-    }
-}
-
-@Composable
-private fun PlayerTransportControls(
-    isPlaying: Boolean,
-    repeatEnabled: Boolean,
-    onPlayPause: () -> Unit,
-    onPrevious: () -> Unit,
-    onNext: () -> Unit,
-    onRepeat: () -> Unit
-) {
-    val colorScheme = MaterialTheme.colorScheme
-    val pauseDesc = stringResource(R.string.content_desc_pause)
-    val playDesc = stringResource(R.string.content_desc_play)
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = SimplePlayerDimens.Player.transportBarVerticalPadding),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(SimplePlayerDimens.Player.transportMainClusterSpacing),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Surface(
-                onClick = onPlayPause,
-                modifier = Modifier.size(SimplePlayerDimens.Player.playSurfaceSize),
-                shape = CircleShape,
-                color = colorScheme.surfaceContainerHigh
-            ) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
-                        contentDescription = if (isPlaying) pauseDesc else playDesc,
-                        tint = colorScheme.onSurface,
-                        modifier = Modifier.size(SimplePlayerDimens.Player.playIconSize)
-                    )
-                }
-            }
-            IconButton(onClick = onPrevious) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_backward_bar_fill),
-                    contentDescription = stringResource(R.string.content_desc_previous_track),
-                    tint = colorScheme.onSurface,
-                    modifier = Modifier.size(SimplePlayerDimens.Player.skipIconSize)
-                )
-            }
-            IconButton(onClick = onNext) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_forward_bar_fill),
-                    contentDescription = stringResource(R.string.content_desc_next_track),
-                    tint = colorScheme.onSurface,
-                    modifier = Modifier.size(SimplePlayerDimens.Player.skipIconSize)
-                )
-            }
-        }
-        IconButton(onClick = onRepeat) {
-            Icon(
-                painter = painterResource(R.drawable.ic_play_on_repeat),
-                contentDescription = stringResource(R.string.content_desc_repeat),
-                tint = if (repeatEnabled) {
-                    colorScheme.onSurface
-                } else {
-                    colorScheme.onSurface
-                },
-                modifier = Modifier.size(SimplePlayerDimens.Player.repeatIconSize)
-            )
-        }
-    }
-}
-
 @Preview(showBackground = true, backgroundColor = 0xFF000000, widthDp = 1024, heightDp = 600, name = "Player (tablet)")
 @Composable
 private fun PlayerScreenTabletPreview() {
     SimplePlayerTheme {
         PlayerScreen(
-            state = PlayerState(
+            state = PlayerUiState(
                 trackId = 1L,
                 trackName = "Perfect",
                 artistName = "Ed Sheeran",
@@ -696,7 +319,7 @@ private fun PlayerScreenTabletPreview() {
 private fun PlayerScreenPreview() {
     SimplePlayerTheme {
         PlayerScreen(
-            state = PlayerState(
+            state = PlayerUiState(
                 trackId = 1L,
                 trackName = "Get Lucky",
                 artistName = "Daft Punk feat. Pharrell Williams",

@@ -1,4 +1,4 @@
-package com.espezzialy.simpleplayer.presentation.common
+package com.espezzialy.simpleplayer.presentation.common.components
 
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight

@@ -12,10 +12,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.espezzialy.simpleplayer.presentation.album.AlbumDetailRoute
-import com.espezzialy.simpleplayer.presentation.player.PlayerNavigation
+import com.espezzialy.simpleplayer.presentation.navigation.PlayerNavigation
+import com.espezzialy.simpleplayer.presentation.navigation.navigateToPlayer
+import com.espezzialy.simpleplayer.presentation.navigation.navigateToPlayerFromAlbum
 import com.espezzialy.simpleplayer.presentation.player.PlayerRoute
-import com.espezzialy.simpleplayer.presentation.player.navigateToPlayer
-import com.espezzialy.simpleplayer.presentation.player.navigateToPlayerFromAlbum
 import com.espezzialy.simpleplayer.presentation.songs.SongsRoute
 
 private const val ROUTE_SONGS = "songs"

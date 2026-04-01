@@ -3,8 +3,12 @@ package com.espezzialy.simpleplayer.presentation.songs
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.espezzialy.simpleplayer.data.local.RecentSongsRepository
+import com.espezzialy.simpleplayer.data.session.PlayerSidePanelSession
+import com.espezzialy.simpleplayer.data.songs.SongsSearchRepository
 import com.espezzialy.simpleplayer.domain.model.Song
-import com.espezzialy.simpleplayer.presentation.player.PlayerSidePanelSession
+import com.espezzialy.simpleplayer.domain.model.SongsEffect
+import com.espezzialy.simpleplayer.domain.model.SongsIntent
+import com.espezzialy.simpleplayer.domain.model.SongsUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.SharedFlow
@@ -21,7 +25,7 @@ class SongsViewModel @Inject constructor(
     private val playerSidePanelSession: PlayerSidePanelSession
 ) : ViewModel() {
 
-    val state: StateFlow<SongsState> = combine(
+    val state: StateFlow<SongsUiState> = combine(
         songsSearchRepository.state,
         recentSongsRepository.recentSongs
     ) { search, recent ->
@@ -29,7 +33,7 @@ class SongsViewModel @Inject constructor(
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5_000),
-        SongsState()
+        SongsUiState()
     )
 
     val effect: SharedFlow<SongsEffect> = songsSearchRepository.effect

@@ -1,4 +1,4 @@
-package com.espezzialy.simpleplayer.presentation.player
+package com.espezzialy.simpleplayer.presentation.player.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures

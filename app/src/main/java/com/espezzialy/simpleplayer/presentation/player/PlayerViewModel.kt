@@ -5,13 +5,18 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.espezzialy.simpleplayer.R
+import com.espezzialy.simpleplayer.core.player.PlayerTimeFormatter
+import com.espezzialy.simpleplayer.data.session.PlayerSidePanelSession
+import com.espezzialy.simpleplayer.data.session.PlayerSidePanelSource
+import com.espezzialy.simpleplayer.data.songs.SongsSearchRepository
 import com.espezzialy.simpleplayer.domain.model.Song
-import dagger.hilt.android.qualifiers.ApplicationContext
-import com.espezzialy.simpleplayer.presentation.songs.SongsEffect
-import com.espezzialy.simpleplayer.presentation.songs.SongsIntent
-import com.espezzialy.simpleplayer.presentation.songs.SongsSearchRepository
+import com.espezzialy.simpleplayer.domain.model.SongsEffect
+import com.espezzialy.simpleplayer.domain.model.SongsIntent
+import com.espezzialy.simpleplayer.presentation.navigation.PlayerNavigation
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -19,10 +24,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.flow.update
 
 @HiltViewModel
 class PlayerViewModel @Inject constructor(
@@ -94,7 +98,7 @@ class PlayerViewModel @Inject constructor(
         )
     )
 
-    val state: StateFlow<PlayerState> = _state.asStateFlow()
+    val state: StateFlow<PlayerUiState> = _state.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -199,9 +203,9 @@ class PlayerViewModel @Inject constructor(
         progress: Float,
         isPlaying: Boolean,
         repeatEnabled: Boolean
-    ): PlayerState {
+    ): PlayerUiState {
         val (current, remaining) = PlayerTimeFormatter.labelsForProgress(progress, totalSeconds)
-        return PlayerState(
+        return PlayerUiState(
             trackId = trackId,
             trackName = trackName,
             artistName = artistName,

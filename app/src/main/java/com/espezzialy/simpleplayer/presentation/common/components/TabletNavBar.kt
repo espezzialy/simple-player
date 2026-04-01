@@ -1,4 +1,4 @@
-package com.espezzialy.simpleplayer.presentation.common
+package com.espezzialy.simpleplayer.presentation.common.components
 
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerDimens
 

@@ -1,9 +1,12 @@
-package com.espezzialy.simpleplayer.presentation.songs
+package com.espezzialy.simpleplayer.data.songs
 
 import android.content.Context
 import com.espezzialy.simpleplayer.R
 import com.espezzialy.simpleplayer.core.coroutines.DispatcherProvider
 import com.espezzialy.simpleplayer.domain.model.Song
+import com.espezzialy.simpleplayer.domain.model.SongsEffect
+import com.espezzialy.simpleplayer.domain.model.SongsIntent
+import com.espezzialy.simpleplayer.domain.model.SongsUiState
 import com.espezzialy.simpleplayer.domain.usecase.SearchSongsUseCase
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -36,8 +39,8 @@ class SongsSearchRepository @Inject constructor(
 
     private val scope = CoroutineScope(SupervisorJob() + dispatcherProvider.main)
 
-    private val _state = MutableStateFlow(SongsState())
-    val state: StateFlow<SongsState> = _state.asStateFlow()
+    private val _state = MutableStateFlow(SongsUiState())
+    val state: StateFlow<SongsUiState> = _state.asStateFlow()
 
     private val _effect = MutableSharedFlow<SongsEffect>(
         extraBufferCapacity = 16,

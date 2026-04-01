@@ -1,4 +1,4 @@
-package com.espezzialy.simpleplayer.presentation.common
+package com.espezzialy.simpleplayer.presentation.common.components
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box

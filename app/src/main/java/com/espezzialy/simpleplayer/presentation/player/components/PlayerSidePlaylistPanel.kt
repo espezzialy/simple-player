@@ -1,4 +1,4 @@
-package com.espezzialy.simpleplayer.presentation.player
+package com.espezzialy.simpleplayer.presentation.player.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -37,9 +37,10 @@ import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.espezzialy.simpleplayer.R
 import com.espezzialy.simpleplayer.domain.model.Song
-import com.espezzialy.simpleplayer.presentation.common.ArtworkThumbnail
-import com.espezzialy.simpleplayer.presentation.common.CenteredLoading
-import com.espezzialy.simpleplayer.presentation.common.ErrorWithRetry
+import com.espezzialy.simpleplayer.presentation.player.PlayerSidePanelUiState
+import com.espezzialy.simpleplayer.presentation.common.components.ArtworkThumbnail
+import com.espezzialy.simpleplayer.presentation.common.components.CenteredLoading
+import com.espezzialy.simpleplayer.presentation.common.components.ErrorWithRetry
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerDimens
 
 @Composable

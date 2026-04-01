@@ -1,4 +1,4 @@
-package com.espezzialy.simpleplayer.presentation.songs
+package com.espezzialy.simpleplayer.presentation.songs.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -36,13 +36,13 @@ import com.espezzialy.simpleplayer.R
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerColors
 import com.espezzialy.simpleplayer.core.media.toItunesArtwork200
 import com.espezzialy.simpleplayer.domain.model.Song
-import com.espezzialy.simpleplayer.presentation.common.ArtworkThumbnail
-import com.espezzialy.simpleplayer.presentation.common.SongListCellArtistColorTablet
-import com.espezzialy.simpleplayer.presentation.common.SongListCellArtistStyleTablet
-import com.espezzialy.simpleplayer.presentation.common.SongListCellArtworkSizePhone
-import com.espezzialy.simpleplayer.presentation.common.SongListCellArtworkSizeTablet
+import com.espezzialy.simpleplayer.presentation.common.components.ArtworkThumbnail
+import com.espezzialy.simpleplayer.presentation.common.components.SongListCellArtistColorTablet
+import com.espezzialy.simpleplayer.presentation.common.components.SongListCellArtistStyleTablet
+import com.espezzialy.simpleplayer.presentation.common.components.SongListCellArtworkSizePhone
+import com.espezzialy.simpleplayer.presentation.common.components.SongListCellArtworkSizeTablet
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerBreakpoints
-import com.espezzialy.simpleplayer.presentation.common.SongListCellTitleStyleTablet
+import com.espezzialy.simpleplayer.presentation.common.components.SongListCellTitleStyleTablet
 
 private val SongRowMenuOpenCellBackground = SimplePlayerColors.MenuOpenRowOverlay
 private val SongRowMenuOpenCellShape = RoundedCornerShape(8.dp)

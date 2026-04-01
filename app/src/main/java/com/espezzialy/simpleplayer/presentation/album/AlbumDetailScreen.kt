@@ -50,15 +50,15 @@ import com.espezzialy.simpleplayer.core.media.toItunesArtwork600
 import com.espezzialy.simpleplayer.domain.model.AlbumDetail
 import com.espezzialy.simpleplayer.domain.model.AlbumTrack
 import com.espezzialy.simpleplayer.domain.model.Song
-import com.espezzialy.simpleplayer.presentation.common.ArtworkThumbnail
-import com.espezzialy.simpleplayer.presentation.common.CenteredLoading
-import com.espezzialy.simpleplayer.presentation.common.ErrorWithRetry
-import com.espezzialy.simpleplayer.presentation.common.SongListCellArtistColorTablet
-import com.espezzialy.simpleplayer.presentation.common.SongListCellArtistStyleTablet
-import com.espezzialy.simpleplayer.presentation.common.SongListCellArtworkSizeTablet
-import com.espezzialy.simpleplayer.presentation.common.SongListCellTitleStyleTablet
-import com.espezzialy.simpleplayer.presentation.common.TabletBackIconButton
-import com.espezzialy.simpleplayer.presentation.common.TabletNavBarPaddingTop
+import com.espezzialy.simpleplayer.presentation.common.components.ArtworkThumbnail
+import com.espezzialy.simpleplayer.presentation.common.components.CenteredLoading
+import com.espezzialy.simpleplayer.presentation.common.components.ErrorWithRetry
+import com.espezzialy.simpleplayer.presentation.common.components.SongListCellArtistColorTablet
+import com.espezzialy.simpleplayer.presentation.common.components.SongListCellArtistStyleTablet
+import com.espezzialy.simpleplayer.presentation.common.components.SongListCellArtworkSizeTablet
+import com.espezzialy.simpleplayer.presentation.common.components.SongListCellTitleStyleTablet
+import com.espezzialy.simpleplayer.presentation.common.components.TabletBackIconButton
+import com.espezzialy.simpleplayer.presentation.common.components.TabletNavBarPaddingTop
 import com.espezzialy.simpleplayer.ui.theme.AlbumPhoneHeroTextStyles
 import com.espezzialy.simpleplayer.ui.theme.AlbumTabletHeroTextStyles
 import com.espezzialy.simpleplayer.ui.theme.AlbumTabletNavTitleTextStyle
@@ -85,7 +85,7 @@ fun AlbumDetailRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AlbumDetailScreen(
-    state: AlbumDetailState,
+    state: AlbumDetailUiState,
     onIntent: (AlbumDetailIntent) -> Unit,
     onBack: () -> Unit,
     onNavigateToPlayer: (Song) -> Unit,
@@ -442,7 +442,7 @@ private fun AlbumTrack.toSong(album: AlbumDetail): Song =
 private fun AlbumDetailScreenTabletPreview() {
     SimplePlayerTheme {
         AlbumDetailScreen(
-            state = AlbumDetailState(
+            state = AlbumDetailUiState(
                 isLoading = false,
                 album = AlbumDetail(
                     collectionId = 1L,
@@ -467,7 +467,7 @@ private fun AlbumDetailScreenTabletPreview() {
 private fun AlbumDetailScreenPreview() {
     SimplePlayerTheme {
         AlbumDetailScreen(
-            state = AlbumDetailState(
+            state = AlbumDetailUiState(
                 isLoading = false,
                 album = AlbumDetail(
                     collectionId = 1L,

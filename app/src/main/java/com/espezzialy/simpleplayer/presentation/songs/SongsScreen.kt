@@ -39,9 +39,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.espezzialy.simpleplayer.R
 import com.espezzialy.simpleplayer.domain.model.Song
-import com.espezzialy.simpleplayer.presentation.common.CenteredLoading
-import com.espezzialy.simpleplayer.presentation.common.ErrorWithRetry
-import com.espezzialy.simpleplayer.presentation.common.SongsSearchField
+import com.espezzialy.simpleplayer.domain.model.SongsEffect
+import com.espezzialy.simpleplayer.domain.model.SongsIntent
+import com.espezzialy.simpleplayer.domain.model.SongsUiState
+import com.espezzialy.simpleplayer.presentation.common.components.CenteredLoading
+import com.espezzialy.simpleplayer.presentation.common.components.ErrorWithRetry
+import com.espezzialy.simpleplayer.presentation.common.components.SongsSearchField
+import com.espezzialy.simpleplayer.presentation.songs.components.SongRow
+import com.espezzialy.simpleplayer.presentation.songs.components.SongsPullRefreshIndicator
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerBreakpoints
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerDimens
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerTheme
@@ -82,7 +87,7 @@ fun SongsRoute(
 
 @Composable
 fun SongsScreen(
-    state: SongsState,
+    state: SongsUiState,
     onIntent: (SongsIntent) -> Unit,
     onNavigateToAlbum: (Long) -> Unit,
     onNavigateToPlayer: (Song, fromRecentSection: Boolean) -> Unit,
@@ -309,7 +314,7 @@ fun SongsScreen(
 private fun SongsScreenPhonePreview() {
     SimplePlayerTheme {
         SongsScreen(
-            state = SongsState(
+            state = SongsUiState(
                 query = "wall",
                 songs = listOf(
                     Song(
@@ -342,7 +347,7 @@ private fun SongsScreenPhonePreview() {
 private fun SongsScreenTabletPreview() {
     SimplePlayerTheme {
         SongsScreen(
-            state = SongsState(
+            state = SongsUiState(
                 query = "wall",
                 songs = listOf(
                     Song(
