@@ -457,17 +457,26 @@ private fun PlayerMainColumn(
             .padding(top = contentPaddingTop),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth(),
-            contentAlignment = Alignment.Center
-        ) {
+        if (isTabletLayout) {
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                PlayerArtwork(
+                    artworkUrl = state.artworkUrl,
+                    trackName = state.trackName,
+                    size = artworkSize
+                )
+            }
+        } else {
             PlayerArtwork(
                 artworkUrl = state.artworkUrl,
                 trackName = state.trackName,
                 size = artworkSize
             )
+            Spacer(modifier = Modifier.weight(1f))
         }
         Column(modifier = Modifier.fillMaxWidth()) {
             Text(
@@ -499,7 +508,7 @@ private fun PlayerMainColumn(
                 thumbDiameter = seekThumbDiameter
             )
         }
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(if (isTabletLayout) 24.dp else 20.dp))
         PlayerTransportControls(
             isPlaying = state.isPlaying,
             repeatEnabled = state.repeatEnabled,
