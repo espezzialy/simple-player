@@ -16,10 +16,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import com.espezzialy.simpleplayer.core.orientation.applyHandheldOrientationPolicy
+import com.espezzialy.simpleplayer.ui.theme.SimplePlayerColors
+import com.espezzialy.simpleplayer.ui.theme.SimplePlayerDimens
 import kotlinx.coroutines.delay
 
 class SplashActivity : ComponentActivity() {
@@ -41,7 +41,7 @@ class SplashActivity : ComponentActivity() {
     @androidx.compose.runtime.Composable
     private fun SplashContent() {
         val gradient = Brush.linearGradient(
-            colors = listOf(Color(0xFF000000), Color(0xFF0086A0)),
+            colors = listOf(SimplePlayerColors.Background, SimplePlayerColors.SplashGradientEnd),
             start = Offset(0f, 1000f),
             end = Offset(1000f, 0f)
         )
@@ -55,7 +55,7 @@ class SplashActivity : ComponentActivity() {
             Image(
                 painter = painterResource(id = R.drawable.music_note_image),
                 contentDescription = null,
-                modifier = Modifier.size(172.dp)
+                modifier = Modifier.size(SimplePlayerDimens.Splash.logoSize)
             )
         }
 

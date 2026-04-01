@@ -40,13 +40,7 @@ import com.espezzialy.simpleplayer.domain.model.Song
 import com.espezzialy.simpleplayer.presentation.common.ArtworkThumbnail
 import com.espezzialy.simpleplayer.presentation.common.CenteredLoading
 import com.espezzialy.simpleplayer.presentation.common.ErrorWithRetry
-
-private val SideRowThumbSize = 52.dp
-private val SidePanelListPaddingTop = 20.dp
-private val SideRowVerticalPadding = 8.dp
-private val SideRowTextStartSpacing = 16.dp
-private val SideRowTextSpacing = 4.dp
-private val SidePanelPlayingIndicatorSize = 36.dp
+import com.espezzialy.simpleplayer.ui.theme.SimplePlayerDimens
 
 @Composable
 fun PlayerSidePlaylistPanel(
@@ -62,7 +56,7 @@ fun PlayerSidePlaylistPanel(
 
     Surface(
         modifier = modifier.fillMaxHeight(),
-        shape = RoundedCornerShape(28.dp),
+        shape = RoundedCornerShape(SimplePlayerDimens.SidePanel.cornerRadius),
         color = colorScheme.surface,
         tonalElevation = 2.dp,
         shadowElevation = 6.dp
@@ -70,17 +64,28 @@ fun PlayerSidePlaylistPanel(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 20.dp, start = 16.dp, end = 16.dp, bottom = 16.dp)
+                .padding(
+                    top = SimplePlayerDimens.SidePanel.paddingTop,
+                    start = SimplePlayerDimens.SidePanel.paddingHorizontal,
+                    end = SimplePlayerDimens.SidePanel.paddingHorizontal,
+                    bottom = SimplePlayerDimens.SidePanel.paddingBottom
+                )
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(bottom = if (sidePanel.panelTitle != null) 8.dp else 0.dp)
+                modifier = Modifier.padding(
+                    bottom = if (sidePanel.panelTitle != null) {
+                        SimplePlayerDimens.SidePanel.titleBottomWhenPresent
+                    } else {
+                        0.dp
+                    }
+                )
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_music_list),
                     contentDescription = null,
                     tint = colorScheme.onBackground,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(SimplePlayerDimens.SidePanel.headerIconSize)
                 )
             }
             sidePanel.panelTitle?.let { title ->
@@ -148,7 +153,7 @@ fun PlayerSidePlaylistPanel(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxWidth()
-                            .padding(top = SidePanelListPaddingTop)
+                            .padding(top = SimplePlayerDimens.SidePanel.listBelowHeaderPadding)
                     ) {
                         items(sidePanel.songs, key = { it.trackId }) { song ->
                             PlayerSidePlaylistRow(
@@ -178,17 +183,17 @@ private fun PlayerSidePlaylistRow(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(vertical = SideRowVerticalPadding),
+            .padding(vertical = SimplePlayerDimens.SidePanel.playlistRowVerticalPadding),
         verticalAlignment = Alignment.CenterVertically
     ) {
         ArtworkThumbnail(
             imageUrl = song.artworkUrl100,
             contentDescription = song.trackName,
-            size = SideRowThumbSize,
-            cornerRadius = 8.dp,
+            size = SimplePlayerDimens.SidePanel.playlistRowThumb,
+            cornerRadius = SimplePlayerDimens.SidePanel.playlistThumbCornerRadius,
             placeholderColor = colorScheme.surfaceContainerLowest
         )
-        Spacer(modifier = Modifier.width(SideRowTextStartSpacing))
+        Spacer(modifier = Modifier.width(SimplePlayerDimens.SidePanel.playlistRowTextStart))
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = song.trackName,
@@ -201,7 +206,7 @@ private fun PlayerSidePlaylistRow(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-            Spacer(modifier = Modifier.height(SideRowTextSpacing))
+            Spacer(modifier = Modifier.height(SimplePlayerDimens.SidePanel.playlistRowTitleToSubtitle))
             Text(
                 text = song.artistName,
                 style = typography.bodySmall.copy(
@@ -236,7 +241,7 @@ private fun SidePanelPlayingIndicator(modifier: Modifier = Modifier) {
     LottieAnimation(
         composition = composition,
         progress = { animationState.progress },
-        modifier = modifier.size(SidePanelPlayingIndicatorSize),
+        modifier = modifier.size(SimplePlayerDimens.SidePanel.playlistPlayingIndicator),
         contentScale = ContentScale.Fit
     )
 }

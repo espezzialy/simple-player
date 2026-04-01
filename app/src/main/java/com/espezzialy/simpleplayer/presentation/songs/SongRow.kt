@@ -27,13 +27,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.espezzialy.simpleplayer.R
+import com.espezzialy.simpleplayer.ui.theme.SimplePlayerColors
 import com.espezzialy.simpleplayer.core.media.toItunesArtwork200
 import com.espezzialy.simpleplayer.domain.model.Song
 import com.espezzialy.simpleplayer.presentation.common.ArtworkThumbnail
@@ -41,10 +41,10 @@ import com.espezzialy.simpleplayer.presentation.common.SongListCellArtistColorTa
 import com.espezzialy.simpleplayer.presentation.common.SongListCellArtistStyleTablet
 import com.espezzialy.simpleplayer.presentation.common.SongListCellArtworkSizePhone
 import com.espezzialy.simpleplayer.presentation.common.SongListCellArtworkSizeTablet
-import com.espezzialy.simpleplayer.presentation.common.SongListCellTabletMinWidthDp
+import com.espezzialy.simpleplayer.ui.theme.SimplePlayerBreakpoints
 import com.espezzialy.simpleplayer.presentation.common.SongListCellTitleStyleTablet
 
-private val SongRowMenuOpenCellBackground = Color(0x14FFFFFF)
+private val SongRowMenuOpenCellBackground = SimplePlayerColors.MenuOpenRowOverlay
 private val SongRowMenuOpenCellShape = RoundedCornerShape(8.dp)
 
 @Composable
@@ -57,7 +57,7 @@ fun SongRow(
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
     val isTabletLayout =
-        LocalConfiguration.current.screenWidthDp >= SongListCellTabletMinWidthDp
+        LocalConfiguration.current.screenWidthDp >= SimplePlayerBreakpoints.tabletMinWidthDp
     val artworkSize =
         if (isTabletLayout) SongListCellArtworkSizeTablet else SongListCellArtworkSizePhone
     val artworkUrl = if (isTabletLayout) {

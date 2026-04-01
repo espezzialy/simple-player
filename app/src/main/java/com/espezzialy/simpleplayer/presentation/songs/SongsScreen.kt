@@ -35,25 +35,19 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.espezzialy.simpleplayer.R
 import com.espezzialy.simpleplayer.domain.model.Song
 import com.espezzialy.simpleplayer.presentation.common.CenteredLoading
 import com.espezzialy.simpleplayer.presentation.common.ErrorWithRetry
-import com.espezzialy.simpleplayer.presentation.common.SongListCellTabletMinWidthDp
 import com.espezzialy.simpleplayer.presentation.common.SongsSearchField
+import com.espezzialy.simpleplayer.ui.theme.SimplePlayerBreakpoints
+import com.espezzialy.simpleplayer.ui.theme.SimplePlayerDimens
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerTheme
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 
-/** Matches the dark Figma layout (Songs / search). */
-private val SongsRowSpacing = 16.dp
-
-private val SongsScreenTitlePaddingTopTablet = 32.dp
-
-/** Dispara [SongsIntent.LoadMore] quando o último item visível está a N linhas do fim. */
 private const val LOAD_MORE_FROM_END_ITEM_COUNT = 4
 
 @Composable
@@ -91,14 +85,13 @@ fun SongsScreen(
     state: SongsState,
     onIntent: (SongsIntent) -> Unit,
     onNavigateToAlbum: (Long) -> Unit,
-    /** `fromRecentSection` define a fila do painel do player (tablet) e a persistência de recentes. */
     onNavigateToPlayer: (Song, fromRecentSection: Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
     val isTabletLayout =
-        LocalConfiguration.current.screenWidthDp >= SongListCellTabletMinWidthDp
+        LocalConfiguration.current.screenWidthDp >= SimplePlayerBreakpoints.tabletMinWidthDp
 
     Column(
         modifier = modifier
@@ -106,10 +99,14 @@ fun SongsScreen(
             .background(colorScheme.background)
             .statusBarsPadding()
             .navigationBarsPadding()
-            .padding(horizontal = 20.dp)
+            .padding(horizontal = SimplePlayerDimens.screenHorizontalPadding)
             .padding(
-                top = if (isTabletLayout) SongsScreenTitlePaddingTopTablet else 8.dp,
-                bottom = 16.dp
+                top = if (isTabletLayout) {
+                    SimplePlayerDimens.Songs.screenTitlePaddingTopTablet
+                } else {
+                    SimplePlayerDimens.Songs.screenTitlePaddingTopPhone
+                },
+                bottom = SimplePlayerDimens.Songs.screenBottomPadding
             )
     ) {
         Text(
@@ -117,12 +114,12 @@ fun SongsScreen(
             style = typography.displaySmall,
             color = colorScheme.onBackground
         )
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(SimplePlayerDimens.Songs.afterTitleSpacing))
         SongsSearchField(
             query = state.query,
             onQueryChange = { onIntent(SongsIntent.QueryChanged(it)) }
         )
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(SimplePlayerDimens.Songs.afterTitleSpacing))
 
         Box(
             modifier = Modifier
@@ -181,13 +178,13 @@ fun SongsScreen(
                                     color = colorScheme.primary
                                 )
                             }
-                            Spacer(modifier = Modifier.height(12.dp))
+                            Spacer(modifier = Modifier.height(SimplePlayerDimens.Songs.recentHeaderSpacing))
                             LazyColumn(
                                 modifier = Modifier
                                     .weight(1f)
                                     .fillMaxWidth(),
-                                contentPadding = PaddingValues(bottom = 8.dp),
-                                verticalArrangement = Arrangement.spacedBy(SongsRowSpacing)
+                                contentPadding = PaddingValues(bottom = SimplePlayerDimens.Songs.listContentBottom),
+                                verticalArrangement = Arrangement.spacedBy(SimplePlayerDimens.Songs.listVerticalItemSpacing)
                             ) {
                                 items(state.recentSongs, key = { it.trackId }) { song ->
                                     SongRow(
@@ -262,8 +259,8 @@ fun SongsScreen(
                                         Modifier
                                     }
                                 ),
-                            contentPadding = PaddingValues(bottom = 8.dp),
-                            verticalArrangement = Arrangement.spacedBy(SongsRowSpacing)
+                            contentPadding = PaddingValues(bottom = SimplePlayerDimens.Songs.listContentBottom),
+                            verticalArrangement = Arrangement.spacedBy(SimplePlayerDimens.Songs.listVerticalItemSpacing)
                         ) {
                             items(state.songs, key = { it.trackId }) { song ->
                                 SongRow(
@@ -277,13 +274,13 @@ fun SongsScreen(
                                     Box(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(vertical = 16.dp),
+                                            .padding(vertical = SimplePlayerDimens.Songs.loadMoreIndicatorPadding),
                                         contentAlignment = Alignment.Center
                                     ) {
                                         CircularProgressIndicator(
-                                            modifier = Modifier.size(28.dp),
+                                            modifier = Modifier.size(SimplePlayerDimens.Songs.loadMoreProgressSize),
                                             color = colorScheme.primary,
-                                            strokeWidth = 2.dp
+                                            strokeWidth = SimplePlayerDimens.Songs.loadMoreProgressStrokeWidth
                                         )
                                     }
                                 }
@@ -297,7 +294,7 @@ fun SongsScreen(
                                 contentDescription = pullRefreshLabel,
                                 modifier = Modifier
                                     .align(Alignment.TopCenter)
-                                    .padding(top = 4.dp)
+                                    .padding(top = SimplePlayerDimens.Songs.pullRefreshIndicatorTop)
                             )
                         }
                     }

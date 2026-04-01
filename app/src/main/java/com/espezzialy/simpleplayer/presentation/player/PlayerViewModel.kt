@@ -154,7 +154,6 @@ class PlayerViewModel @Inject constructor(
         }
     }
 
-    /** Ao terminar a duração mocada (ou seek ao fim com reprodução ativa), avança como o botão forward. */
     private fun onPlaybackReachedEnd() {
         val beforeId = _state.value.trackId
         skipInQueue(1)
@@ -217,9 +216,7 @@ class PlayerViewModel @Inject constructor(
     }
 
     private companion object {
-        /** Mock total duration (~4:20). */
         const val MOCK_TOTAL_SECONDS = 260
-        /** Atualização do progresso em reprodução (ms). */
         const val MOCK_PROGRESS_TICK_MS = 250L
     }
 }

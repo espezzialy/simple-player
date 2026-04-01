@@ -24,16 +24,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /**
- * Estado de busca compartilhado entre a tela Songs e o painel lateral do player (tablet),
- * para manter a mesma query e lista ao navegar. A paginação por scroll existe só na tela Songs.
- *
- * **Rede:** primeiro pedido só com [SearchSongsUseCase.PAGE_SIZE] (25) para resposta rápida.
- * A API iTunes ignora `offset`, por isso no **primeiro** “carregar mais” pedimos até
- * [SearchSongsUseCase.MAX_ITUNES_TOTAL] (o resultado inclui o mesmo prefixo de 25 + o resto).
- * Depois disso, mais páginas de 25 são só em memória.
- *
- * Efeitos usam [MutableSharedFlow] (e não Channel) para vários coletores (Songs + Player) sem
- * competição por um único consumidor.
+ * iTunes Search ignores `offset`; the first "load more" refetches with a large limit, then paging is in-memory.
+ * [MutableSharedFlow] lets Songs and Player both collect [effect] without a single consumer.
  */
 @Singleton
 class SongsSearchRepository @Inject constructor(
@@ -56,10 +48,7 @@ class SongsSearchRepository @Inject constructor(
     private var searchJob: Job? = null
     private var loadMoreJob: Job? = null
 
-    /** Lista canónica após o último pedido relevante; até 200 quando o catálogo completo foi pedido. */
     private var allSongs: List<Song> = emptyList()
-
-    /** `false` até o primeiro [loadMore] com pedido grande (ou não ser necessário). */
     private var fullCatalogLoaded: Boolean = false
 
     fun onIntent(intent: SongsIntent) {
@@ -68,7 +57,6 @@ class SongsSearchRepository @Inject constructor(
             SongsIntent.RetrySearch -> triggerSearch(debounce = false, reset = true, isPullToRefresh = false)
             SongsIntent.Refresh -> refresh()
             SongsIntent.LoadMore -> loadMore()
-            // Roteado em [SongsViewModel]; mantido para exaustividade de [SongsIntent].
             SongsIntent.ClearRecentSongs -> Unit
         }
     }
@@ -251,7 +239,6 @@ class SongsSearchRepository @Inject constructor(
         publishVisibleWindow(visibleCount = newSize)
     }
 
-    /** Atualiza [SongsState.songs] com os primeiros [visibleCount] itens de [allSongs]. */
     private fun publishVisibleWindow(visibleCount: Int) {
         val n = visibleCount.coerceIn(0, allSongs.size)
         _state.update { current ->

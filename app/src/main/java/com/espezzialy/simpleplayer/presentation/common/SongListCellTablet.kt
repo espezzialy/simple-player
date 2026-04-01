@@ -1,13 +1,11 @@
 package com.espezzialy.simpleplayer.presentation.common
 
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.espezzialy.simpleplayer.ui.theme.ArticulatCfFamily
-
-const val SongListCellTabletMinWidthDp = 600
+import com.espezzialy.simpleplayer.ui.theme.SimplePlayerColors
 
 val SongListCellArtworkSizePhone = 64.dp
 val SongListCellArtworkSizeTablet = 78.dp
@@ -26,4 +24,4 @@ val SongListCellArtistStyleTablet = TextStyle(
     lineHeight = 25.2.sp
 )
 
-val SongListCellArtistColorTablet = Color(0xFF737373)
+val SongListCellArtistColorTablet = SimplePlayerColors.OnSurfaceSecondary

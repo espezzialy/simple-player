@@ -3,10 +3,6 @@ package com.espezzialy.simpleplayer.data.local
 import com.espezzialy.simpleplayer.core.media.toItunesArtwork600
 import com.espezzialy.simpleplayer.domain.model.Song
 
-/**
- * Formato persistido em DataStore (JSON): metadados + URLs de capa
- * (100 e 600 para cache no disco via Coil).
- */
 data class RecentSongSnapshot(
     val trackId: Long,
     val trackName: String,

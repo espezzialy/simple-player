@@ -44,7 +44,6 @@ class AlbumDetailViewModel @Inject constructor(
         }
     }
 
-    /** Ao abrir o player a partir do álbum, o painel (tablet) lista as faixas do álbum. */
     fun preparePlayerFromAlbum(album: AlbumDetail) {
         val songs = album.tracks.map { track ->
             Song(

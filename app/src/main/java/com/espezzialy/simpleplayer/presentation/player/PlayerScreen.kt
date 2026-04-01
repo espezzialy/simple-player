@@ -57,7 +57,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.core.app.MultiWindowModeChangedInfo
 import androidx.core.util.Consumer
@@ -67,37 +66,14 @@ import com.espezzialy.simpleplayer.R
 import com.espezzialy.simpleplayer.core.media.toItunesArtwork600
 import com.espezzialy.simpleplayer.domain.model.Song
 import com.espezzialy.simpleplayer.presentation.songs.SongsEffect
-import com.espezzialy.simpleplayer.presentation.common.PhoneContentPaddingBelowTopBar
 import com.espezzialy.simpleplayer.presentation.common.TabletBackIconButton
 import com.espezzialy.simpleplayer.presentation.common.TabletNavBarPaddingTop
 import com.espezzialy.simpleplayer.presentation.songs.SongsIntent
+import com.espezzialy.simpleplayer.ui.theme.PlayerNowPlayingTextStyles
+import com.espezzialy.simpleplayer.ui.theme.SimplePlayerBreakpoints
+import com.espezzialy.simpleplayer.ui.theme.SimplePlayerColors
+import com.espezzialy.simpleplayer.ui.theme.SimplePlayerDimens
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerTheme
-
-private const val PlayerTabletMinWidthDp = 600
-
-/** Figma tablet (ex.: 834px wide): painel lateral com largura fixa 288px. */
-private val PlayerSidePanelWidth = 288.dp
-
-/** Figma: phone artwork 264×264. */
-private val PlayerArtworkSizePhone = 264.dp
-
-/** Figma: tablet artwork 286×286. */
-private val PlayerArtworkSizeTablet = 286.dp
-
-/** Figma: padding above player content on tablet. */
-private val PlayerContentPaddingTopTablet = 62.dp
-
-/** Espaço entre a barra (voltar + título) e o conteúdo principal no tablet. */
-private val PlayerTabletMainPaddingBelowTopBar = 16.dp
-
-/** Espaço entre o botão voltar e o título "Now playing". */
-private val PlayerTopBarTitleInsetAfterBackTablet = 10.dp
-
-private val PlayerSeekTrackHeightPhone = 4.dp
-private val PlayerSeekTrackHeightTablet = 8.dp
-
-private val PlayerSeekThumbDiameterPhone = 16.dp
-private val PlayerSeekThumbDiameterTablet = 24.dp
 
 @Composable
 fun PlayerRoute(
@@ -149,11 +125,11 @@ fun PlayerScreen(
     val colorScheme = MaterialTheme.colorScheme
     val configuration = LocalConfiguration.current
     val isTabletLayout =
-        configuration.screenWidthDp >= PlayerTabletMinWidthDp
+        configuration.screenWidthDp >= SimplePlayerBreakpoints.tabletMinWidthDp
     val seekTrackHeight =
-        if (isTabletLayout) PlayerSeekTrackHeightTablet else PlayerSeekTrackHeightPhone
+        if (isTabletLayout) SimplePlayerDimens.Player.seekTrackHeightTablet else SimplePlayerDimens.Player.seekTrackHeightPhone
     val seekThumbDiameter =
-        if (isTabletLayout) PlayerSeekThumbDiameterTablet else PlayerSeekThumbDiameterPhone
+        if (isTabletLayout) SimplePlayerDimens.Player.seekThumbTablet else SimplePlayerDimens.Player.seekThumbPhone
     val isInMultiWindowMode = rememberIsInMultiWindowMode()
     val showSidePanel = isTabletLayout && !isInMultiWindowMode
     val isTabletLandscape =
@@ -170,7 +146,7 @@ fun PlayerScreen(
                     .fillMaxSize()
                     .statusBarsPadding()
                     .navigationBarsPadding()
-                    .padding(start = 24.dp),
+                    .padding(start = SimplePlayerDimens.Player.horizontalPadding),
                 verticalAlignment = Alignment.Top
             ) {
                 Column(
@@ -186,8 +162,8 @@ fun PlayerScreen(
                         state = state,
                         onIntent = onIntent,
                         artistNameColor = colorScheme.onBackground,
-                        artworkSize = PlayerArtworkSizeTablet,
-                        contentPaddingTop = PlayerTabletMainPaddingBelowTopBar,
+                        artworkSize = SimplePlayerDimens.Player.artworkTablet,
+                        contentPaddingTop = SimplePlayerDimens.Player.paddingBelowTopBarTablet,
                         seekTrackHeight = seekTrackHeight,
                         seekThumbDiameter = seekThumbDiameter,
                         isTabletLayout = true
@@ -205,7 +181,7 @@ fun PlayerScreen(
                         tint = colorScheme.onSurfaceVariant
                     )
                 }
-                Spacer(modifier = Modifier.width(12.dp))
+                Spacer(modifier = Modifier.width(SimplePlayerDimens.Player.sidePanelMenuGap))
                 PlayerSidePlaylistPanel(
                     sidePanel = sidePanelUiState,
                     currentTrackId = state.trackId,
@@ -219,11 +195,11 @@ fun PlayerScreen(
                             if (isTabletLandscape) {
                                 Modifier.weight(0.38f)
                             } else {
-                                Modifier.width(PlayerSidePanelWidth)
+                                Modifier.width(SimplePlayerDimens.Player.sidePanelWidth)
                             }
                         )
                         .fillMaxHeight()
-                        .padding(end = 24.dp)
+                        .padding(end = SimplePlayerDimens.Player.sidePanelEndPadding)
                 )
             }
         } else if (isTabletLayout) {
@@ -232,7 +208,7 @@ fun PlayerScreen(
                     .fillMaxSize()
                     .statusBarsPadding()
                     .navigationBarsPadding()
-                    .padding(horizontal = 24.dp)
+                    .padding(horizontal = SimplePlayerDimens.Player.horizontalPadding)
             ) {
                 PlayerTabletTopBar(
                     onBack = onBack,
@@ -243,8 +219,8 @@ fun PlayerScreen(
                     state = state,
                     onIntent = onIntent,
                     artistNameColor = colorScheme.onBackground,
-                    artworkSize = PlayerArtworkSizeTablet,
-                    contentPaddingTop = PlayerTabletMainPaddingBelowTopBar,
+                    artworkSize = SimplePlayerDimens.Player.artworkTablet,
+                    contentPaddingTop = SimplePlayerDimens.Player.paddingBelowTopBarTablet,
                     seekTrackHeight = seekTrackHeight,
                     seekThumbDiameter = seekThumbDiameter,
                     isTabletLayout = true
@@ -268,14 +244,14 @@ fun PlayerScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding)
-                        .padding(horizontal = 24.dp)
+                        .padding(horizontal = SimplePlayerDimens.Player.horizontalPadding)
                 ) {
                     PlayerMainColumn(
                         state = state,
                         onIntent = onIntent,
                         artistNameColor = colorScheme.onSurfaceVariant,
-                        artworkSize = PlayerArtworkSizePhone,
-                        contentPaddingTop = PhoneContentPaddingBelowTopBar,
+                        artworkSize = SimplePlayerDimens.Player.artworkPhone,
+                        contentPaddingTop = SimplePlayerDimens.contentBelowTopAppBarPhone,
                         seekTrackHeight = seekTrackHeight,
                         seekThumbDiameter = seekThumbDiameter,
                         isTabletLayout = false
@@ -290,8 +266,11 @@ fun PlayerScreen(
                 sheetState = overflowSheetState,
                 dragHandle = { BottomSheetDefaults.DragHandle() },
                 containerColor = colorScheme.surfaceContainerHigh,
-                shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
-                scrimColor = Color.Black.copy(alpha = 0.45f),
+                shape = RoundedCornerShape(
+                    topStart = SimplePlayerDimens.Player.bottomSheetTopCorner,
+                    topEnd = SimplePlayerDimens.Player.bottomSheetTopCorner
+                ),
+                scrimColor = SimplePlayerColors.ModalSheetScrim,
                 tonalElevation = 0.dp
             ) {
                 PlayerOverflowSheetContent(
@@ -374,7 +353,7 @@ private fun PlayerTabletTopBar(
             painter = painterResource(R.drawable.ic_arrow_left),
             iconSize = 28.dp
         )
-        Spacer(modifier = Modifier.width(PlayerTopBarTitleInsetAfterBackTablet))
+        Spacer(modifier = Modifier.width(SimplePlayerDimens.Player.topBarTitleInsetAfterBackTablet))
         Text(
             text = title,
             style = typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
@@ -393,7 +372,7 @@ private fun PlayerTabletTopBar(
                 )
             }
         } else {
-            Spacer(modifier = Modifier.width(48.dp))
+            Spacer(modifier = Modifier.width(SimplePlayerDimens.Player.tabletOverflowPlaceholderWidth))
         }
     }
 }
@@ -439,16 +418,15 @@ private fun PlayerMainColumn(
     isTabletLayout: Boolean
 ) {
     val colorScheme = MaterialTheme.colorScheme
-    val typography = MaterialTheme.typography
     val trackNameStyle = if (isTabletLayout) {
-        typography.headlineSmall.copy(fontSize = 40.sp, lineHeight = 48.sp)
+        PlayerNowPlayingTextStyles.trackTablet
     } else {
-        typography.headlineSmall.copy(fontSize = 32.sp, lineHeight = 38.4.sp)
+        PlayerNowPlayingTextStyles.trackPhone
     }
     val artistNameStyle = if (isTabletLayout) {
-        typography.bodyLarge.copy(fontSize = 20.sp, lineHeight = 24.sp)
+        PlayerNowPlayingTextStyles.artistTablet
     } else {
-        typography.bodyLarge.copy(fontSize = 16.sp, lineHeight = 19.2.sp)
+        PlayerNowPlayingTextStyles.artistPhone
     }
 
     Column(
@@ -488,7 +466,7 @@ private fun PlayerMainColumn(
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Start
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(SimplePlayerDimens.Player.spacerTitleToArtist))
             Text(
                 text = state.artistName,
                 style = artistNameStyle,
@@ -498,7 +476,7 @@ private fun PlayerMainColumn(
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Start
             )
-            Spacer(modifier = Modifier.height(28.dp))
+            Spacer(modifier = Modifier.height(SimplePlayerDimens.Player.spacerArtistToSeek))
             PlayerSeekSection(
                 progress = state.progress,
                 currentLabel = state.currentTimeLabel,
@@ -508,7 +486,15 @@ private fun PlayerMainColumn(
                 thumbDiameter = seekThumbDiameter
             )
         }
-        Spacer(modifier = Modifier.height(if (isTabletLayout) 24.dp else 20.dp))
+        Spacer(
+            modifier = Modifier.height(
+                if (isTabletLayout) {
+                    SimplePlayerDimens.Player.spacerSeekToTransportTablet
+                } else {
+                    SimplePlayerDimens.Player.spacerSeekToTransportPhone
+                }
+            )
+        )
         PlayerTransportControls(
             isPlaying = state.isPlaying,
             repeatEnabled = state.repeatEnabled,
@@ -517,14 +503,14 @@ private fun PlayerMainColumn(
             onNext = { onIntent(PlayerIntent.SkipNextClicked) },
             onRepeat = { onIntent(PlayerIntent.RepeatClicked) }
         )
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(SimplePlayerDimens.Player.spacerAfterTransport))
     }
 }
 
 @Composable
 private fun PlayerArtwork(artworkUrl: String?, trackName: String, size: Dp) {
     val colorScheme = MaterialTheme.colorScheme
-    val shape = RoundedCornerShape(16.dp)
+    val shape = RoundedCornerShape(SimplePlayerDimens.Player.artworkCornerRadius)
     Box(
         modifier = Modifier
             .size(size)
@@ -563,7 +549,7 @@ private fun PlayerSeekSection(
             trackHeight = trackHeight,
             thumbDiameter = thumbDiameter
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(SimplePlayerDimens.Player.seekTimeRowSpacing))
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
@@ -597,17 +583,17 @@ private fun PlayerTransportControls(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .padding(vertical = SimplePlayerDimens.Player.transportBarVerticalPadding),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(SimplePlayerDimens.Player.transportMainClusterSpacing),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Surface(
                 onClick = onPlayPause,
-                modifier = Modifier.size(72.dp),
+                modifier = Modifier.size(SimplePlayerDimens.Player.playSurfaceSize),
                 shape = CircleShape,
                 color = colorScheme.surfaceContainerHigh
             ) {
@@ -619,7 +605,7 @@ private fun PlayerTransportControls(
                         imageVector = if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
                         contentDescription = if (isPlaying) pauseDesc else playDesc,
                         tint = colorScheme.onSurface,
-                        modifier = Modifier.size(36.dp)
+                        modifier = Modifier.size(SimplePlayerDimens.Player.playIconSize)
                     )
                 }
             }
@@ -628,7 +614,7 @@ private fun PlayerTransportControls(
                     painter = painterResource(R.drawable.ic_backward_bar_fill),
                     contentDescription = stringResource(R.string.content_desc_previous_track),
                     tint = colorScheme.onSurface,
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier.size(SimplePlayerDimens.Player.skipIconSize)
                 )
             }
             IconButton(onClick = onNext) {
@@ -636,7 +622,7 @@ private fun PlayerTransportControls(
                     painter = painterResource(R.drawable.ic_forward_bar_fill),
                     contentDescription = stringResource(R.string.content_desc_next_track),
                     tint = colorScheme.onSurface,
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier.size(SimplePlayerDimens.Player.skipIconSize)
                 )
             }
         }
@@ -649,7 +635,7 @@ private fun PlayerTransportControls(
                 } else {
                     colorScheme.onSurface
                 },
-                modifier = Modifier.size(28.dp)
+                modifier = Modifier.size(SimplePlayerDimens.Player.repeatIconSize)
             )
         }
     }

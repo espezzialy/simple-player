@@ -6,10 +6,8 @@ data class PlayerState(
     val trackId: Long,
     val trackName: String,
     val artistName: String,
-    /** `null` when there is no associated album (lookup). */
     val collectionId: Long?,
     val artworkUrl: String?,
-    /** 0f..1f — mock until real playback exists. */
     val progress: Float,
     val isPlaying: Boolean,
     val currentTimeLabel: String,

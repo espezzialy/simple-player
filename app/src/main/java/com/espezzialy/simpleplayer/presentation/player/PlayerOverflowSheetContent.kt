@@ -19,10 +19,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import com.espezzialy.simpleplayer.R
+import com.espezzialy.simpleplayer.ui.theme.SimplePlayerDimens
 
-/** Action sheet content (Figma: track/artist header + “View album” row). */
 @Composable
 internal fun PlayerOverflowSheetContent(
     trackName: String,
@@ -38,8 +37,8 @@ internal fun PlayerOverflowSheetContent(
         modifier = modifier
             .fillMaxWidth()
             .navigationBarsPadding()
-            .padding(horizontal = 24.dp)
-            .padding(bottom = 20.dp)
+            .padding(horizontal = SimplePlayerDimens.OverflowSheet.horizontalPadding)
+            .padding(bottom = SimplePlayerDimens.OverflowSheet.bottomPadding)
     ) {
         Text(
             text = trackName,
@@ -48,7 +47,7 @@ internal fun PlayerOverflowSheetContent(
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
-        Spacer(modifier = Modifier.height(6.dp))
+        Spacer(modifier = Modifier.height(SimplePlayerDimens.OverflowSheet.headerSubtitleSpacing))
         Text(
             text = artistName,
             style = typography.bodyMedium,
@@ -57,7 +56,7 @@ internal fun PlayerOverflowSheetContent(
             modifier = Modifier.fillMaxWidth()
         )
         if (showViewAlbum) {
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(SimplePlayerDimens.OverflowSheet.beforeActionsSpacing))
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -68,9 +67,9 @@ internal fun PlayerOverflowSheetContent(
                     painter = painterResource(R.drawable.ic_setlist),
                     contentDescription = null,
                     tint = colorScheme.onSurface,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(SimplePlayerDimens.OverflowSheet.rowIconSize)
                 )
-                Spacer(modifier = Modifier.width(16.dp))
+                Spacer(modifier = Modifier.width(SimplePlayerDimens.OverflowSheet.rowIconTextGap))
                 Text(
                     text = stringResource(R.string.view_album),
                     style = typography.bodyLarge,

@@ -4,7 +4,6 @@ import com.espezzialy.simpleplayer.data.remote.model.ItunesSongDto
 
 data class RemoteSearchSongsPage(
     val dtos: List<ItunesSongDto>,
-    /** Tamanho de `results` na resposta da API antes do filtro local. */
     val apiConsumedCount: Int
 )
 

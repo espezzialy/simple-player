@@ -53,10 +53,6 @@ class RecentSongsRepository @Inject constructor(
         }
         .stateIn(scope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
-    /**
-     * Persiste a faixa no topo da lista (MRU) e devolve a lista resultante
-     * para o painel do player — não depender do [StateFlow] (emit assíncrono).
-     */
     suspend fun add(song: Song): List<Song> {
         val snap = RecentSongSnapshot.fromSong(song)
         val newSnapshots = writeMutex.withLock {

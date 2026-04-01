@@ -6,9 +6,8 @@ import retrofit2.http.Query
 
 interface ItunesApiService {
     /**
-     * Sem valores default em parâmetros @Query: o Retrofit/Kotlin pode omitir o query na URL,
-     * o que altera o comportamento da API (ex.: `media` ausente => resultados mistos e filtro
-     * por `kind` pode esvaziar a lista).
+     * No default @Query values: Retrofit/Kotlin may omit the parameter from the URL, which
+     * changes API behavior (e.g. missing `media` => mixed results and `kind` filtering can empty the list).
      */
     @GET("search")
     suspend fun searchSongs(
@@ -19,7 +18,6 @@ interface ItunesApiService {
         @Query("offset") offset: Int
     ): ItunesSearchResponseDto
 
-    /** [Lookup API](https://developer.apple.com/library/archive/documentation/AudioVideo/Conceptual/iTuneSearchAPI/Searching.html#//apple_ref/doc/uid/TP40017632-CH100-SW5) */
     @GET("lookup")
     suspend fun lookupAlbum(
         @Query("id") collectionId: Long,

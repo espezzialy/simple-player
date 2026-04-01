@@ -9,7 +9,6 @@ fun String?.toItunesArtwork600(): String? {
     return trim().replace(Regex("(\\d+)x(\\d+)bb\\.jpg$"), "600x600bb.jpg")
 }
 
-/** Same pattern as [toItunesArtwork600], for list thumbnails on tablet (e.g. Songs row). */
 fun String?.toItunesArtwork200(): String? {
     if (this.isNullOrBlank()) return null
     return trim().replace(Regex("(\\d+)x(\\d+)bb\\.jpg$"), "200x200bb.jpg")

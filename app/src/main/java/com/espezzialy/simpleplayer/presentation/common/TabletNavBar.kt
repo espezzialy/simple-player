@@ -1,6 +1,5 @@
 package com.espezzialy.simpleplayer.presentation.common
 
-import androidx.compose.ui.unit.dp
+import com.espezzialy.simpleplayer.ui.theme.SimplePlayerDimens
 
-/** Padding superior da barra (voltar + título) em tablet — alinhado entre Player e Album. */
-val TabletNavBarPaddingTop = 34.dp
+val TabletNavBarPaddingTop = SimplePlayerDimens.TabletNav.paddingTop

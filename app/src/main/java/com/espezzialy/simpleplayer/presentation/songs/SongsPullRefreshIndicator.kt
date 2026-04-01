@@ -28,10 +28,6 @@ private val IndicatorSize = 48.dp
 private val IconSize = 26.dp
 private val ProgressSize = 28.dp
 
-/**
- * Indicador de pull-to-refresh alinhado ao Material 3 (superfície circular + ícone / progresso),
- * com [pullRefreshIndicatorTransform] para seguir o gesto.
- */
 @Composable
 fun SongsPullRefreshIndicator(
     pullRefreshState: PullRefreshState,

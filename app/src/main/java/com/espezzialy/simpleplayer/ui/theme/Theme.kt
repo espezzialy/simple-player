@@ -4,11 +4,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 
-/**
- * Dark palette used across the app (search, player, album). The UI is dark-first; tokens live in
- * [SimplePlayerColors] and map into Material [androidx.compose.material3.ColorScheme] so screens use
- * [MaterialTheme.colorScheme] instead of ad-hoc color objects.
- */
 private val SimplePlayerDarkColorScheme = darkColorScheme(
     primary = SimplePlayerColors.SeekTrackActive,
     onPrimary = SimplePlayerColors.Background,

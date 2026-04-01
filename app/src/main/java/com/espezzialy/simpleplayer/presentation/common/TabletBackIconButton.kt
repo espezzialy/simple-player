@@ -18,9 +18,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.painter.Painter
 
-/**
- * Área de toque 40×40 dp (Figma), ícone centrado — para tablet em Player e Album.
- */
 private val TabletBackIconContainerSize = 40.dp
 
 @OptIn(ExperimentalMaterial3Api::class)

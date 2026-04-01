@@ -18,7 +18,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-/** Track + circular thumb (Library – Player / Figma). [trackHeight] 4dp phone, 8dp tablet. [thumbDiameter] 16dp phone, 24dp tablet. */
 @Composable
 fun PlayerSeekBar(
     progress: Float,

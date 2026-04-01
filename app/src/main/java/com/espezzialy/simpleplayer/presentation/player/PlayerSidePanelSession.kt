@@ -7,18 +7,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-/** Painel do player (tablet): lista da pesquisa em Songs, recentes ou faixas de um álbum. */
 sealed interface PlayerSidePanelSource {
     data object SearchResults : PlayerSidePanelSource
     data class AlbumTracks(val albumTitle: String, val songs: List<Song>) : PlayerSidePanelSource
-    /** Lista de recentes (Songs) ao abrir o player a partir dessa secção. */
     data class RecentSongs(val songs: List<Song>) : PlayerSidePanelSource
 }
 
-/**
- * Define a origem da lista do painel lateral do player.
- * [PlayerSidePanelSource.SearchResults] usa [com.espezzialy.simpleplayer.presentation.songs.SongsSearchRepository].
- */
 @Singleton
 class PlayerSidePanelSession @Inject constructor() {
 

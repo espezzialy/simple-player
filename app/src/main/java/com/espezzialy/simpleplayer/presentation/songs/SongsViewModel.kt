@@ -43,10 +43,6 @@ class SongsViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Ao abrir o player a partir da pesquisa, o painel usa a lista da pesquisa;
-     * a partir de recentes, usa a lista persistente.
-     */
     fun onSongSelectedForPlayer(song: Song, fromRecentSection: Boolean, onReady: () -> Unit) {
         viewModelScope.launch {
             val queueAfterAdd = recentSongsRepository.add(song)

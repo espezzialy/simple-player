@@ -3,10 +3,6 @@ package com.espezzialy.simpleplayer.data.remote.model
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
-/**
- * Mapping for the track object returned by the [iTunes Search API](https://developer.apple.com/library/archive/documentation/AudioVideo/Conceptual/iTuneSearchAPI/Searching.html).
- * Optional API fields are nullable; Gson ignores missing keys.
- */
 data class ItunesSongDto(
     @SerializedName("wrapperType")
     val wrapperType: String? = null,

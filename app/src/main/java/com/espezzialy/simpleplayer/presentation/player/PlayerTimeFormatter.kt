@@ -2,9 +2,6 @@ package com.espezzialy.simpleplayer.presentation.player
 
 import kotlin.math.roundToInt
 
-/**
- * Time formatting for the mock slider (no [android.text.format.DateUtils] for easier JVM tests).
- */
 object PlayerTimeFormatter {
 
     fun labelsForProgress(progress: Float, totalSeconds: Int): Pair<String, String> {

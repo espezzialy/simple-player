@@ -36,14 +36,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
@@ -59,75 +56,15 @@ import com.espezzialy.simpleplayer.presentation.common.ErrorWithRetry
 import com.espezzialy.simpleplayer.presentation.common.SongListCellArtistColorTablet
 import com.espezzialy.simpleplayer.presentation.common.SongListCellArtistStyleTablet
 import com.espezzialy.simpleplayer.presentation.common.SongListCellArtworkSizeTablet
-import com.espezzialy.simpleplayer.presentation.common.SongListCellTabletMinWidthDp
 import com.espezzialy.simpleplayer.presentation.common.SongListCellTitleStyleTablet
 import com.espezzialy.simpleplayer.presentation.common.TabletBackIconButton
 import com.espezzialy.simpleplayer.presentation.common.TabletNavBarPaddingTop
-import com.espezzialy.simpleplayer.ui.theme.ArticulatCfFamily
+import com.espezzialy.simpleplayer.ui.theme.AlbumPhoneHeroTextStyles
+import com.espezzialy.simpleplayer.ui.theme.AlbumTabletHeroTextStyles
+import com.espezzialy.simpleplayer.ui.theme.AlbumTabletNavTitleTextStyle
+import com.espezzialy.simpleplayer.ui.theme.SimplePlayerBreakpoints
+import com.espezzialy.simpleplayer.ui.theme.SimplePlayerDimens
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerTheme
-
-private val HeroArtworkSize = 240.dp
-private val RowThumbSize = 56.dp
-
-/** Telefone — hero abaixo do título da app bar (Figma). */
-private val AlbumPhoneHeroPaddingTop = 24.dp
-private val AlbumPhoneHeroArtworkSize = 120.dp
-private val AlbumPhoneHeroArtworkCornerRadius = 16.dp
-private val AlbumPhoneTitlePaddingTopAfterImage = 16.dp
-private val AlbumPhoneArtistPaddingTopAfterTitle = 8.dp
-/** Espaço entre o nome do artista e a primeira faixa. */
-private val AlbumPhoneTracksPaddingTopAfterArtist = 60.dp
-
-private val AlbumPhoneHeroTitleStyle = TextStyle(
-    fontFamily = ArticulatCfFamily,
-    fontWeight = FontWeight.SemiBold,
-    fontSize = 20.sp,
-    lineHeight = 24.sp,
-    textAlign = TextAlign.Center
-)
-
-private val AlbumPhoneHeroArtistStyle = TextStyle(
-    fontFamily = ArticulatCfFamily,
-    fontWeight = FontWeight.Medium,
-    fontSize = 14.sp,
-    lineHeight = 16.8.sp,
-    textAlign = TextAlign.Center
-)
-
-/** Material width breakpoint: at 600dp and above, album hero uses tablet (side-by-side) layout. */
-private const val TabletMinWidthDp = 600
-
-private val AlbumTabletNavPaddingStart = 25.dp
-private val AlbumTabletNavIconToTitle = 10.dp
-
-private val AlbumTabletNavTitleStyle = TextStyle(
-    fontFamily = ArticulatCfFamily,
-    fontWeight = FontWeight.SemiBold,
-    fontSize = 18.sp,
-    lineHeight = 19.44.sp
-)
-
-private val AlbumTabletHeroArtworkSize = 120.dp
-private val AlbumTabletHeroArtworkCornerRadius = 16.dp
-private val AlbumTabletContentPaddingStart = 40.dp
-private val AlbumTabletHeroPaddingTop = 48.dp
-private val AlbumTabletHeroImageToText = 34.dp
-private val AlbumTabletTracksTopSpacer = 56.dp
-private val AlbumTabletTrackSpacing = 24.dp
-
-private val AlbumTabletHeroTitleStyle = TextStyle(
-    fontFamily = ArticulatCfFamily,
-    fontWeight = FontWeight.SemiBold,
-    fontSize = 56.sp,
-    lineHeight = 67.2.sp
-)
-
-private val AlbumTabletHeroArtistStyle = TextStyle(
-    fontFamily = ArticulatCfFamily,
-    fontWeight = FontWeight.Medium,
-    fontSize = 28.sp,
-    lineHeight = 33.6.sp
-)
 
 @Composable
 fun AlbumDetailRoute(
@@ -160,7 +97,7 @@ fun AlbumDetailScreen(
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
     val isTabletLayout =
-        LocalConfiguration.current.screenWidthDp >= TabletMinWidthDp
+        LocalConfiguration.current.screenWidthDp >= SimplePlayerBreakpoints.tabletMinWidthDp
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -213,7 +150,7 @@ fun AlbumDetailScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding)
-                        .padding(horizontal = 20.dp)
+                        .padding(horizontal = SimplePlayerDimens.screenHorizontalPadding)
                 )
             }
 
@@ -242,7 +179,7 @@ private fun AlbumTabletTopBar(onBack: () -> Unit) {
             .fillMaxWidth()
             .statusBarsPadding()
             .padding(
-                start = AlbumTabletNavPaddingStart,
+                start = SimplePlayerDimens.Album.tabletNavPaddingStart,
                 top = TabletNavBarPaddingTop
             ),
         verticalAlignment = Alignment.CenterVertically
@@ -254,10 +191,10 @@ private fun AlbumTabletTopBar(onBack: () -> Unit) {
             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
             iconSize = 28.dp
         )
-        Spacer(modifier = Modifier.width(AlbumTabletNavIconToTitle))
+        Spacer(modifier = Modifier.width(SimplePlayerDimens.Album.tabletNavIconToTitle))
         Text(
             text = stringResource(R.string.album_fallback_title),
-            style = AlbumTabletNavTitleStyle,
+            style = AlbumTabletNavTitleTextStyle,
             color = colorScheme.onBackground
         )
     }
@@ -272,20 +209,20 @@ private fun AlbumContent(
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
     val isTabletLayout =
-        LocalConfiguration.current.screenWidthDp >= TabletMinWidthDp
+        LocalConfiguration.current.screenWidthDp >= SimplePlayerBreakpoints.tabletMinWidthDp
 
     if (isTabletLayout) {
         LazyColumn(
             modifier = modifier,
             contentPadding = PaddingValues(
-                start = AlbumTabletContentPaddingStart,
-                end = 20.dp,
-                bottom = 24.dp
+                start = SimplePlayerDimens.Album.tabletContentPaddingStart,
+                end = SimplePlayerDimens.Album.listHorizontalEnd,
+                bottom = SimplePlayerDimens.Album.listBottomPadding
             )
         ) {
             item {
                 AlbumTabletHeroSection(album = album)
-                Spacer(modifier = Modifier.height(AlbumTabletTracksTopSpacer))
+                Spacer(modifier = Modifier.height(SimplePlayerDimens.Album.tabletTracksTopSpacer))
             }
             itemsIndexed(
                 items = album.tracks,
@@ -297,7 +234,7 @@ private fun AlbumContent(
                         onClick = { onSongClick(track) }
                     )
                     if (index < album.tracks.lastIndex) {
-                        Spacer(modifier = Modifier.height(AlbumTabletTrackSpacing))
+                        Spacer(modifier = Modifier.height(SimplePlayerDimens.Album.tabletTrackSpacing))
                     }
                 }
             }
@@ -306,10 +243,10 @@ private fun AlbumContent(
         LazyColumn(
             modifier = modifier,
             contentPadding = PaddingValues(
-                start = 20.dp,
-                end = 20.dp,
-                top = AlbumPhoneHeroPaddingTop,
-                bottom = 24.dp
+                start = SimplePlayerDimens.screenHorizontalPadding,
+                end = SimplePlayerDimens.screenHorizontalPadding,
+                top = SimplePlayerDimens.Album.phoneHeroPaddingTop,
+                bottom = SimplePlayerDimens.Album.listBottomPadding
             )
         ) {
             item {
@@ -319,28 +256,28 @@ private fun AlbumContent(
                 ) {
                     AlbumHeroArtwork(
                         album = album,
-                        size = AlbumPhoneHeroArtworkSize,
-                        cornerRadius = AlbumPhoneHeroArtworkCornerRadius
+                        size = SimplePlayerDimens.Album.phoneHeroArtwork,
+                        cornerRadius = SimplePlayerDimens.Album.phoneHeroCornerRadius
                     )
-                    Spacer(modifier = Modifier.height(AlbumPhoneTitlePaddingTopAfterImage))
+                    Spacer(modifier = Modifier.height(SimplePlayerDimens.Album.phoneTitleAfterImage))
                     Text(
                         text = album.title,
                         modifier = Modifier.fillMaxWidth(),
-                        style = AlbumPhoneHeroTitleStyle,
+                        style = AlbumPhoneHeroTextStyles.title,
                         color = colorScheme.onBackground,
                         maxLines = 3,
                         overflow = TextOverflow.Ellipsis
                     )
-                    Spacer(modifier = Modifier.height(AlbumPhoneArtistPaddingTopAfterTitle))
+                    Spacer(modifier = Modifier.height(SimplePlayerDimens.Album.phoneArtistAfterTitle))
                     Text(
                         text = album.artistName,
                         modifier = Modifier.fillMaxWidth(),
-                        style = AlbumPhoneHeroArtistStyle,
+                        style = AlbumPhoneHeroTextStyles.artist,
                         color = colorScheme.onBackground,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
-                    Spacer(modifier = Modifier.height(AlbumPhoneTracksPaddingTopAfterArtist))
+                    Spacer(modifier = Modifier.height(SimplePlayerDimens.Album.phoneTracksAfterArtist))
                 }
             }
             itemsIndexed(
@@ -353,7 +290,7 @@ private fun AlbumContent(
                         onClick = { onSongClick(track) }
                     )
                     if (index < album.tracks.lastIndex) {
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(SimplePlayerDimens.Album.phoneTrackRowGap))
                     }
                 }
             }
@@ -367,28 +304,28 @@ private fun AlbumTabletHeroSection(album: AlbumDetail) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = AlbumTabletHeroPaddingTop),
+            .padding(top = SimplePlayerDimens.Album.tabletHeroPaddingTop),
         verticalAlignment = Alignment.CenterVertically
     ) {
         AlbumHeroArtwork(
             album = album,
-            size = AlbumTabletHeroArtworkSize,
-            cornerRadius = AlbumTabletHeroArtworkCornerRadius
+            size = SimplePlayerDimens.Album.tabletHeroArtwork,
+            cornerRadius = SimplePlayerDimens.Album.tabletHeroCornerRadius
         )
-        Spacer(modifier = Modifier.width(AlbumTabletHeroImageToText))
+        Spacer(modifier = Modifier.width(SimplePlayerDimens.Album.tabletHeroImageToText))
         Column(
             modifier = Modifier.weight(1f),
             horizontalAlignment = Alignment.Start
         ) {
             Text(
                 text = album.title,
-                style = AlbumTabletHeroTitleStyle,
+                style = AlbumTabletHeroTextStyles.title,
                 color = colorScheme.onBackground
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(SimplePlayerDimens.Album.phoneArtistAfterTitle))
             Text(
                 text = album.artistName,
-                style = AlbumTabletHeroArtistStyle,
+                style = AlbumTabletHeroTextStyles.artist,
                 color = colorScheme.onBackground
             )
         }
@@ -398,8 +335,8 @@ private fun AlbumTabletHeroSection(album: AlbumDetail) {
 @Composable
 private fun AlbumHeroArtwork(
     album: AlbumDetail,
-    size: Dp = HeroArtworkSize,
-    cornerRadius: Dp = 8.dp
+    size: Dp = SimplePlayerDimens.Album.heroArtworkFallback,
+    cornerRadius: Dp = SimplePlayerDimens.Album.rowThumbnailCornerRadius
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val shape = RoundedCornerShape(cornerRadius)
@@ -430,8 +367,12 @@ private fun TrackRow(
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
     val isTabletLayout =
-        LocalConfiguration.current.screenWidthDp >= SongListCellTabletMinWidthDp
-    val thumbSize = if (isTabletLayout) SongListCellArtworkSizeTablet else RowThumbSize
+        LocalConfiguration.current.screenWidthDp >= SimplePlayerBreakpoints.tabletMinWidthDp
+    val thumbSize = if (isTabletLayout) {
+        SongListCellArtworkSizeTablet
+    } else {
+        SimplePlayerDimens.Album.rowThumb
+    }
     val artworkUrl = if (isTabletLayout) {
         track.artworkUrl100.toItunesArtwork200()
     } else {
@@ -448,10 +389,10 @@ private fun TrackRow(
             imageUrl = artworkUrl,
             contentDescription = track.trackName,
             size = thumbSize,
-            cornerRadius = 8.dp,
+            cornerRadius = SimplePlayerDimens.Album.rowThumbnailCornerRadius,
             placeholderColor = colorScheme.surfaceContainerLowest
         )
-        Spacer(modifier = Modifier.width(12.dp))
+        Spacer(modifier = Modifier.width(SimplePlayerDimens.Album.trackRowThumbSpacing))
         Column(modifier = Modifier.weight(1f)) {
             if (isTabletLayout) {
                 Text(
@@ -461,7 +402,7 @@ private fun TrackRow(
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(SimplePlayerDimens.Album.trackRowTitleToArtistTablet))
                 Text(
                     text = track.artistName,
                     style = SongListCellArtistStyleTablet,
@@ -475,7 +416,7 @@ private fun TrackRow(
                     style = typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
                     color = colorScheme.onBackground
                 )
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(SimplePlayerDimens.Album.trackRowTitleToArtistPhone))
                 Text(
                     text = track.artistName,
                     style = typography.bodySmall,

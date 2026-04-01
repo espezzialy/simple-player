@@ -4,15 +4,13 @@ import android.app.Activity
 import android.content.pm.ActivityInfo
 import android.os.Build
 import android.util.DisplayMetrics
+import com.espezzialy.simpleplayer.ui.theme.SimplePlayerBreakpoints
 import kotlin.math.min
 
-/** Mesmo breakpoint que o layout tablet (ex. player / listas). */
-private const val TABLET_SMALLEST_WIDTH_DP = 600
-
 /**
- * Menor lado do **ecrã físico** em dp (não o da janela atual).
- * Em split-screen no tablet, [android.content.res.Configuration.smallestScreenWidthDp] cai abaixo de 600
- * e fazia o app tratar o painel como telefone — daí o retrato forçado e proporções estranhas.
+ * Shortest side of the **physical display** in dp (not the current window).
+ * In tablet split-screen, [android.content.res.Configuration.smallestScreenWidthDp] can drop below 600
+ * and the app would treat the player panel as phone — hence forced portrait and odd proportions.
  */
 private fun Activity.physicalSmallestWidthDp(): Float {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -28,12 +26,9 @@ private fun Activity.physicalSmallestWidthDp(): Float {
     }
 }
 
-/**
- * Telefone (ecrã físico estreito): força retrato. Tablet: rotação livre, inclusive em split-screen.
- */
 fun Activity.applyHandheldOrientationPolicy() {
     requestedOrientation =
-        if (physicalSmallestWidthDp() < TABLET_SMALLEST_WIDTH_DP) {
+        if (physicalSmallestWidthDp() < SimplePlayerBreakpoints.tabletMinWidthDp) {
             ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         } else {
             ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
