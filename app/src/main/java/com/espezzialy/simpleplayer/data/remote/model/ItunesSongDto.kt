@@ -1,7 +1,6 @@
 package com.espezzialy.simpleplayer.data.remote.model
 
 import com.google.gson.annotations.SerializedName
-import java.io.Serializable
 
 data class ItunesSongDto(
     @SerializedName("wrapperType")
@@ -78,4 +77,4 @@ data class ItunesSongDto(
     val copyright: String? = null,
     @SerializedName("description")
     val description: String? = null,
-) : Serializable
+)

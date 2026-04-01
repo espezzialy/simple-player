@@ -16,8 +16,8 @@ class SongsRemoteDataSourceImpl @Inject constructor(
             val raw = apiService
                 .searchSongs(
                     term = term,
-                    media = MEDIA_MUSIC,
-                    entity = ENTITY_SONG,
+                    media = ItunesApiConstants.MEDIA_MUSIC,
+                    entity = ItunesApiConstants.ENTITY_SONG,
                     limit = limit,
                     offset = offset
                 )
@@ -34,15 +34,9 @@ class SongsRemoteDataSourceImpl @Inject constructor(
         return withContext(dispatcherProvider.io) {
             apiService.lookupAlbum(
                 collectionId = collectionId,
-                entity = ENTITY_SONG,
-                limit = LOOKUP_LIMIT
+                entity = ItunesApiConstants.ENTITY_SONG,
+                limit = ItunesApiConstants.LOOKUP_TRACKS_MAX
             ).results
         }
-    }
-
-    private companion object {
-        const val MEDIA_MUSIC = "music"
-        const val ENTITY_SONG = "song"
-        const val LOOKUP_LIMIT = 200
     }
 }
