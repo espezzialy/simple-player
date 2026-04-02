@@ -68,5 +68,6 @@ If you want this wired in Gradle and YAML, ask with the exact secret names you p
 ## 6. Notes
 
 - Workflows use **JDK 17** and **Ubuntu** (`ubuntu-latest`), aligned with AGP 8.x.
-- The APK job installs `platforms;android-36` and `build-tools;35.0.0` to match this project’s `compileSdk = 36`. If you change `compileSdk`, update the **Android SDK** → `packages` section in the workflow.
+- The APK job installs `platforms;android-36` and `build-tools;35.0.1` via `setup-android`’s `packages` input. That value must be **space-separated on a single line** (do not use a multiline `|` block for two packages — `sdkmanager` would treat the whole string as one package name and fail).
+- If you change `compileSdk` / build-tools, update the `packages` line in `.github/workflows/build-apk.yml` to match what `sdkmanager --list` shows on your machine.
 - **Branch protection (optional):** under **Settings** → **Branches**, you can require the **CI** workflow to pass before merging into `main`.
