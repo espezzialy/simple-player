@@ -65,6 +65,8 @@ fun PlayerMainColumn(
                     artworkUrl = state.artworkUrl,
                     trackName = state.trackName,
                     size = artworkSize,
+                    onSwipeToNext = { onIntent(PlayerIntent.SkipNextClicked) },
+                    onSwipeToPrevious = { onIntent(PlayerIntent.SkipPreviousClicked) },
                 )
             }
         } else {
@@ -72,6 +74,8 @@ fun PlayerMainColumn(
                 artworkUrl = state.artworkUrl,
                 trackName = state.trackName,
                 size = artworkSize,
+                onSwipeToNext = { onIntent(PlayerIntent.SkipNextClicked) },
+                onSwipeToPrevious = { onIntent(PlayerIntent.SkipPreviousClicked) },
             )
             Spacer(modifier = Modifier.weight(1f))
         }

@@ -26,6 +26,9 @@ object SimplePlayerDimens {
         val spacerAfterTransport = 16.dp
         val bottomSheetTopCorner = 28.dp
         val artworkCornerRadius = 16.dp
+
+        /** Minimum horizontal drag to count as skip previous/next on artwork swipe. */
+        val artworkSwipeHorizontalThreshold = 48.dp
         val sidePanelStartPadding = 24.dp
         val sidePanelEndPadding = 24.dp
         val sidePanelMenuGap = 12.dp
