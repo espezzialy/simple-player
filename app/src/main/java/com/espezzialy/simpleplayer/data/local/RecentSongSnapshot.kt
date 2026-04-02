@@ -10,26 +10,28 @@ data class RecentSongSnapshot(
     val collectionName: String,
     val collectionId: Long?,
     val artworkUrlSmall: String?,
-    val artworkUrlLarge: String?
+    val artworkUrlLarge: String?,
 ) {
-    fun toSong(): Song = Song(
-        trackId = trackId,
-        trackName = trackName,
-        artistName = artistName,
-        collectionName = collectionName,
-        collectionId = collectionId,
-        artworkUrl100 = artworkUrlSmall
-    )
+    fun toSong(): Song =
+        Song(
+            trackId = trackId,
+            trackName = trackName,
+            artistName = artistName,
+            collectionName = collectionName,
+            collectionId = collectionId,
+            artworkUrl100 = artworkUrlSmall,
+        )
 
     companion object {
-        fun fromSong(song: Song): RecentSongSnapshot = RecentSongSnapshot(
-            trackId = song.trackId,
-            trackName = song.trackName,
-            artistName = song.artistName,
-            collectionName = song.collectionName,
-            collectionId = song.collectionId,
-            artworkUrlSmall = song.artworkUrl100,
-            artworkUrlLarge = song.artworkUrl100.toItunesArtwork600()
-        )
+        fun fromSong(song: Song): RecentSongSnapshot =
+            RecentSongSnapshot(
+                trackId = song.trackId,
+                trackName = song.trackName,
+                artistName = song.artistName,
+                collectionName = song.collectionName,
+                collectionId = song.collectionId,
+                artworkUrlSmall = song.artworkUrl100,
+                artworkUrlLarge = song.artworkUrl100.toItunesArtwork600(),
+            )
     }
 }

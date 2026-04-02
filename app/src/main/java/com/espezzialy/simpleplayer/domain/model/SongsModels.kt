@@ -9,14 +9,18 @@ data class SongsUiState(
     val isRefreshing: Boolean = false,
     val isLoadingMore: Boolean = false,
     val hasMore: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
 )
 
 sealed interface SongsIntent {
     data class QueryChanged(val value: String) : SongsIntent
+
     data object RetrySearch : SongsIntent
+
     data object Refresh : SongsIntent
+
     data object LoadMore : SongsIntent
+
     data object ClearRecentSongs : SongsIntent
 }
 

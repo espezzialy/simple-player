@@ -19,12 +19,12 @@ fun AlbumPhoneHeroSection(album: AlbumDetail) {
     val colorScheme = MaterialTheme.colorScheme
     Column(
         modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         AlbumHeroArtwork(
             album = album,
             size = SimplePlayerDimens.Album.phoneHeroArtwork,
-            cornerRadius = SimplePlayerDimens.Album.phoneHeroCornerRadius
+            cornerRadius = SimplePlayerDimens.Album.phoneHeroCornerRadius,
         )
         Spacer(modifier = Modifier.height(SimplePlayerDimens.Album.phoneTitleAfterImage))
         Text(
@@ -33,7 +33,7 @@ fun AlbumPhoneHeroSection(album: AlbumDetail) {
             style = AlbumPhoneHeroTextStyles.title,
             color = colorScheme.onBackground,
             maxLines = 3,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
         )
         Spacer(modifier = Modifier.height(SimplePlayerDimens.Album.phoneArtistAfterTitle))
         Text(
@@ -42,7 +42,7 @@ fun AlbumPhoneHeroSection(album: AlbumDetail) {
             style = AlbumPhoneHeroTextStyles.artist,
             color = colorScheme.onBackground,
             maxLines = 2,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
         )
         Spacer(modifier = Modifier.height(SimplePlayerDimens.Album.phoneTracksAfterArtist))
     }

@@ -20,31 +20,32 @@ import com.espezzialy.simpleplayer.ui.theme.SimplePlayerDimens
 fun AlbumTabletHeroSection(album: AlbumDetail) {
     val colorScheme = MaterialTheme.colorScheme
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = SimplePlayerDimens.Album.tabletHeroPaddingTop),
-        verticalAlignment = Alignment.CenterVertically
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(top = SimplePlayerDimens.Album.tabletHeroPaddingTop),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         AlbumHeroArtwork(
             album = album,
             size = SimplePlayerDimens.Album.tabletHeroArtwork,
-            cornerRadius = SimplePlayerDimens.Album.tabletHeroCornerRadius
+            cornerRadius = SimplePlayerDimens.Album.tabletHeroCornerRadius,
         )
         Spacer(modifier = Modifier.width(SimplePlayerDimens.Album.tabletHeroImageToText))
         Column(
             modifier = Modifier.weight(1f),
-            horizontalAlignment = Alignment.Start
+            horizontalAlignment = Alignment.Start,
         ) {
             Text(
                 text = album.title,
                 style = AlbumTabletHeroTextStyles.title,
-                color = colorScheme.onBackground
+                color = colorScheme.onBackground,
             )
             Spacer(modifier = Modifier.height(SimplePlayerDimens.Album.phoneArtistAfterTitle))
             Text(
                 text = album.artistName,
                 style = AlbumTabletHeroTextStyles.artist,
-                color = colorScheme.onBackground
+                color = colorScheme.onBackground,
             )
         }
     }

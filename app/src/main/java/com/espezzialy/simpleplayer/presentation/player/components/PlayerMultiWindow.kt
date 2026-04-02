@@ -30,9 +30,10 @@ fun rememberIsInMultiWindowMode(): Boolean {
     }
     DisposableEffect(activity) {
         val act = activity ?: return@DisposableEffect onDispose { }
-        val listener = Consumer<MultiWindowModeChangedInfo> { info ->
-            inMultiWindow = info.isInMultiWindowMode
-        }
+        val listener =
+            Consumer<MultiWindowModeChangedInfo> { info ->
+                inMultiWindow = info.isInMultiWindowMode
+            }
         act.addOnMultiWindowModeChangedListener(listener)
         inMultiWindow = act.isInMultiWindowMode
         onDispose {

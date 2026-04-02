@@ -12,6 +12,7 @@ object SimplePlayerColors {
     val ArtworkPlaceholder = Color(0xFF1A1A1A)
     val SeekTrackInactive = Color(0xFF3A3A3C)
     val SeekTrackActive = Color(0xFFFFFFFF)
+
     /** Repeat control: active (playlist loop on). */
     val PlayerRepeatActive = Color(0xFF2196F3)
     val MenuOpenRowOverlay = Color(0x14FFFFFF)

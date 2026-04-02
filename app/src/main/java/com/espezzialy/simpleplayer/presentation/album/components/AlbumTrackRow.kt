@@ -28,35 +28,38 @@ import com.espezzialy.simpleplayer.ui.theme.SimplePlayerDimens
 @Composable
 fun AlbumTrackRow(
     track: AlbumTrack,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
     val isTabletLayout =
         LocalConfiguration.current.screenWidthDp >= SimplePlayerBreakpoints.tabletMinWidthDp
-    val thumbSize = if (isTabletLayout) {
-        SongListCellArtworkSizeTablet
-    } else {
-        SimplePlayerDimens.Album.rowThumb
-    }
-    val artworkUrl = if (isTabletLayout) {
-        track.artworkUrl100.toItunesArtwork200()
-    } else {
-        track.artworkUrl100
-    }
+    val thumbSize =
+        if (isTabletLayout) {
+            SongListCellArtworkSizeTablet
+        } else {
+            SimplePlayerDimens.Album.rowThumb
+        }
+    val artworkUrl =
+        if (isTabletLayout) {
+            track.artworkUrl100.toItunesArtwork200()
+        } else {
+            track.artworkUrl100
+        }
 
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick),
-        verticalAlignment = Alignment.CenterVertically
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         ArtworkThumbnail(
             imageUrl = artworkUrl,
             contentDescription = track.trackName,
             size = thumbSize,
             cornerRadius = SimplePlayerDimens.Album.rowThumbnailCornerRadius,
-            placeholderColor = colorScheme.surfaceContainerLowest
+            placeholderColor = colorScheme.surfaceContainerLowest,
         )
         Spacer(modifier = Modifier.width(SimplePlayerDimens.Album.trackRowThumbSpacing))
         Column(modifier = Modifier.weight(1f)) {
@@ -66,7 +69,7 @@ fun AlbumTrackRow(
                     style = SongListCellTitleStyleTablet,
                     color = colorScheme.onBackground,
                     maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
                 Spacer(modifier = Modifier.height(SimplePlayerDimens.Album.trackRowTitleToArtistTablet))
                 Text(
@@ -74,19 +77,19 @@ fun AlbumTrackRow(
                     style = SongListCellArtistStyleTablet,
                     color = SongListCellArtistColorTablet,
                     maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
             } else {
                 Text(
                     text = track.trackName,
                     style = typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
-                    color = colorScheme.onBackground
+                    color = colorScheme.onBackground,
                 )
                 Spacer(modifier = Modifier.height(SimplePlayerDimens.Album.trackRowTitleToArtistPhone))
                 Text(
                     text = track.artistName,
                     style = typography.bodySmall,
-                    color = colorScheme.onSurfaceVariant
+                    color = colorScheme.onSurfaceVariant,
                 )
             }
         }

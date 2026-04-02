@@ -12,9 +12,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.espezzialy.simpleplayer.presentation.album.AlbumDetailRoute
-import com.espezzialy.simpleplayer.presentation.navigation.PlayerNavigation
-import com.espezzialy.simpleplayer.presentation.navigation.navigateToPlayer
-import com.espezzialy.simpleplayer.presentation.navigation.navigateToPlayerFromAlbum
 import com.espezzialy.simpleplayer.presentation.player.PlayerRoute
 import com.espezzialy.simpleplayer.presentation.songs.SongsRoute
 
@@ -31,22 +28,22 @@ fun SimplePlayerNavHost(modifier: Modifier = Modifier) {
     NavHost(
         navController = navController,
         startDestination = ROUTE_SONGS,
-        modifier = modifier
+        modifier = modifier,
     ) {
         composable(
             route = ROUTE_SONGS,
             exitTransition = {
                 slideOutHorizontally(
                     animationSpec = tween(SLIDE_DURATION_MS),
-                    targetOffsetX = { fullWidth -> -fullWidth }
+                    targetOffsetX = { fullWidth -> -fullWidth },
                 )
             },
             popEnterTransition = {
                 slideInHorizontally(
                     animationSpec = tween(SLIDE_DURATION_MS),
-                    initialOffsetX = { fullWidth -> -fullWidth }
+                    initialOffsetX = { fullWidth -> -fullWidth },
                 )
-            }
+            },
         ) {
             SongsRoute(
                 onNavigateToAlbum = { collectionId ->
@@ -56,59 +53,61 @@ fun SimplePlayerNavHost(modifier: Modifier = Modifier) {
                 },
                 onNavigateToPlayer = { song ->
                     navController.navigateToPlayer(song)
-                }
+                },
             )
         }
         composable(
             route = ROUTE_ALBUM,
-            arguments = listOf(
-                navArgument(ARG_COLLECTION_ID) { type = NavType.LongType }
-            ),
+            arguments =
+                listOf(
+                    navArgument(ARG_COLLECTION_ID) { type = NavType.LongType },
+                ),
             enterTransition = {
                 slideInHorizontally(
                     animationSpec = tween(SLIDE_DURATION_MS),
-                    initialOffsetX = { fullWidth -> fullWidth }
+                    initialOffsetX = { fullWidth -> fullWidth },
                 )
             },
             popExitTransition = {
                 slideOutHorizontally(
                     animationSpec = tween(SLIDE_DURATION_MS),
-                    targetOffsetX = { fullWidth -> fullWidth }
+                    targetOffsetX = { fullWidth -> fullWidth },
                 )
-            }
+            },
         ) {
             AlbumDetailRoute(
                 onBack = { navController.popBackStack() },
                 onNavigateToPlayer = { song ->
                     navController.navigateToPlayerFromAlbum(song)
-                }
+                },
             )
         }
         composable(
             route = PlayerNavigation.ROUTE,
-            arguments = listOf(
-                navArgument(PlayerNavigation.ARG_TRACK_ID) { type = NavType.LongType },
-                navArgument(PlayerNavigation.ARG_TRACK_NAME) { type = NavType.StringType },
-                navArgument(PlayerNavigation.ARG_ARTIST_NAME) { type = NavType.StringType },
-                navArgument(PlayerNavigation.ARG_ARTWORK_URL) {
-                    type = NavType.StringType
-                    defaultValue = ""
-                },
-                navArgument(PlayerNavigation.ARG_COLLECTION_ID) {
-                    type = NavType.LongType
-                    defaultValue = PlayerNavigation.NO_COLLECTION_ID
-                }
-            ),
+            arguments =
+                listOf(
+                    navArgument(PlayerNavigation.ARG_TRACK_ID) { type = NavType.LongType },
+                    navArgument(PlayerNavigation.ARG_TRACK_NAME) { type = NavType.StringType },
+                    navArgument(PlayerNavigation.ARG_ARTIST_NAME) { type = NavType.StringType },
+                    navArgument(PlayerNavigation.ARG_ARTWORK_URL) {
+                        type = NavType.StringType
+                        defaultValue = ""
+                    },
+                    navArgument(PlayerNavigation.ARG_COLLECTION_ID) {
+                        type = NavType.LongType
+                        defaultValue = PlayerNavigation.NO_COLLECTION_ID
+                    },
+                ),
             enterTransition = {
                 slideInHorizontally(
                     animationSpec = tween(SLIDE_DURATION_MS),
-                    initialOffsetX = { fullWidth -> fullWidth }
+                    initialOffsetX = { fullWidth -> fullWidth },
                 )
             },
             exitTransition = {
                 slideOutHorizontally(
                     animationSpec = tween(SLIDE_DURATION_MS),
-                    targetOffsetX = { fullWidth -> -fullWidth }
+                    targetOffsetX = { fullWidth -> -fullWidth },
                 )
             },
             popEnterTransition = {
@@ -117,9 +116,9 @@ fun SimplePlayerNavHost(modifier: Modifier = Modifier) {
             popExitTransition = {
                 slideOutHorizontally(
                     animationSpec = tween(SLIDE_DURATION_MS),
-                    targetOffsetX = { fullWidth -> fullWidth }
+                    targetOffsetX = { fullWidth -> fullWidth },
                 )
-            }
+            },
         ) {
             PlayerRoute(
                 onBack = { navController.popBackStack() },
@@ -127,7 +126,7 @@ fun SimplePlayerNavHost(modifier: Modifier = Modifier) {
                     navController.navigate("album/$collectionId") {
                         launchSingleTop = true
                     }
-                }
+                },
             )
         }
     }

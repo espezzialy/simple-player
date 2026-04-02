@@ -3,8 +3,10 @@ package com.espezzialy.simpleplayer.core.player
 import kotlin.math.roundToInt
 
 object PlayerTimeFormatter {
-
-    fun labelsForProgress(progress: Float, totalSeconds: Int): Pair<String, String> {
+    fun labelsForProgress(
+        progress: Float,
+        totalSeconds: Int,
+    ): Pair<String, String> {
         require(totalSeconds >= 0)
         val p = progress.coerceIn(0f, 1f)
         val current = (p * totalSeconds).roundToInt().coerceIn(0, totalSeconds)

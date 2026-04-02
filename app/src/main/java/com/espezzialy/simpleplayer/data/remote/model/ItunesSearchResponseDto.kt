@@ -6,5 +6,5 @@ data class ItunesSearchResponseDto(
     @SerializedName("resultCount")
     val resultCount: Int = 0,
     @SerializedName("results")
-    val results: List<ItunesSongDto> = emptyList()
+    val results: List<ItunesSongDto> = emptyList(),
 )

@@ -10,18 +10,20 @@ import com.espezzialy.simpleplayer.ui.theme.SimplePlayerColors
 val SongListCellArtworkSizePhone = 64.dp
 val SongListCellArtworkSizeTablet = 78.dp
 
-val SongListCellTitleStyleTablet = TextStyle(
-    fontFamily = ArticulatCfFamily,
-    fontWeight = FontWeight.Medium,
-    fontSize = 24.sp,
-    lineHeight = 28.8.sp
-)
+val SongListCellTitleStyleTablet =
+    TextStyle(
+        fontFamily = ArticulatCfFamily,
+        fontWeight = FontWeight.Medium,
+        fontSize = 24.sp,
+        lineHeight = 28.8.sp,
+    )
 
-val SongListCellArtistStyleTablet = TextStyle(
-    fontFamily = ArticulatCfFamily,
-    fontWeight = FontWeight.Medium,
-    fontSize = 18.sp,
-    lineHeight = 25.2.sp
-)
+val SongListCellArtistStyleTablet =
+    TextStyle(
+        fontFamily = ArticulatCfFamily,
+        fontWeight = FontWeight.Medium,
+        fontSize = 18.sp,
+        lineHeight = 25.2.sp,
+    )
 
 val SongListCellArtistColorTablet = SimplePlayerColors.OnSurfaceSecondary

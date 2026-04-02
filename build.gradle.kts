@@ -5,4 +5,11 @@ plugins {
     alias(libs.plugins.kotlin.compose) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.hilt.android) apply false
+    alias(libs.plugins.ktlint) apply false
+}
+
+tasks.register("lintProject") {
+    group = "verification"
+    description = "Runs Android Lint and ktlint on the app module (style + platform checks)."
+    dependsOn(":app:lint", ":app:ktlintCheck")
 }

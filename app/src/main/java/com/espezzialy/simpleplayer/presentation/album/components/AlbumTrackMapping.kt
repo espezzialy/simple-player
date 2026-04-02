@@ -11,5 +11,5 @@ fun AlbumTrack.toSong(album: AlbumDetail): Song =
         artistName = artistName,
         collectionName = album.title,
         collectionId = album.collectionId,
-        artworkUrl100 = artworkUrl100
+        artworkUrl100 = artworkUrl100,
     )

@@ -33,43 +33,46 @@ fun SongsPullRefreshIndicator(
     pullRefreshState: PullRefreshState,
     isRefreshing: Boolean,
     contentDescription: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val colorScheme = MaterialTheme.colorScheme
 
     Box(
-        modifier = modifier
-            .pullRefreshIndicatorTransform(pullRefreshState)
-            .semantics { this.contentDescription = contentDescription }
+        modifier =
+            modifier
+                .pullRefreshIndicatorTransform(pullRefreshState)
+                .semantics { this.contentDescription = contentDescription },
     ) {
         Surface(
             shape = CircleShape,
             color = colorScheme.surfaceContainerHigh,
             tonalElevation = 3.dp,
             shadowElevation = 3.dp,
-            modifier = Modifier.size(IndicatorSize)
+            modifier = Modifier.size(IndicatorSize),
         ) {
             Box(
                 modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
             ) {
                 if (isRefreshing) {
                     CircularProgressIndicator(
-                        modifier = Modifier
-                            .padding(10.dp)
-                            .size(ProgressSize),
+                        modifier =
+                            Modifier
+                                .padding(10.dp)
+                                .size(ProgressSize),
                         color = colorScheme.primary,
                         strokeWidth = 2.5.dp,
-                        strokeCap = StrokeCap.Round
+                        strokeCap = StrokeCap.Round,
                     )
                 } else {
                     Icon(
                         imageVector = Icons.Filled.Refresh,
                         contentDescription = null,
-                        modifier = Modifier
-                            .size(IconSize)
-                            .rotate(pullRefreshState.progress * 180f),
-                        tint = colorScheme.primary
+                        modifier =
+                            Modifier
+                                .size(IconSize)
+                                .rotate(pullRefreshState.progress * 180f),
+                        tint = colorScheme.primary,
                     )
                 }
             }

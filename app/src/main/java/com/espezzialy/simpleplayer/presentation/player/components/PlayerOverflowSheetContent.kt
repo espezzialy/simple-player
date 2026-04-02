@@ -28,24 +28,25 @@ internal fun PlayerOverflowSheetContent(
     artistName: String,
     showViewAlbum: Boolean,
     onViewAlbumClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
 
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .navigationBarsPadding()
-            .padding(horizontal = SimplePlayerDimens.OverflowSheet.horizontalPadding)
-            .padding(bottom = SimplePlayerDimens.OverflowSheet.bottomPadding)
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .navigationBarsPadding()
+                .padding(horizontal = SimplePlayerDimens.OverflowSheet.horizontalPadding)
+                .padding(bottom = SimplePlayerDimens.OverflowSheet.bottomPadding),
     ) {
         Text(
             text = trackName,
             style = typography.headlineSmall,
             color = colorScheme.onSurface,
             textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         )
         Spacer(modifier = Modifier.height(SimplePlayerDimens.OverflowSheet.headerSubtitleSpacing))
         Text(
@@ -53,27 +54,28 @@ internal fun PlayerOverflowSheetContent(
             style = typography.bodyMedium,
             color = colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         )
         if (showViewAlbum) {
             Spacer(modifier = Modifier.height(SimplePlayerDimens.OverflowSheet.beforeActionsSpacing))
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable(onClick = onViewAlbumClick),
-                verticalAlignment = Alignment.CenterVertically
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .clickable(onClick = onViewAlbumClick),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_setlist),
                     contentDescription = null,
                     tint = colorScheme.onSurface,
-                    modifier = Modifier.size(SimplePlayerDimens.OverflowSheet.rowIconSize)
+                    modifier = Modifier.size(SimplePlayerDimens.OverflowSheet.rowIconSize),
                 )
                 Spacer(modifier = Modifier.width(SimplePlayerDimens.OverflowSheet.rowIconTextGap))
                 Text(
                     text = stringResource(R.string.view_album),
                     style = typography.bodyLarge,
-                    color = colorScheme.onSurface
+                    color = colorScheme.onSurface,
                 )
             }
         }

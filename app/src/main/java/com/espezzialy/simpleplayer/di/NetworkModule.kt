@@ -15,7 +15,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
-
     private const val ITUNES_BASE_URL = "https://itunes.apple.com/"
 
     @Provides
@@ -29,7 +28,10 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(okHttpClient: OkHttpClient, gson: Gson): Retrofit =
+    fun provideRetrofit(
+        okHttpClient: OkHttpClient,
+        gson: Gson,
+    ): Retrofit =
         Retrofit.Builder()
             .baseUrl(ITUNES_BASE_URL)
             .client(okHttpClient)
@@ -38,6 +40,5 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideItunesApiService(retrofit: Retrofit): ItunesApiService =
-        retrofit.create(ItunesApiService::class.java)
+    fun provideItunesApiService(retrofit: Retrofit): ItunesApiService = retrofit.create(ItunesApiService::class.java)
 }

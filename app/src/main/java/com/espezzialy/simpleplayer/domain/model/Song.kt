@@ -6,5 +6,5 @@ data class Song(
     val artistName: String,
     val collectionName: String,
     val collectionId: Long?,
-    val artworkUrl100: String?
+    val artworkUrl100: String?,
 )

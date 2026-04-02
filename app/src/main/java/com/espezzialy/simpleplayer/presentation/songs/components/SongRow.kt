@@ -4,9 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -33,7 +33,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.espezzialy.simpleplayer.R
-import com.espezzialy.simpleplayer.ui.theme.SimplePlayerColors
 import com.espezzialy.simpleplayer.core.media.toItunesArtwork200
 import com.espezzialy.simpleplayer.domain.model.Song
 import com.espezzialy.simpleplayer.presentation.common.components.ArtworkThumbnail
@@ -41,8 +40,9 @@ import com.espezzialy.simpleplayer.presentation.common.components.SongListCellAr
 import com.espezzialy.simpleplayer.presentation.common.components.SongListCellArtistStyleTablet
 import com.espezzialy.simpleplayer.presentation.common.components.SongListCellArtworkSizePhone
 import com.espezzialy.simpleplayer.presentation.common.components.SongListCellArtworkSizeTablet
-import com.espezzialy.simpleplayer.ui.theme.SimplePlayerBreakpoints
 import com.espezzialy.simpleplayer.presentation.common.components.SongListCellTitleStyleTablet
+import com.espezzialy.simpleplayer.ui.theme.SimplePlayerBreakpoints
+import com.espezzialy.simpleplayer.ui.theme.SimplePlayerColors
 
 private val SongRowMenuOpenCellBackground = SimplePlayerColors.MenuOpenRowOverlay
 private val SongRowMenuOpenCellShape = RoundedCornerShape(8.dp)
@@ -52,7 +52,7 @@ fun SongRow(
     song: Song,
     onSongClick: () -> Unit,
     onViewAlbum: (() -> Unit)? = null,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
@@ -60,35 +60,38 @@ fun SongRow(
         LocalConfiguration.current.screenWidthDp >= SimplePlayerBreakpoints.tabletMinWidthDp
     val artworkSize =
         if (isTabletLayout) SongListCellArtworkSizeTablet else SongListCellArtworkSizePhone
-    val artworkUrl = if (isTabletLayout) {
-        song.artworkUrl100.toItunesArtwork200()
-    } else {
-        song.artworkUrl100
-    }
+    val artworkUrl =
+        if (isTabletLayout) {
+            song.artworkUrl100.toItunesArtwork200()
+        } else {
+            song.artworkUrl100
+        }
 
     var menuExpanded by remember { mutableStateOf(false) }
 
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .then(
-                if (menuExpanded && onViewAlbum != null) {
-                    Modifier.background(
-                        color = SongRowMenuOpenCellBackground,
-                        shape = SongRowMenuOpenCellShape
-                    )
-                } else {
-                    Modifier
-                }
-            ),
-        verticalAlignment = Alignment.CenterVertically
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .then(
+                    if (menuExpanded && onViewAlbum != null) {
+                        Modifier.background(
+                            color = SongRowMenuOpenCellBackground,
+                            shape = SongRowMenuOpenCellShape,
+                        )
+                    } else {
+                        Modifier
+                    },
+                ),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(
-            modifier = Modifier
-                .weight(1f)
-                .clickable(onClick = onSongClick)
-                .padding(vertical = 4.dp),
-            verticalAlignment = Alignment.CenterVertically
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .clickable(onClick = onSongClick)
+                    .padding(vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             ArtworkThumbnail(
                 imageUrl = artworkUrl,
@@ -96,7 +99,7 @@ fun SongRow(
                 size = artworkSize,
                 modifier = Modifier,
                 cornerRadius = 8.dp,
-                placeholderColor = colorScheme.surface
+                placeholderColor = colorScheme.surface,
             )
             Spacer(modifier = Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
@@ -106,7 +109,7 @@ fun SongRow(
                         style = SongListCellTitleStyleTablet,
                         color = colorScheme.onSurface,
                         maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
                     )
                     Spacer(modifier = Modifier.height(6.dp))
                     Text(
@@ -114,21 +117,21 @@ fun SongRow(
                         style = SongListCellArtistStyleTablet,
                         color = SongListCellArtistColorTablet,
                         maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
                     )
                 } else {
                     Text(
                         text = song.trackName,
                         style = typography.titleMedium,
                         color = colorScheme.onSurface,
-                        maxLines = 2
+                        maxLines = 2,
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = song.artistName,
                         style = typography.bodyMedium,
                         color = colorScheme.onSurfaceVariant,
-                        maxLines = 2
+                        maxLines = 2,
                     )
                 }
             }
@@ -139,13 +142,13 @@ fun SongRow(
                     Icon(
                         painter = painterResource(R.drawable.ic_more),
                         contentDescription = stringResource(R.string.content_desc_more_options),
-                        tint = colorScheme.onSurfaceVariant
+                        tint = colorScheme.onSurfaceVariant,
                     )
                 }
                 DropdownMenu(
                     expanded = menuExpanded,
                     onDismissRequest = { menuExpanded = false },
-                    containerColor = colorScheme.surface
+                    containerColor = colorScheme.surface,
                 ) {
                     DropdownMenuItem(
                         text = {
@@ -154,7 +157,7 @@ fun SongRow(
                                 style = typography.bodyLarge,
                                 color = colorScheme.onSurface,
                                 maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
+                                overflow = TextOverflow.Ellipsis,
                             )
                         },
                         trailingIcon = {
@@ -162,7 +165,7 @@ fun SongRow(
                                 painter = painterResource(R.drawable.ic_view_album),
                                 contentDescription = null,
                                 modifier = Modifier.size(24.dp),
-                                tint = colorScheme.onSurface
+                                tint = colorScheme.onSurface,
                             )
                         },
                         onClick = {
@@ -170,13 +173,15 @@ fun SongRow(
                             onViewAlbum()
                         },
                         modifier = Modifier.width(200.dp),
-                        contentPadding = PaddingValues(
-                            horizontal = 12.dp,
-                            vertical = 8.dp
-                        ),
-                        colors = MenuDefaults.itemColors(
-                            textColor = colorScheme.onSurface
-                        )
+                        contentPadding =
+                            PaddingValues(
+                                horizontal = 12.dp,
+                                vertical = 8.dp,
+                            ),
+                        colors =
+                            MenuDefaults.itemColors(
+                                textColor = colorScheme.onSurface,
+                            ),
                     )
                 }
             }

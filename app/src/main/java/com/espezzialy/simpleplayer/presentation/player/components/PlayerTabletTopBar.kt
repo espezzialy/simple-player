@@ -27,22 +27,23 @@ import com.espezzialy.simpleplayer.ui.theme.SimplePlayerDimens
 fun PlayerTabletTopBar(
     onBack: () -> Unit,
     title: String,
-    onOverflowClick: (() -> Unit)? = null
+    onOverflowClick: (() -> Unit)? = null,
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = TabletNavBarPaddingTop),
-        verticalAlignment = Alignment.CenterVertically
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(top = TabletNavBarPaddingTop),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         TabletBackIconButton(
             onClick = onBack,
             contentDescription = stringResource(R.string.content_desc_back),
             tint = colorScheme.onBackground,
             painter = painterResource(R.drawable.ic_arrow_left),
-            iconSize = 28.dp
+            iconSize = 28.dp,
         )
         Spacer(modifier = Modifier.width(SimplePlayerDimens.Player.topBarTitleInsetAfterBackTablet))
         Text(
@@ -52,14 +53,14 @@ fun PlayerTabletTopBar(
             modifier = Modifier.weight(1f),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            textAlign = TextAlign.Start
+            textAlign = TextAlign.Start,
         )
         if (onOverflowClick != null) {
             IconButton(onClick = onOverflowClick) {
                 Icon(
                     painter = painterResource(R.drawable.ic_more),
                     contentDescription = stringResource(R.string.content_desc_menu),
-                    tint = colorScheme.onSurfaceVariant
+                    tint = colorScheme.onSurfaceVariant,
                 )
             }
         } else {

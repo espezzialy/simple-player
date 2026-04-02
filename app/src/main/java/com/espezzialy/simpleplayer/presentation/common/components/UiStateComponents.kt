@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -21,11 +20,11 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun CenteredLoading(
     modifier: Modifier = Modifier,
-    indicatorColor: Color = MaterialTheme.colorScheme.onSurfaceVariant
+    indicatorColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
 ) {
     Box(
         modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         CircularProgressIndicator(color = indicatorColor)
     }
@@ -39,21 +38,22 @@ fun ErrorWithRetry(
     modifier: Modifier = Modifier,
     messageColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
     buttonContainerColor: Color = MaterialTheme.colorScheme.surface,
-    buttonContentColor: Color = MaterialTheme.colorScheme.onSurface
+    buttonContentColor: Color = MaterialTheme.colorScheme.onSurface,
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(text = message, color = messageColor)
         Spacer(modifier = Modifier.height(12.dp))
         Button(
             onClick = onRetry,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = buttonContainerColor,
-                contentColor = buttonContentColor
-            )
+            colors =
+                ButtonDefaults.buttonColors(
+                    containerColor = buttonContainerColor,
+                    contentColor = buttonContentColor,
+                ),
         ) {
             Text(text = retryLabel)
         }

@@ -17,7 +17,7 @@ import com.espezzialy.simpleplayer.R
 @Composable
 fun AlbumPhoneTopBar(
     title: String,
-    onBack: () -> Unit
+    onBack: () -> Unit,
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
@@ -27,7 +27,7 @@ fun AlbumPhoneTopBar(
                 text = title,
                 style = typography.titleLarge,
                 color = colorScheme.onBackground,
-                maxLines = 1
+                maxLines = 1,
             )
         },
         navigationIcon = {
@@ -35,14 +35,15 @@ fun AlbumPhoneTopBar(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = stringResource(R.string.content_desc_back),
-                    tint = colorScheme.onBackground
+                    tint = colorScheme.onBackground,
                 )
             }
         },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = colorScheme.background,
-            titleContentColor = colorScheme.onBackground,
-            navigationIconContentColor = colorScheme.onBackground
-        )
+        colors =
+            TopAppBarDefaults.topAppBarColors(
+                containerColor = colorScheme.background,
+                titleContentColor = colorScheme.onBackground,
+                navigationIconContentColor = colorScheme.onBackground,
+            ),
     )
 }

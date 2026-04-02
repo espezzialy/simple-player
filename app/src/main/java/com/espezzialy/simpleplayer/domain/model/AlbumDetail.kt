@@ -5,12 +5,12 @@ data class AlbumDetail(
     val title: String,
     val artistName: String,
     val artworkUrl: String?,
-    val tracks: List<AlbumTrack>
+    val tracks: List<AlbumTrack>,
 )
 
 data class AlbumTrack(
     val trackId: Long,
     val trackName: String,
     val artistName: String,
-    val artworkUrl100: String?
+    val artworkUrl100: String?,
 )

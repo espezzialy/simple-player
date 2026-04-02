@@ -15,13 +15,13 @@ interface ItunesApiService {
         @Query("media") media: String,
         @Query("entity") entity: String,
         @Query("limit") limit: Int,
-        @Query("offset") offset: Int
+        @Query("offset") offset: Int,
     ): ItunesSearchResponseDto
 
     @GET("lookup")
     suspend fun lookupAlbum(
         @Query("id") collectionId: Long,
         @Query("entity") entity: String,
-        @Query("limit") limit: Int
+        @Query("limit") limit: Int,
     ): ItunesSearchResponseDto
 }

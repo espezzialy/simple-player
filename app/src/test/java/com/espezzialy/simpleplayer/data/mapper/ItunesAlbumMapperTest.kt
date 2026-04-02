@@ -7,7 +7,6 @@ import org.junit.Assert.assertNull
 import org.junit.Test
 
 class ItunesAlbumMapperTest {
-
     @Test
     fun mapLookupResultsToAlbumDetail_returnsNull_whenEmpty() {
         assertNull(ItunesAlbumMapper.mapLookupResultsToAlbumDetail(emptyList()))
@@ -21,33 +20,36 @@ class ItunesAlbumMapperTest {
 
     @Test
     fun mapLookupResultsToAlbumDetail_usesCollectionRow_andSortsTracksByDiscAndTrackNumber() {
-        val collection = ItunesSongDto(
-            wrapperType = "collection",
-            collectionId = 99L,
-            collectionName = "Album X",
-            artistName = "Artist",
-            artworkUrl100 = "http://cover.jpg"
-        )
-        val b = ItunesSongDto(
-            kind = "song",
-            trackId = 2L,
-            trackName = "Second",
-            artistName = "Artist",
-            collectionId = 99L,
-            collectionName = "Album X",
-            discNumber = 1,
-            trackNumber = 2
-        )
-        val a = ItunesSongDto(
-            kind = "song",
-            trackId = 1L,
-            trackName = "First",
-            artistName = "Artist",
-            collectionId = 99L,
-            collectionName = "Album X",
-            discNumber = 1,
-            trackNumber = 1
-        )
+        val collection =
+            ItunesSongDto(
+                wrapperType = "collection",
+                collectionId = 99L,
+                collectionName = "Album X",
+                artistName = "Artist",
+                artworkUrl100 = "http://cover.jpg",
+            )
+        val b =
+            ItunesSongDto(
+                kind = "song",
+                trackId = 2L,
+                trackName = "Second",
+                artistName = "Artist",
+                collectionId = 99L,
+                collectionName = "Album X",
+                discNumber = 1,
+                trackNumber = 2,
+            )
+        val a =
+            ItunesSongDto(
+                kind = "song",
+                trackId = 1L,
+                trackName = "First",
+                artistName = "Artist",
+                collectionId = 99L,
+                collectionName = "Album X",
+                discNumber = 1,
+                trackNumber = 1,
+            )
 
         val album = ItunesAlbumMapper.mapLookupResultsToAlbumDetail(listOf(collection, b, a))
 
@@ -63,15 +65,16 @@ class ItunesAlbumMapperTest {
 
     @Test
     fun mapLookupResultsToAlbumDetail_fallsBackToTracks_whenNoCollectionRow() {
-        val t = ItunesSongDto(
-            kind = "song",
-            trackId = 5L,
-            trackName = "Only",
-            artistName = "Solo",
-            collectionId = 42L,
-            collectionName = "From Track",
-            artworkUrl100 = "http://t.jpg"
-        )
+        val t =
+            ItunesSongDto(
+                kind = "song",
+                trackId = 5L,
+                trackName = "Only",
+                artistName = "Solo",
+                collectionId = 42L,
+                collectionName = "From Track",
+                artworkUrl100 = "http://t.jpg",
+            )
 
         val album = ItunesAlbumMapper.mapLookupResultsToAlbumDetail(listOf(t))
 

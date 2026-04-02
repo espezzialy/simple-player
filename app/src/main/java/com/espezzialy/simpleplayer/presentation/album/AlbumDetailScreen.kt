@@ -1,6 +1,5 @@
 package com.espezzialy.simpleplayer.presentation.album
 
-import android.content.res.Configuration as AndroidConfiguration
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,12 +27,13 @@ import com.espezzialy.simpleplayer.presentation.common.components.ErrorWithRetry
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerBreakpoints
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerDimens
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerTheme
+import android.content.res.Configuration as AndroidConfiguration
 
 @Composable
 fun AlbumDetailRoute(
     onBack: () -> Unit,
     onNavigateToPlayer: (Song) -> Unit,
-    viewModel: AlbumDetailViewModel = hiltViewModel()
+    viewModel: AlbumDetailViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     AlbumDetailScreen(
@@ -41,7 +41,7 @@ fun AlbumDetailRoute(
         onIntent = viewModel::onIntent,
         onBack = onBack,
         onNavigateToPlayer = onNavigateToPlayer,
-        onBeforeNavigateToPlayerFromAlbum = viewModel::preparePlayerFromAlbum
+        onBeforeNavigateToPlayerFromAlbum = viewModel::preparePlayerFromAlbum,
     )
 }
 
@@ -53,7 +53,7 @@ fun AlbumDetailScreen(
     onBack: () -> Unit,
     onNavigateToPlayer: (Song) -> Unit,
     onBeforeNavigateToPlayerFromAlbum: (AlbumDetail) -> Unit = {},
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val fallbackTitle = stringResource(R.string.album_fallback_title)
     val title = state.album?.title.orEmpty().ifBlank { fallbackTitle }
@@ -70,14 +70,15 @@ fun AlbumDetailScreen(
             } else {
                 AlbumPhoneTopBar(title = title, onBack = onBack)
             }
-        }
+        },
     ) { innerPadding ->
         when {
             state.isLoading -> {
                 CenteredLoading(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding),
                 )
             }
 
@@ -86,10 +87,11 @@ fun AlbumDetailScreen(
                     message = state.errorMessage,
                     retryLabel = stringResource(R.string.retry),
                     onRetry = { onIntent(AlbumDetailIntent.Retry) },
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
-                        .padding(horizontal = SimplePlayerDimens.screenHorizontalPadding)
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding)
+                            .padding(horizontal = SimplePlayerDimens.screenHorizontalPadding),
                 )
             }
 
@@ -101,9 +103,10 @@ fun AlbumDetailScreen(
                         onBeforeNavigateToPlayerFromAlbum(album)
                         onNavigateToPlayer(track.toSong(album))
                     },
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding),
                 )
             }
         }
@@ -119,33 +122,37 @@ private const val PhonePreviewHeightDp = 844
     showBackground = true,
     widthDp = TabletPreviewWidthDp,
     heightDp = TabletPreviewHeightDp,
-    name = "Album (tablet)"
+    name = "Album (tablet)",
 )
 @Composable
 private fun AlbumDetailScreenTabletPreview() {
-    val tabletConfiguration = AndroidConfiguration(LocalConfiguration.current).apply {
-        screenWidthDp = TabletPreviewWidthDp
-        screenHeightDp = TabletPreviewHeightDp
-    }
+    val tabletConfiguration =
+        AndroidConfiguration(LocalConfiguration.current).apply {
+            screenWidthDp = TabletPreviewWidthDp
+            screenHeightDp = TabletPreviewHeightDp
+        }
     CompositionLocalProvider(LocalConfiguration provides tabletConfiguration) {
         SimplePlayerTheme {
             AlbumDetailScreen(
-                state = AlbumDetailUiState(
-                    isLoading = false,
-                    album = AlbumDetail(
-                        collectionId = 1L,
-                        title = "Divide",
-                        artistName = "Ed Sheeran",
-                        artworkUrl = null,
-                        tracks = listOf(
-                            AlbumTrack(1L, "Perfect", "Ed Sheeran", null),
-                            AlbumTrack(2L, "Shape of You", "Ed Sheeran", null)
-                        )
-                    )
-                ),
+                state =
+                    AlbumDetailUiState(
+                        isLoading = false,
+                        album =
+                            AlbumDetail(
+                                collectionId = 1L,
+                                title = "Divide",
+                                artistName = "Ed Sheeran",
+                                artworkUrl = null,
+                                tracks =
+                                    listOf(
+                                        AlbumTrack(1L, "Perfect", "Ed Sheeran", null),
+                                        AlbumTrack(2L, "Shape of You", "Ed Sheeran", null),
+                                    ),
+                            ),
+                    ),
                 onIntent = {},
                 onBack = {},
-                onNavigateToPlayer = {}
+                onNavigateToPlayer = {},
             )
         }
     }
@@ -154,29 +161,33 @@ private fun AlbumDetailScreenTabletPreview() {
 @Preview(showBackground = true, widthDp = PhonePreviewWidthDp, heightDp = PhonePreviewHeightDp)
 @Composable
 private fun AlbumDetailScreenPreview() {
-    val phoneConfiguration = AndroidConfiguration(LocalConfiguration.current).apply {
-        screenWidthDp = PhonePreviewWidthDp
-        screenHeightDp = PhonePreviewHeightDp
-    }
+    val phoneConfiguration =
+        AndroidConfiguration(LocalConfiguration.current).apply {
+            screenWidthDp = PhonePreviewWidthDp
+            screenHeightDp = PhonePreviewHeightDp
+        }
     CompositionLocalProvider(LocalConfiguration provides phoneConfiguration) {
         SimplePlayerTheme {
             AlbumDetailScreen(
-                state = AlbumDetailUiState(
-                    isLoading = false,
-                    album = AlbumDetail(
-                        collectionId = 1L,
-                        title = "Random Access Memories",
-                        artistName = "Daft Punk",
-                        artworkUrl = null,
-                        tracks = listOf(
-                            AlbumTrack(1L, "Give Life Back to Music", "Daft Punk", null),
-                            AlbumTrack(2L, "The Game of Love", "Daft Punk", null)
-                        )
-                    )
-                ),
+                state =
+                    AlbumDetailUiState(
+                        isLoading = false,
+                        album =
+                            AlbumDetail(
+                                collectionId = 1L,
+                                title = "Random Access Memories",
+                                artistName = "Daft Punk",
+                                artworkUrl = null,
+                                tracks =
+                                    listOf(
+                                        AlbumTrack(1L, "Give Life Back to Music", "Daft Punk", null),
+                                        AlbumTrack(2L, "The Game of Love", "Daft Punk", null),
+                                    ),
+                            ),
+                    ),
                 onIntent = {},
                 onBack = {},
-                onNavigateToPlayer = {}
+                onNavigateToPlayer = {},
             )
         }
     }

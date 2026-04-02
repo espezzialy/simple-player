@@ -32,37 +32,38 @@ fun PlayerTransportControls(
     onPlayPause: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
-    onRepeat: () -> Unit
+    onRepeat: () -> Unit,
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val pauseDesc = stringResource(R.string.content_desc_pause)
     val playDesc = stringResource(R.string.content_desc_play)
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = SimplePlayerDimens.Player.transportBarVerticalPadding),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(vertical = SimplePlayerDimens.Player.transportBarVerticalPadding),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(SimplePlayerDimens.Player.transportMainClusterSpacing),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Surface(
                 onClick = onPlayPause,
                 modifier = Modifier.size(SimplePlayerDimens.Player.playSurfaceSize),
                 shape = CircleShape,
-                color = colorScheme.surfaceContainerHigh
+                color = colorScheme.surfaceContainerHigh,
             ) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) {
                     Icon(
                         imageVector = if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
                         contentDescription = if (isPlaying) pauseDesc else playDesc,
                         tint = colorScheme.onSurface,
-                        modifier = Modifier.size(SimplePlayerDimens.Player.playIconSize)
+                        modifier = Modifier.size(SimplePlayerDimens.Player.playIconSize),
                     )
                 }
             }
@@ -71,7 +72,7 @@ fun PlayerTransportControls(
                     painter = painterResource(R.drawable.ic_backward_bar_fill),
                     contentDescription = stringResource(R.string.content_desc_previous_track),
                     tint = colorScheme.onSurface,
-                    modifier = Modifier.size(SimplePlayerDimens.Player.skipIconSize)
+                    modifier = Modifier.size(SimplePlayerDimens.Player.skipIconSize),
                 )
             }
             IconButton(onClick = onNext) {
@@ -79,7 +80,7 @@ fun PlayerTransportControls(
                     painter = painterResource(R.drawable.ic_forward_bar_fill),
                     contentDescription = stringResource(R.string.content_desc_next_track),
                     tint = colorScheme.onSurface,
-                    modifier = Modifier.size(SimplePlayerDimens.Player.skipIconSize)
+                    modifier = Modifier.size(SimplePlayerDimens.Player.skipIconSize),
                 )
             }
         }
@@ -87,12 +88,13 @@ fun PlayerTransportControls(
             Icon(
                 painter = painterResource(R.drawable.ic_play_on_repeat),
                 contentDescription = stringResource(R.string.content_desc_repeat),
-                tint = if (repeatEnabled) {
-                    SimplePlayerColors.PlayerRepeatActive
-                } else {
-                    Color.White
-                },
-                modifier = Modifier.size(SimplePlayerDimens.Player.repeatIconSize)
+                tint =
+                    if (repeatEnabled) {
+                        SimplePlayerColors.PlayerRepeatActive
+                    } else {
+                        Color.White
+                    },
+                modifier = Modifier.size(SimplePlayerDimens.Player.repeatIconSize),
             )
         }
     }

@@ -37,10 +37,10 @@ import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.espezzialy.simpleplayer.R
 import com.espezzialy.simpleplayer.domain.model.Song
-import com.espezzialy.simpleplayer.presentation.player.PlayerSidePanelUiState
 import com.espezzialy.simpleplayer.presentation.common.components.ArtworkThumbnail
 import com.espezzialy.simpleplayer.presentation.common.components.CenteredLoading
 import com.espezzialy.simpleplayer.presentation.common.components.ErrorWithRetry
+import com.espezzialy.simpleplayer.presentation.player.PlayerSidePanelUiState
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerDimens
 
 @Composable
@@ -50,7 +50,7 @@ fun PlayerSidePlaylistPanel(
     isCurrentPlaying: Boolean,
     onRetrySearch: () -> Unit,
     onSongClick: (Song) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
@@ -60,33 +60,36 @@ fun PlayerSidePlaylistPanel(
         shape = RoundedCornerShape(SimplePlayerDimens.SidePanel.cornerRadius),
         color = colorScheme.surface,
         tonalElevation = 2.dp,
-        shadowElevation = 6.dp
+        shadowElevation = 6.dp,
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    top = SimplePlayerDimens.SidePanel.paddingTop,
-                    start = SimplePlayerDimens.SidePanel.paddingHorizontal,
-                    end = SimplePlayerDimens.SidePanel.paddingHorizontal,
-                    bottom = SimplePlayerDimens.SidePanel.paddingBottom
-                )
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(
+                        top = SimplePlayerDimens.SidePanel.paddingTop,
+                        start = SimplePlayerDimens.SidePanel.paddingHorizontal,
+                        end = SimplePlayerDimens.SidePanel.paddingHorizontal,
+                        bottom = SimplePlayerDimens.SidePanel.paddingBottom,
+                    ),
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(
-                    bottom = if (sidePanel.panelTitle != null) {
-                        SimplePlayerDimens.SidePanel.titleBottomWhenPresent
-                    } else {
-                        0.dp
-                    }
-                )
+                modifier =
+                    Modifier.padding(
+                        bottom =
+                            if (sidePanel.panelTitle != null) {
+                                SimplePlayerDimens.SidePanel.titleBottomWhenPresent
+                            } else {
+                                0.dp
+                            },
+                    ),
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_music_list),
                     contentDescription = null,
                     tint = colorScheme.onBackground,
-                    modifier = Modifier.size(SimplePlayerDimens.SidePanel.headerIconSize)
+                    modifier = Modifier.size(SimplePlayerDimens.SidePanel.headerIconSize),
                 )
             }
             sidePanel.panelTitle?.let { title ->
@@ -96,18 +99,20 @@ fun PlayerSidePlaylistPanel(
                     color = colorScheme.onBackground,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 0.dp)
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 0.dp),
                 )
             }
 
             when {
                 sidePanel.isSearchMode && sidePanel.isLoading && sidePanel.songs.isEmpty() -> {
                     CenteredLoading(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth()
+                        modifier =
+                            Modifier
+                                .weight(1f)
+                                .fillMaxWidth(),
                     )
                 }
 
@@ -116,9 +121,10 @@ fun PlayerSidePlaylistPanel(
                         message = sidePanel.errorMessage,
                         retryLabel = stringResource(R.string.retry),
                         onRetry = onRetrySearch,
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth()
+                        modifier =
+                            Modifier
+                                .weight(1f)
+                                .fillMaxWidth(),
                     )
                 }
 
@@ -127,7 +133,7 @@ fun PlayerSidePlaylistPanel(
                         modifier = Modifier.weight(1f),
                         text = stringResource(R.string.songs_empty_query_hint),
                         style = typography.bodyMedium,
-                        color = colorScheme.onSurfaceVariant
+                        color = colorScheme.onSurfaceVariant,
                     )
                 }
 
@@ -136,7 +142,7 @@ fun PlayerSidePlaylistPanel(
                         modifier = Modifier.weight(1f),
                         text = stringResource(R.string.songs_no_results),
                         style = typography.bodyMedium,
-                        color = colorScheme.onSurfaceVariant
+                        color = colorScheme.onSurfaceVariant,
                     )
                 }
 
@@ -145,22 +151,23 @@ fun PlayerSidePlaylistPanel(
                         modifier = Modifier.weight(1f),
                         text = stringResource(R.string.player_side_panel_empty_album),
                         style = typography.bodyMedium,
-                        color = colorScheme.onSurfaceVariant
+                        color = colorScheme.onSurfaceVariant,
                     )
                 }
 
                 else -> {
                     LazyColumn(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth()
-                            .padding(top = SimplePlayerDimens.SidePanel.listBelowHeaderPadding)
+                        modifier =
+                            Modifier
+                                .weight(1f)
+                                .fillMaxWidth()
+                                .padding(top = SimplePlayerDimens.SidePanel.listBelowHeaderPadding),
                     ) {
                         items(sidePanel.songs, key = { it.trackId }) { song ->
                             PlayerSidePlaylistRow(
                                 song = song,
                                 showPlayingIndicator = song.trackId == currentTrackId && isCurrentPlaying,
-                                onClick = { onSongClick(song) }
+                                onClick = { onSongClick(song) },
                             )
                         }
                     }
@@ -174,56 +181,60 @@ fun PlayerSidePlaylistPanel(
 private fun PlayerSidePlaylistRow(
     song: Song,
     showPlayingIndicator: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
     val playingIndicatorDesc = stringResource(R.string.content_desc_playing_indicator)
 
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(vertical = SimplePlayerDimens.SidePanel.playlistRowVerticalPadding),
-        verticalAlignment = Alignment.CenterVertically
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick)
+                .padding(vertical = SimplePlayerDimens.SidePanel.playlistRowVerticalPadding),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         ArtworkThumbnail(
             imageUrl = song.artworkUrl100,
             contentDescription = song.trackName,
             size = SimplePlayerDimens.SidePanel.playlistRowThumb,
             cornerRadius = SimplePlayerDimens.SidePanel.playlistThumbCornerRadius,
-            placeholderColor = colorScheme.surfaceContainerLowest
+            placeholderColor = colorScheme.surfaceContainerLowest,
         )
         Spacer(modifier = Modifier.width(SimplePlayerDimens.SidePanel.playlistRowTextStart))
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = song.trackName,
-                style = typography.titleMedium.copy(
-                    fontSize = 16.sp,
-                    lineHeight = 19.2.sp,
-                    fontWeight = FontWeight.SemiBold
-                ),
+                style =
+                    typography.titleMedium.copy(
+                        fontSize = 16.sp,
+                        lineHeight = 19.2.sp,
+                        fontWeight = FontWeight.SemiBold,
+                    ),
                 color = colorScheme.onBackground,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
             Spacer(modifier = Modifier.height(SimplePlayerDimens.SidePanel.playlistRowTitleToSubtitle))
             Text(
                 text = song.artistName,
-                style = typography.bodySmall.copy(
-                    fontSize = 12.sp,
-                    lineHeight = 16.8.sp
-                ),
+                style =
+                    typography.bodySmall.copy(
+                        fontSize = 12.sp,
+                        lineHeight = 16.8.sp,
+                    ),
                 color = colorScheme.onSurfaceVariant,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
         }
         if (showPlayingIndicator) {
             SidePanelPlayingIndicator(
-                modifier = Modifier.semantics {
-                    contentDescription = playingIndicatorDesc
-                }
+                modifier =
+                    Modifier.semantics {
+                        contentDescription = playingIndicatorDesc
+                    },
             )
         }
     }
@@ -231,18 +242,20 @@ private fun PlayerSidePlaylistRow(
 
 @Composable
 private fun SidePanelPlayingIndicator(modifier: Modifier = Modifier) {
-    val compositionResult = rememberLottieComposition(
-        LottieCompositionSpec.RawRes(R.raw.live_bars)
-    )
+    val compositionResult =
+        rememberLottieComposition(
+            LottieCompositionSpec.RawRes(R.raw.live_bars),
+        )
     val composition = compositionResult.value
-    val animationState = animateLottieCompositionAsState(
-        composition = composition,
-        iterations = LottieConstants.IterateForever
-    )
+    val animationState =
+        animateLottieCompositionAsState(
+            composition = composition,
+            iterations = LottieConstants.IterateForever,
+        )
     LottieAnimation(
         composition = composition,
         progress = { animationState.progress },
         modifier = modifier.size(SimplePlayerDimens.SidePanel.playlistPlayingIndicator),
-        contentScale = ContentScale.Fit
+        contentScale = ContentScale.Fit,
     )
 }

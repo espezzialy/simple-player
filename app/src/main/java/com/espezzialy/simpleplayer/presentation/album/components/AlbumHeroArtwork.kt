@@ -19,7 +19,7 @@ import com.espezzialy.simpleplayer.ui.theme.SimplePlayerDimens
 fun AlbumHeroArtwork(
     album: AlbumDetail,
     size: Dp = SimplePlayerDimens.Album.heroArtworkFallback,
-    cornerRadius: Dp = SimplePlayerDimens.Album.rowThumbnailCornerRadius
+    cornerRadius: Dp = SimplePlayerDimens.Album.rowThumbnailCornerRadius,
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val shape = RoundedCornerShape(cornerRadius)
@@ -27,17 +27,19 @@ fun AlbumHeroArtwork(
         AsyncImage(
             model = album.artworkUrl.toItunesArtwork600() ?: album.artworkUrl,
             contentDescription = album.title,
-            modifier = Modifier
-                .size(size)
-                .clip(shape),
-            contentScale = ContentScale.Crop
+            modifier =
+                Modifier
+                    .size(size)
+                    .clip(shape),
+            contentScale = ContentScale.Crop,
         )
     } else {
         Box(
-            modifier = Modifier
-                .size(size)
-                .clip(shape)
-                .background(colorScheme.surfaceContainerLowest)
+            modifier =
+                Modifier
+                    .size(size)
+                    .clip(shape)
+                    .background(colorScheme.surfaceContainerLowest),
         )
     }
 }

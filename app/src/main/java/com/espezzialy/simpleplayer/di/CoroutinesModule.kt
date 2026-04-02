@@ -11,10 +11,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class CoroutinesModule {
-
     @Binds
     @Singleton
-    abstract fun bindDispatcherProvider(
-        impl: DefaultDispatcherProvider
-    ): DispatcherProvider
+    abstract fun bindDispatcherProvider(impl: DefaultDispatcherProvider): DispatcherProvider
 }

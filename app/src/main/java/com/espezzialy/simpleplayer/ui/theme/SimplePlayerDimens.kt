@@ -3,7 +3,6 @@ package com.espezzialy.simpleplayer.ui.theme
 import androidx.compose.ui.unit.dp
 
 object SimplePlayerDimens {
-
     val screenHorizontalPadding = 20.dp
     val contentBelowTopAppBarPhone = 90.dp
 

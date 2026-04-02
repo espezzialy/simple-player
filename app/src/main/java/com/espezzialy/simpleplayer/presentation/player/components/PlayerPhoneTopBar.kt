@@ -18,7 +18,7 @@ import com.espezzialy.simpleplayer.R
 fun PlayerPhoneTopBar(
     onBack: () -> Unit,
     title: String,
-    onOverflowClick: () -> Unit
+    onOverflowClick: () -> Unit,
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
@@ -29,7 +29,7 @@ fun PlayerPhoneTopBar(
                 style = typography.titleLarge,
                 color = colorScheme.onBackground,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
         },
         navigationIcon = {
@@ -37,7 +37,7 @@ fun PlayerPhoneTopBar(
                 Icon(
                     painter = painterResource(R.drawable.ic_arrow_left),
                     contentDescription = stringResource(R.string.content_desc_back),
-                    tint = colorScheme.onBackground
+                    tint = colorScheme.onBackground,
                 )
             }
         },
@@ -46,14 +46,15 @@ fun PlayerPhoneTopBar(
                 Icon(
                     painter = painterResource(R.drawable.ic_more),
                     contentDescription = stringResource(R.string.content_desc_menu),
-                    tint = colorScheme.onSurface
+                    tint = colorScheme.onSurface,
                 )
             }
         },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = colorScheme.background,
-            titleContentColor = colorScheme.onBackground,
-            navigationIconContentColor = colorScheme.onBackground
-        )
+        colors =
+            TopAppBarDefaults.topAppBarColors(
+                containerColor = colorScheme.background,
+                titleContentColor = colorScheme.onBackground,
+                navigationIconContentColor = colorScheme.onBackground,
+            ),
     )
 }

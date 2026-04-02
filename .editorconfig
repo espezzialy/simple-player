@@ -1,0 +1,18 @@
+# https://editorconfig.org
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{kt,kts}]
+indent_style = space
+indent_size = 4
+# Jetpack Compose: @Composable com nomes em PascalCase
+ktlint_function_naming_ignore_when_annotated_with = Composable
+# Ficheiros tipo *Contract.kt com sealed interface de intents
+ktlint_standard_filename = disabled
+# Convenções do projeto (ex.: const em object com camelCase)
+ktlint_standard_property-naming = disabled

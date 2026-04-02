@@ -21,24 +21,26 @@ fun ArtworkThumbnail(
     size: Dp,
     modifier: Modifier = Modifier,
     cornerRadius: Dp = 8.dp,
-    placeholderColor: Color = MaterialTheme.colorScheme.surfaceContainerLowest
+    placeholderColor: Color = MaterialTheme.colorScheme.surfaceContainerLowest,
 ) {
     val shape = RoundedCornerShape(cornerRadius)
     if (!imageUrl.isNullOrBlank()) {
         AsyncImage(
             model = imageUrl,
             contentDescription = contentDescription,
-            modifier = modifier
-                .size(size)
-                .clip(shape),
-            contentScale = ContentScale.Crop
+            modifier =
+                modifier
+                    .size(size)
+                    .clip(shape),
+            contentScale = ContentScale.Crop,
         )
     } else {
         Box(
-            modifier = modifier
-                .size(size)
-                .clip(shape)
-                .background(placeholderColor)
+            modifier =
+                modifier
+                    .size(size)
+                    .clip(shape)
+                    .background(placeholderColor),
         )
     }
 }

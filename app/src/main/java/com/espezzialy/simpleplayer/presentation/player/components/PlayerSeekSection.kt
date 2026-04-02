@@ -20,7 +20,7 @@ fun PlayerSeekSection(
     remainingLabel: String,
     onProgressChange: (Float) -> Unit,
     trackHeight: Dp,
-    thumbDiameter: Dp
+    thumbDiameter: Dp,
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
@@ -31,22 +31,22 @@ fun PlayerSeekSection(
             onProgressChange = onProgressChange,
             modifier = Modifier.fillMaxWidth(),
             trackHeight = trackHeight,
-            thumbDiameter = thumbDiameter
+            thumbDiameter = thumbDiameter,
         )
         Spacer(modifier = Modifier.height(SimplePlayerDimens.Player.seekTimeRowSpacing))
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(
                 text = currentLabel,
                 style = typography.labelSmall,
-                color = colorScheme.onSurfaceVariant
+                color = colorScheme.onSurfaceVariant,
             )
             Text(
                 text = remainingLabel,
                 style = typography.labelSmall,
-                color = colorScheme.onSurfaceVariant
+                color = colorScheme.onSurfaceVariant,
             )
         }
     }

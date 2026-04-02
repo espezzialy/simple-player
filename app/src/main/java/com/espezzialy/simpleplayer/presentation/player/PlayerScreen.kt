@@ -1,6 +1,5 @@
 package com.espezzialy.simpleplayer.presentation.player
 
-import android.content.res.Configuration as AndroidConfiguration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,7 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -44,21 +42,22 @@ import com.espezzialy.simpleplayer.domain.model.SongsEffect
 import com.espezzialy.simpleplayer.domain.model.SongsIntent
 import com.espezzialy.simpleplayer.presentation.common.components.TabletNavBarPaddingTop
 import com.espezzialy.simpleplayer.presentation.player.components.PlayerMainColumn
-import com.espezzialy.simpleplayer.presentation.player.components.rememberIsInMultiWindowMode
 import com.espezzialy.simpleplayer.presentation.player.components.PlayerOverflowSheetContent
 import com.espezzialy.simpleplayer.presentation.player.components.PlayerPhoneTopBar
 import com.espezzialy.simpleplayer.presentation.player.components.PlayerSidePlaylistPanel
 import com.espezzialy.simpleplayer.presentation.player.components.PlayerTabletTopBar
+import com.espezzialy.simpleplayer.presentation.player.components.rememberIsInMultiWindowMode
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerBreakpoints
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerColors
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerDimens
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerTheme
+import android.content.res.Configuration as AndroidConfiguration
 
 @Composable
 fun PlayerRoute(
     onBack: () -> Unit,
     onNavigateToAlbum: (Long) -> Unit,
-    viewModel: PlayerViewModel = hiltViewModel()
+    viewModel: PlayerViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val sidePanelUiState by viewModel.sidePanelUiState.collectAsStateWithLifecycle()
@@ -77,7 +76,7 @@ fun PlayerRoute(
         onBack = onBack,
         onNavigateToAlbum = onNavigateToAlbum,
         sidePanelUiState = sidePanelUiState,
-        onRetrySearch = { viewModel.onSongsSearchIntent(SongsIntent.RetrySearch) }
+        onRetrySearch = { viewModel.onSongsSearchIntent(SongsIntent.RetrySearch) },
     )
 }
 
@@ -88,16 +87,17 @@ fun PlayerScreen(
     onIntent: (PlayerIntent) -> Unit,
     onBack: () -> Unit,
     onNavigateToAlbum: (Long) -> Unit,
-    sidePanelUiState: PlayerSidePanelUiState = PlayerSidePanelUiState(
-        songs = emptyList(),
-        panelTitle = null,
-        isSearchMode = true,
-        isLoading = false,
-        errorMessage = null,
-        showEmptyQueryHint = true
-    ),
+    sidePanelUiState: PlayerSidePanelUiState =
+        PlayerSidePanelUiState(
+            songs = emptyList(),
+            panelTitle = null,
+            isSearchMode = true,
+            isLoading = false,
+            errorMessage = null,
+            showEmptyQueryHint = true,
+        ),
     onRetrySearch: () -> Unit = {},
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     var overflowSheetVisible by remember { mutableStateOf(false) }
     val overflowSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
@@ -115,27 +115,30 @@ fun PlayerScreen(
         configuration.screenHeightDp < configuration.screenWidthDp
 
     Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(colorScheme.background)
+        modifier =
+            modifier
+                .fillMaxSize()
+                .background(colorScheme.background),
     ) {
         if (isTabletLayout && showSidePanel) {
             Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .statusBarsPadding()
-                    .navigationBarsPadding()
-                    .padding(start = SimplePlayerDimens.Player.horizontalPadding),
-                verticalAlignment = Alignment.Top
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .statusBarsPadding()
+                        .navigationBarsPadding()
+                        .padding(start = SimplePlayerDimens.Player.horizontalPadding),
+                verticalAlignment = Alignment.Top,
             ) {
                 Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxHeight()
+                    modifier =
+                        Modifier
+                            .weight(1f)
+                            .fillMaxHeight(),
                 ) {
                     PlayerTabletTopBar(
                         onBack = onBack,
-                        title = stringResource(R.string.player_now_playing)
+                        title = stringResource(R.string.player_now_playing),
                     )
                     PlayerMainColumn(
                         state = state,
@@ -145,19 +148,20 @@ fun PlayerScreen(
                         contentPaddingTop = SimplePlayerDimens.Player.paddingBelowTopBarTablet,
                         seekTrackHeight = seekTrackHeight,
                         seekThumbDiameter = seekThumbDiameter,
-                        isTabletLayout = true
+                        isTabletLayout = true,
                     )
                 }
                 IconButton(
                     onClick = { overflowSheetVisible = true },
-                    modifier = Modifier
-                        .align(Alignment.Top)
-                        .padding(top = TabletNavBarPaddingTop)
+                    modifier =
+                        Modifier
+                            .align(Alignment.Top)
+                            .padding(top = TabletNavBarPaddingTop),
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_more),
                         contentDescription = stringResource(R.string.content_desc_menu),
-                        tint = colorScheme.onSurfaceVariant
+                        tint = colorScheme.onSurfaceVariant,
                     )
                 }
                 Spacer(modifier = Modifier.width(SimplePlayerDimens.Player.sidePanelMenuGap))
@@ -169,30 +173,32 @@ fun PlayerScreen(
                     onSongClick = { song: Song ->
                         onIntent(PlayerIntent.SongSelectedFromPlaylist(song))
                     },
-                    modifier = Modifier
-                        .then(
-                            if (isTabletLandscape) {
-                                Modifier.weight(0.38f)
-                            } else {
-                                Modifier.width(SimplePlayerDimens.Player.sidePanelWidth)
-                            }
-                        )
-                        .fillMaxHeight()
-                        .padding(end = SimplePlayerDimens.Player.sidePanelEndPadding)
+                    modifier =
+                        Modifier
+                            .then(
+                                if (isTabletLandscape) {
+                                    Modifier.weight(0.38f)
+                                } else {
+                                    Modifier.width(SimplePlayerDimens.Player.sidePanelWidth)
+                                },
+                            )
+                            .fillMaxHeight()
+                            .padding(end = SimplePlayerDimens.Player.sidePanelEndPadding),
                 )
             }
         } else if (isTabletLayout) {
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .statusBarsPadding()
-                    .navigationBarsPadding()
-                    .padding(horizontal = SimplePlayerDimens.Player.horizontalPadding)
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .statusBarsPadding()
+                        .navigationBarsPadding()
+                        .padding(horizontal = SimplePlayerDimens.Player.horizontalPadding),
             ) {
                 PlayerTabletTopBar(
                     onBack = onBack,
                     title = stringResource(R.string.player_now_playing),
-                    onOverflowClick = { overflowSheetVisible = true }
+                    onOverflowClick = { overflowSheetVisible = true },
                 )
                 PlayerMainColumn(
                     state = state,
@@ -202,28 +208,30 @@ fun PlayerScreen(
                     contentPaddingTop = SimplePlayerDimens.Player.paddingBelowTopBarTablet,
                     seekTrackHeight = seekTrackHeight,
                     seekThumbDiameter = seekThumbDiameter,
-                    isTabletLayout = true
+                    isTabletLayout = true,
                 )
             }
         } else {
             Scaffold(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .navigationBarsPadding(),
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .navigationBarsPadding(),
                 containerColor = colorScheme.background,
                 topBar = {
                     PlayerPhoneTopBar(
                         onBack = onBack,
                         title = stringResource(R.string.player_now_playing),
-                        onOverflowClick = { overflowSheetVisible = true }
+                        onOverflowClick = { overflowSheetVisible = true },
                     )
-                }
+                },
             ) { innerPadding ->
                 Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
-                        .padding(horizontal = SimplePlayerDimens.Player.horizontalPadding)
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding)
+                            .padding(horizontal = SimplePlayerDimens.Player.horizontalPadding),
                 ) {
                     PlayerMainColumn(
                         state = state,
@@ -233,7 +241,7 @@ fun PlayerScreen(
                         contentPaddingTop = SimplePlayerDimens.contentBelowTopAppBarPhone,
                         seekTrackHeight = seekTrackHeight,
                         seekThumbDiameter = seekThumbDiameter,
-                        isTabletLayout = false
+                        isTabletLayout = false,
                     )
                 }
             }
@@ -245,12 +253,13 @@ fun PlayerScreen(
                 sheetState = overflowSheetState,
                 dragHandle = { BottomSheetDefaults.DragHandle() },
                 containerColor = colorScheme.surfaceContainerHigh,
-                shape = RoundedCornerShape(
-                    topStart = SimplePlayerDimens.Player.bottomSheetTopCorner,
-                    topEnd = SimplePlayerDimens.Player.bottomSheetTopCorner
-                ),
+                shape =
+                    RoundedCornerShape(
+                        topStart = SimplePlayerDimens.Player.bottomSheetTopCorner,
+                        topEnd = SimplePlayerDimens.Player.bottomSheetTopCorner,
+                    ),
                 scrimColor = SimplePlayerColors.ModalSheetScrim,
-                tonalElevation = 0.dp
+                tonalElevation = 0.dp,
             ) {
                 PlayerOverflowSheetContent(
                     trackName = state.trackName,
@@ -259,7 +268,7 @@ fun PlayerScreen(
                     onViewAlbumClick = {
                         overflowSheetVisible = false
                         state.collectionId?.let(onNavigateToAlbum)
-                    }
+                    },
                 )
             }
         }
@@ -274,58 +283,62 @@ private const val TabletPreviewHeightDp = 600
     backgroundColor = 0xFF000000,
     widthDp = TabletPreviewWidthDp,
     heightDp = TabletPreviewHeightDp,
-    name = "Player (tablet)"
+    name = "Player (tablet)",
 )
 @Composable
 private fun PlayerScreenTabletPreview() {
-    val tabletConfiguration = AndroidConfiguration(LocalConfiguration.current).apply {
-        screenWidthDp = TabletPreviewWidthDp
-        screenHeightDp = TabletPreviewHeightDp
-    }
+    val tabletConfiguration =
+        AndroidConfiguration(LocalConfiguration.current).apply {
+            screenWidthDp = TabletPreviewWidthDp
+            screenHeightDp = TabletPreviewHeightDp
+        }
     CompositionLocalProvider(LocalConfiguration provides tabletConfiguration) {
         SimplePlayerTheme {
             PlayerScreen(
-                state = PlayerUiState(
-                    trackId = 1L,
-                    trackName = "Perfect",
-                    artistName = "Ed Sheeran",
-                    collectionId = 1L,
-                    artworkUrl = null,
-                    progress = 0f,
-                    isPlaying = true,
-                    currentTimeLabel = "0:00",
-                    remainingTimeLabel = "-4:20",
-                    repeatEnabled = false
-                ),
+                state =
+                    PlayerUiState(
+                        trackId = 1L,
+                        trackName = "Perfect",
+                        artistName = "Ed Sheeran",
+                        collectionId = 1L,
+                        artworkUrl = null,
+                        progress = 0f,
+                        isPlaying = true,
+                        currentTimeLabel = "0:00",
+                        remainingTimeLabel = "-4:20",
+                        repeatEnabled = false,
+                    ),
                 onIntent = {},
                 onBack = {},
                 onNavigateToAlbum = {},
-                sidePanelUiState = PlayerSidePanelUiState(
-                    songs = listOf(
-                        Song(
-                            trackId = 1L,
-                            trackName = "Perfect",
-                            artistName = "Ed Sheeran",
-                            collectionName = "÷",
-                            collectionId = 1L,
-                            artworkUrl100 = null
-                        ),
-                        Song(
-                            trackId = 2L,
-                            trackName = "Shape of You",
-                            artistName = "Ed Sheeran",
-                            collectionName = "÷",
-                            collectionId = 1L,
-                            artworkUrl100 = null
-                        )
+                sidePanelUiState =
+                    PlayerSidePanelUiState(
+                        songs =
+                            listOf(
+                                Song(
+                                    trackId = 1L,
+                                    trackName = "Perfect",
+                                    artistName = "Ed Sheeran",
+                                    collectionName = "÷",
+                                    collectionId = 1L,
+                                    artworkUrl100 = null,
+                                ),
+                                Song(
+                                    trackId = 2L,
+                                    trackName = "Shape of You",
+                                    artistName = "Ed Sheeran",
+                                    collectionName = "÷",
+                                    collectionId = 1L,
+                                    artworkUrl100 = null,
+                                ),
+                            ),
+                        panelTitle = "÷",
+                        isSearchMode = false,
+                        isLoading = false,
+                        errorMessage = null,
+                        showEmptyQueryHint = false,
                     ),
-                    panelTitle = "÷",
-                    isSearchMode = false,
-                    isLoading = false,
-                    errorMessage = null,
-                    showEmptyQueryHint = false
-                ),
-                onRetrySearch = {}
+                onRetrySearch = {},
             )
         }
     }
@@ -336,21 +349,22 @@ private fun PlayerScreenTabletPreview() {
 private fun PlayerScreenPreview() {
     SimplePlayerTheme {
         PlayerScreen(
-            state = PlayerUiState(
-                trackId = 1L,
-                trackName = "Get Lucky",
-                artistName = "Daft Punk feat. Pharrell Williams",
-                collectionId = 1L,
-                artworkUrl = null,
-                progress = 0f,
-                isPlaying = false,
-                currentTimeLabel = "0:00",
-                remainingTimeLabel = "-4:20",
-                repeatEnabled = false
-            ),
+            state =
+                PlayerUiState(
+                    trackId = 1L,
+                    trackName = "Get Lucky",
+                    artistName = "Daft Punk feat. Pharrell Williams",
+                    collectionId = 1L,
+                    artworkUrl = null,
+                    progress = 0f,
+                    isPlaying = false,
+                    currentTimeLabel = "0:00",
+                    remainingTimeLabel = "-4:20",
+                    repeatEnabled = false,
+                ),
             onIntent = {},
             onBack = {},
-            onNavigateToAlbum = {}
+            onNavigateToAlbum = {},
         )
     }
 }

@@ -24,31 +24,32 @@ import com.espezzialy.simpleplayer.ui.theme.SimplePlayerDimens
 @Composable
 fun AlbumTabletTopBar(
     onBack: () -> Unit,
-    title: String
+    title: String,
 ) {
     val colorScheme = MaterialTheme.colorScheme
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .statusBarsPadding()
-            .padding(
-                start = SimplePlayerDimens.Album.tabletNavPaddingStart,
-                top = TabletNavBarPaddingTop
-            ),
-        verticalAlignment = Alignment.CenterVertically
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .statusBarsPadding()
+                .padding(
+                    start = SimplePlayerDimens.Album.tabletNavPaddingStart,
+                    top = TabletNavBarPaddingTop,
+                ),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         TabletBackIconButton(
             onClick = onBack,
             contentDescription = stringResource(R.string.content_desc_back),
             tint = colorScheme.onBackground,
             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-            iconSize = 28.dp
+            iconSize = 28.dp,
         )
         Spacer(modifier = Modifier.width(SimplePlayerDimens.Album.tabletNavIconToTitle))
         Text(
             text = title,
             style = AlbumTabletNavTitleTextStyle,
-            color = colorScheme.onBackground
+            color = colorScheme.onBackground,
         )
     }
 }

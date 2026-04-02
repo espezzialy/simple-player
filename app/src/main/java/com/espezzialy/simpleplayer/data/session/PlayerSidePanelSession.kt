@@ -1,33 +1,39 @@
 package com.espezzialy.simpleplayer.data.session
 
 import com.espezzialy.simpleplayer.domain.model.Song
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import javax.inject.Inject
+import javax.inject.Singleton
 
 sealed interface PlayerSidePanelSource {
     data object SearchResults : PlayerSidePanelSource
+
     data class AlbumTracks(val albumTitle: String, val songs: List<Song>) : PlayerSidePanelSource
+
     data class RecentSongs(val songs: List<Song>) : PlayerSidePanelSource
 }
 
 @Singleton
-class PlayerSidePanelSession @Inject constructor() {
+class PlayerSidePanelSession
+    @Inject
+    constructor() {
+        private val _source = MutableStateFlow<PlayerSidePanelSource>(PlayerSidePanelSource.SearchResults)
+        val source: StateFlow<PlayerSidePanelSource> = _source.asStateFlow()
 
-    private val _source = MutableStateFlow<PlayerSidePanelSource>(PlayerSidePanelSource.SearchResults)
-    val source: StateFlow<PlayerSidePanelSource> = _source.asStateFlow()
+        fun setSearchResults() {
+            _source.value = PlayerSidePanelSource.SearchResults
+        }
 
-    fun setSearchResults() {
-        _source.value = PlayerSidePanelSource.SearchResults
+        fun setAlbumTracks(
+            albumTitle: String,
+            songs: List<Song>,
+        ) {
+            _source.value = PlayerSidePanelSource.AlbumTracks(albumTitle, songs)
+        }
+
+        fun setRecentSongs(songs: List<Song>) {
+            _source.value = PlayerSidePanelSource.RecentSongs(songs)
+        }
     }
-
-    fun setAlbumTracks(albumTitle: String, songs: List<Song>) {
-        _source.value = PlayerSidePanelSource.AlbumTracks(albumTitle, songs)
-    }
-
-    fun setRecentSongs(songs: List<Song>) {
-        _source.value = PlayerSidePanelSource.RecentSongs(songs)
-    }
-}

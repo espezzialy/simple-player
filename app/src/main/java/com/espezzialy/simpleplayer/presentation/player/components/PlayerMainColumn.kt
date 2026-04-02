@@ -30,44 +30,48 @@ fun PlayerMainColumn(
     contentPaddingTop: Dp,
     seekTrackHeight: Dp,
     seekThumbDiameter: Dp,
-    isTabletLayout: Boolean
+    isTabletLayout: Boolean,
 ) {
     val colorScheme = MaterialTheme.colorScheme
-    val trackNameStyle = if (isTabletLayout) {
-        PlayerNowPlayingTextStyles.trackTablet
-    } else {
-        PlayerNowPlayingTextStyles.trackPhone
-    }
-    val artistNameStyle = if (isTabletLayout) {
-        PlayerNowPlayingTextStyles.artistTablet
-    } else {
-        PlayerNowPlayingTextStyles.artistPhone
-    }
+    val trackNameStyle =
+        if (isTabletLayout) {
+            PlayerNowPlayingTextStyles.trackTablet
+        } else {
+            PlayerNowPlayingTextStyles.trackPhone
+        }
+    val artistNameStyle =
+        if (isTabletLayout) {
+            PlayerNowPlayingTextStyles.artistTablet
+        } else {
+            PlayerNowPlayingTextStyles.artistPhone
+        }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(top = contentPaddingTop),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(top = contentPaddingTop),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         if (isTabletLayout) {
             Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth(),
-                contentAlignment = Alignment.Center
+                modifier =
+                    Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
+                contentAlignment = Alignment.Center,
             ) {
                 PlayerArtwork(
                     artworkUrl = state.artworkUrl,
                     trackName = state.trackName,
-                    size = artworkSize
+                    size = artworkSize,
                 )
             }
         } else {
             PlayerArtwork(
                 artworkUrl = state.artworkUrl,
                 trackName = state.trackName,
-                size = artworkSize
+                size = artworkSize,
             )
             Spacer(modifier = Modifier.weight(1f))
         }
@@ -79,7 +83,7 @@ fun PlayerMainColumn(
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Start
+                textAlign = TextAlign.Start,
             )
             Spacer(modifier = Modifier.height(SimplePlayerDimens.Player.spacerTitleToArtist))
             Text(
@@ -89,7 +93,7 @@ fun PlayerMainColumn(
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Start
+                textAlign = TextAlign.Start,
             )
             Spacer(modifier = Modifier.height(SimplePlayerDimens.Player.spacerArtistToSeek))
             PlayerSeekSection(
@@ -98,17 +102,18 @@ fun PlayerMainColumn(
                 remainingLabel = state.remainingTimeLabel,
                 onProgressChange = { onIntent(PlayerIntent.ProgressChanged(it)) },
                 trackHeight = seekTrackHeight,
-                thumbDiameter = seekThumbDiameter
+                thumbDiameter = seekThumbDiameter,
             )
         }
         Spacer(
-            modifier = Modifier.height(
-                if (isTabletLayout) {
-                    SimplePlayerDimens.Player.spacerSeekToTransportTablet
-                } else {
-                    SimplePlayerDimens.Player.spacerSeekToTransportPhone
-                }
-            )
+            modifier =
+                Modifier.height(
+                    if (isTabletLayout) {
+                        SimplePlayerDimens.Player.spacerSeekToTransportTablet
+                    } else {
+                        SimplePlayerDimens.Player.spacerSeekToTransportPhone
+                    },
+                ),
         )
         PlayerTransportControls(
             isPlaying = state.isPlaying,
@@ -116,7 +121,7 @@ fun PlayerMainColumn(
             onPlayPause = { onIntent(PlayerIntent.PlayPauseClicked) },
             onPrevious = { onIntent(PlayerIntent.SkipPreviousClicked) },
             onNext = { onIntent(PlayerIntent.SkipNextClicked) },
-            onRepeat = { onIntent(PlayerIntent.RepeatClicked) }
+            onRepeat = { onIntent(PlayerIntent.RepeatClicked) },
         )
         Spacer(modifier = Modifier.height(SimplePlayerDimens.Player.spacerAfterTransport))
     }

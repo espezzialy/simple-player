@@ -13,16 +13,11 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class DataModule {
+    @Binds
+    @Singleton
+    abstract fun bindSongsRemoteDataSource(impl: SongsRemoteDataSourceImpl): SongsRemoteDataSource
 
     @Binds
     @Singleton
-    abstract fun bindSongsRemoteDataSource(
-        impl: SongsRemoteDataSourceImpl
-    ): SongsRemoteDataSource
-
-    @Binds
-    @Singleton
-    abstract fun bindSongRepository(
-        impl: SongRepositoryImpl
-    ): SongRepository
+    abstract fun bindSongRepository(impl: SongRepositoryImpl): SongRepository
 }

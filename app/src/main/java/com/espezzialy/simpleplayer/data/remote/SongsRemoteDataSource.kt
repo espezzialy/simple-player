@@ -4,11 +4,15 @@ import com.espezzialy.simpleplayer.data.remote.model.ItunesSongDto
 
 data class RemoteSearchSongsPage(
     val dtos: List<ItunesSongDto>,
-    val apiConsumedCount: Int
+    val apiConsumedCount: Int,
 )
 
 interface SongsRemoteDataSource {
-    suspend fun searchSongs(term: String, limit: Int, offset: Int): RemoteSearchSongsPage
+    suspend fun searchSongs(
+        term: String,
+        limit: Int,
+        offset: Int,
+    ): RemoteSearchSongsPage
 
     suspend fun lookupAlbumTracks(collectionId: Long): List<ItunesSongDto>
 }

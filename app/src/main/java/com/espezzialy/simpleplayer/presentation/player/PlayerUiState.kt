@@ -12,7 +12,7 @@ data class PlayerUiState(
     val isPlaying: Boolean,
     val currentTimeLabel: String,
     val remainingTimeLabel: String,
-    val repeatEnabled: Boolean
+    val repeatEnabled: Boolean,
 )
 
 data class PlayerSidePanelUiState(
@@ -21,5 +21,5 @@ data class PlayerSidePanelUiState(
     val isSearchMode: Boolean,
     val isLoading: Boolean,
     val errorMessage: String?,
-    val showEmptyQueryHint: Boolean
+    val showEmptyQueryHint: Boolean,
 )

@@ -4,7 +4,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class PlayerTimeFormatterTest {
-
     @Test
     fun labelsForProgress_matchesMockTrackPosition() {
         val total = 260

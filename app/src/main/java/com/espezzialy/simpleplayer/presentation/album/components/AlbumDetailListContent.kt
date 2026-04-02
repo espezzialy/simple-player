@@ -1,10 +1,10 @@
 package com.espezzialy.simpleplayer.presentation.album.components
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
@@ -19,7 +19,7 @@ import com.espezzialy.simpleplayer.ui.theme.SimplePlayerDimens
 fun AlbumDetailListContent(
     album: AlbumDetail,
     onSongClick: (AlbumTrack) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val isTabletLayout =
         LocalConfiguration.current.screenWidthDp >= SimplePlayerBreakpoints.tabletMinWidthDp
@@ -27,11 +27,12 @@ fun AlbumDetailListContent(
     if (isTabletLayout) {
         LazyColumn(
             modifier = modifier,
-            contentPadding = PaddingValues(
-                start = SimplePlayerDimens.Album.tabletContentPaddingStart,
-                end = SimplePlayerDimens.Album.listHorizontalEnd,
-                bottom = SimplePlayerDimens.Album.listBottomPadding
-            )
+            contentPadding =
+                PaddingValues(
+                    start = SimplePlayerDimens.Album.tabletContentPaddingStart,
+                    end = SimplePlayerDimens.Album.listHorizontalEnd,
+                    bottom = SimplePlayerDimens.Album.listBottomPadding,
+                ),
         ) {
             item {
                 AlbumTabletHeroSection(album = album)
@@ -39,12 +40,12 @@ fun AlbumDetailListContent(
             }
             itemsIndexed(
                 items = album.tracks,
-                key = { _, track -> track.trackId }
+                key = { _, track -> track.trackId },
             ) { index, track ->
                 Column(modifier = Modifier.fillMaxWidth()) {
                     AlbumTrackRow(
                         track = track,
-                        onClick = { onSongClick(track) }
+                        onClick = { onSongClick(track) },
                     )
                     if (index < album.tracks.lastIndex) {
                         Spacer(modifier = Modifier.height(SimplePlayerDimens.Album.tabletTrackSpacing))
@@ -55,24 +56,25 @@ fun AlbumDetailListContent(
     } else {
         LazyColumn(
             modifier = modifier,
-            contentPadding = PaddingValues(
-                start = SimplePlayerDimens.screenHorizontalPadding,
-                end = SimplePlayerDimens.screenHorizontalPadding,
-                top = SimplePlayerDimens.Album.phoneHeroPaddingTop,
-                bottom = SimplePlayerDimens.Album.listBottomPadding
-            )
+            contentPadding =
+                PaddingValues(
+                    start = SimplePlayerDimens.screenHorizontalPadding,
+                    end = SimplePlayerDimens.screenHorizontalPadding,
+                    top = SimplePlayerDimens.Album.phoneHeroPaddingTop,
+                    bottom = SimplePlayerDimens.Album.listBottomPadding,
+                ),
         ) {
             item {
                 AlbumPhoneHeroSection(album = album)
             }
             itemsIndexed(
                 items = album.tracks,
-                key = { _, track -> track.trackId }
+                key = { _, track -> track.trackId },
             ) { index, track ->
                 Column(modifier = Modifier.fillMaxWidth()) {
                     AlbumTrackRow(
                         track = track,
-                        onClick = { onSongClick(track) }
+                        onClick = { onSongClick(track) },
                     )
                     if (index < album.tracks.lastIndex) {
                         Spacer(modifier = Modifier.height(SimplePlayerDimens.Album.phoneTrackRowGap))

@@ -2,8 +2,8 @@
 
 package com.espezzialy.simpleplayer.presentation.songs
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -60,7 +60,7 @@ fun SongsRoute(
     onNavigateToAlbum: (Long) -> Unit,
     onNavigateToPlayer: (Song) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: SongsViewModel = hiltViewModel()
+    viewModel: SongsViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -81,7 +81,7 @@ fun SongsRoute(
                 onNavigateToPlayer(song)
             }
         },
-        modifier = modifier
+        modifier = modifier,
     )
 }
 
@@ -91,7 +91,7 @@ fun SongsScreen(
     onIntent: (SongsIntent) -> Unit,
     onNavigateToAlbum: (Long) -> Unit,
     onNavigateToPlayer: (Song, fromRecentSection: Boolean) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
@@ -99,44 +99,48 @@ fun SongsScreen(
         LocalConfiguration.current.screenWidthDp >= SimplePlayerBreakpoints.tabletMinWidthDp
 
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(colorScheme.background)
-            .statusBarsPadding()
-            .navigationBarsPadding()
-            .padding(horizontal = SimplePlayerDimens.screenHorizontalPadding)
-            .padding(
-                top = if (isTabletLayout) {
-                    SimplePlayerDimens.Songs.screenTitlePaddingTopTablet
-                } else {
-                    SimplePlayerDimens.Songs.screenTitlePaddingTopPhone
-                },
-                bottom = SimplePlayerDimens.Songs.screenBottomPadding
-            )
+        modifier =
+            modifier
+                .fillMaxSize()
+                .background(colorScheme.background)
+                .statusBarsPadding()
+                .navigationBarsPadding()
+                .padding(horizontal = SimplePlayerDimens.screenHorizontalPadding)
+                .padding(
+                    top =
+                        if (isTabletLayout) {
+                            SimplePlayerDimens.Songs.screenTitlePaddingTopTablet
+                        } else {
+                            SimplePlayerDimens.Songs.screenTitlePaddingTopPhone
+                        },
+                    bottom = SimplePlayerDimens.Songs.screenBottomPadding,
+                ),
     ) {
         Text(
             text = stringResource(R.string.songs_title),
             style = typography.displaySmall,
-            color = colorScheme.onBackground
+            color = colorScheme.onBackground,
         )
         Spacer(modifier = Modifier.height(SimplePlayerDimens.Songs.afterTitleSpacing))
         SongsSearchField(
             query = state.query,
-            onQueryChange = { onIntent(SongsIntent.QueryChanged(it)) }
+            onQueryChange = { onIntent(SongsIntent.QueryChanged(it)) },
         )
         Spacer(modifier = Modifier.height(SimplePlayerDimens.Songs.afterTitleSpacing))
 
         Box(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
         ) {
             when {
                 state.isLoading && state.songs.isEmpty() -> {
                     CenteredLoading(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .fillMaxWidth()
+                        modifier =
+                            Modifier
+                                .fillMaxSize()
+                                .fillMaxWidth(),
                     )
                 }
 
@@ -145,9 +149,10 @@ fun SongsScreen(
                         message = state.errorMessage,
                         retryLabel = stringResource(R.string.retry),
                         onRetry = { onIntent(SongsIntent.RetrySearch) },
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .fillMaxWidth()
+                        modifier =
+                            Modifier
+                                .fillMaxSize()
+                                .fillMaxWidth(),
                     )
                 }
 
@@ -157,47 +162,51 @@ fun SongsScreen(
                             Text(
                                 text = stringResource(R.string.songs_empty_query_hint),
                                 style = typography.bodyMedium,
-                                color = colorScheme.onSurfaceVariant
+                                color = colorScheme.onSurfaceVariant,
                             )
                         } else {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+                                verticalAlignment = Alignment.CenterVertically,
                             ) {
                                 Text(
                                     text = stringResource(R.string.songs_recent_title),
                                     style = typography.titleMedium,
                                     color = colorScheme.onBackground,
-                                    modifier = Modifier.weight(1f)
+                                    modifier = Modifier.weight(1f),
                                 )
                                 Text(
                                     text = stringResource(R.string.songs_clear_recent),
-                                    modifier = Modifier
-                                        .clickable {
-                                            onIntent(SongsIntent.ClearRecentSongs)
-                                        },
-                                    style = typography.bodyMedium.copy(
-                                        textDecoration = TextDecoration.Underline
-                                    ),
-                                    color = colorScheme.primary
+                                    modifier =
+                                        Modifier
+                                            .clickable {
+                                                onIntent(SongsIntent.ClearRecentSongs)
+                                            },
+                                    style =
+                                        typography.bodyMedium.copy(
+                                            textDecoration = TextDecoration.Underline,
+                                        ),
+                                    color = colorScheme.primary,
                                 )
                             }
                             Spacer(modifier = Modifier.height(SimplePlayerDimens.Songs.recentHeaderSpacing))
                             LazyColumn(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .fillMaxWidth(),
+                                modifier =
+                                    Modifier
+                                        .weight(1f)
+                                        .fillMaxWidth(),
                                 contentPadding = PaddingValues(bottom = SimplePlayerDimens.Songs.listContentBottom),
-                                verticalArrangement = Arrangement.spacedBy(SimplePlayerDimens.Songs.listVerticalItemSpacing)
+                                verticalArrangement = Arrangement.spacedBy(SimplePlayerDimens.Songs.listVerticalItemSpacing),
                             ) {
                                 items(state.recentSongs, key = { it.trackId }) { song ->
                                     SongRow(
                                         song = song,
                                         onSongClick = { onNavigateToPlayer(song, true) },
-                                        onViewAlbum = song.collectionId?.let { id ->
-                                            { onNavigateToAlbum(id) }
-                                        }
+                                        onViewAlbum =
+                                            song.collectionId?.let { id ->
+                                                { onNavigateToAlbum(id) }
+                                            },
                                     )
                                 }
                             }
@@ -210,7 +219,7 @@ fun SongsScreen(
                         modifier = Modifier.fillMaxSize(),
                         text = stringResource(R.string.songs_no_results),
                         style = typography.bodyMedium,
-                        color = colorScheme.onSurfaceVariant
+                        color = colorScheme.onSurfaceVariant,
                     )
                 }
 
@@ -218,10 +227,11 @@ fun SongsScreen(
                     val listState = rememberLazyListState()
                     val pullRefreshEnabled =
                         state.query.isNotBlank() && !(state.isLoading && state.songs.isEmpty())
-                    val pullRefreshState = rememberPullRefreshState(
-                        refreshing = state.isRefreshing,
-                        onRefresh = { onIntent(SongsIntent.Refresh) }
-                    )
+                    val pullRefreshState =
+                        rememberPullRefreshState(
+                            refreshing = state.isRefreshing,
+                            onRefresh = { onIntent(SongsIntent.Refresh) },
+                        )
                     val pullRefreshLabel = stringResource(R.string.content_desc_pull_to_refresh)
 
                     Box(modifier = Modifier.fillMaxSize()) {
@@ -232,7 +242,7 @@ fun SongsScreen(
                             state.isLoadingMore,
                             state.isLoading,
                             state.isRefreshing,
-                            state.songs.size
+                            state.songs.size,
                         ) {
                             if (!state.hasMore || state.isLoadingMore || state.isLoading ||
                                 state.isRefreshing
@@ -254,38 +264,40 @@ fun SongsScreen(
 
                         LazyColumn(
                             state = listState,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .fillMaxWidth()
-                                .then(
-                                    if (pullRefreshEnabled) {
-                                        Modifier.pullRefresh(pullRefreshState)
-                                    } else {
-                                        Modifier
-                                    }
-                                ),
+                            modifier =
+                                Modifier
+                                    .fillMaxSize()
+                                    .fillMaxWidth()
+                                    .then(
+                                        if (pullRefreshEnabled) {
+                                            Modifier.pullRefresh(pullRefreshState)
+                                        } else {
+                                            Modifier
+                                        },
+                                    ),
                             contentPadding = PaddingValues(bottom = SimplePlayerDimens.Songs.listContentBottom),
-                            verticalArrangement = Arrangement.spacedBy(SimplePlayerDimens.Songs.listVerticalItemSpacing)
+                            verticalArrangement = Arrangement.spacedBy(SimplePlayerDimens.Songs.listVerticalItemSpacing),
                         ) {
                             items(state.songs, key = { it.trackId }) { song ->
                                 SongRow(
                                     song = song,
                                     onSongClick = { onNavigateToPlayer(song, false) },
-                                    onViewAlbum = song.collectionId?.let { id -> { onNavigateToAlbum(id) } }
+                                    onViewAlbum = song.collectionId?.let { id -> { onNavigateToAlbum(id) } },
                                 )
                             }
                             if (state.isLoadingMore) {
                                 item(key = "loading_more") {
                                     Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(vertical = SimplePlayerDimens.Songs.loadMoreIndicatorPadding),
-                                        contentAlignment = Alignment.Center
+                                        modifier =
+                                            Modifier
+                                                .fillMaxWidth()
+                                                .padding(vertical = SimplePlayerDimens.Songs.loadMoreIndicatorPadding),
+                                        contentAlignment = Alignment.Center,
                                     ) {
                                         CircularProgressIndicator(
                                             modifier = Modifier.size(SimplePlayerDimens.Songs.loadMoreProgressSize),
                                             color = colorScheme.primary,
-                                            strokeWidth = SimplePlayerDimens.Songs.loadMoreProgressStrokeWidth
+                                            strokeWidth = SimplePlayerDimens.Songs.loadMoreProgressStrokeWidth,
                                         )
                                     }
                                 }
@@ -297,9 +309,10 @@ fun SongsScreen(
                                 pullRefreshState = pullRefreshState,
                                 isRefreshing = state.isRefreshing,
                                 contentDescription = pullRefreshLabel,
-                                modifier = Modifier
-                                    .align(Alignment.TopCenter)
-                                    .padding(top = SimplePlayerDimens.Songs.pullRefreshIndicatorTop)
+                                modifier =
+                                    Modifier
+                                        .align(Alignment.TopCenter)
+                                        .padding(top = SimplePlayerDimens.Songs.pullRefreshIndicatorTop),
                             )
                         }
                     }
@@ -314,30 +327,32 @@ fun SongsScreen(
 private fun SongsScreenPhonePreview() {
     SimplePlayerTheme {
         SongsScreen(
-            state = SongsUiState(
-                query = "wall",
-                songs = listOf(
-                    Song(
-                        1L,
-                        "Wall",
-                        "Good Kid",
-                        "Wall - Single",
-                        collectionId = 1L,
-                        artworkUrl100 = null
-                    ),
-                    Song(
-                        2L,
-                        "Off the Wall",
-                        "Michael Jackson",
-                        "Off the Wall",
-                        collectionId = 2L,
-                        artworkUrl100 = null
-                    )
-                )
-            ),
+            state =
+                SongsUiState(
+                    query = "wall",
+                    songs =
+                        listOf(
+                            Song(
+                                1L,
+                                "Wall",
+                                "Good Kid",
+                                "Wall - Single",
+                                collectionId = 1L,
+                                artworkUrl100 = null,
+                            ),
+                            Song(
+                                2L,
+                                "Off the Wall",
+                                "Michael Jackson",
+                                "Off the Wall",
+                                collectionId = 2L,
+                                artworkUrl100 = null,
+                            ),
+                        ),
+                ),
             onIntent = {},
             onNavigateToAlbum = {},
-            onNavigateToPlayer = { _, _ -> }
+            onNavigateToPlayer = { _, _ -> },
         )
     }
 }
@@ -347,30 +362,32 @@ private fun SongsScreenPhonePreview() {
 private fun SongsScreenTabletPreview() {
     SimplePlayerTheme {
         SongsScreen(
-            state = SongsUiState(
-                query = "wall",
-                songs = listOf(
-                    Song(
-                        1L,
-                        "Wall",
-                        "Good Kid",
-                        "Wall - Single",
-                        collectionId = 1L,
-                        artworkUrl100 = null
-                    ),
-                    Song(
-                        2L,
-                        "Off the Wall",
-                        "Michael Jackson",
-                        "Off the Wall",
-                        collectionId = 2L,
-                        artworkUrl100 = null
-                    )
-                )
-            ),
+            state =
+                SongsUiState(
+                    query = "wall",
+                    songs =
+                        listOf(
+                            Song(
+                                1L,
+                                "Wall",
+                                "Good Kid",
+                                "Wall - Single",
+                                collectionId = 1L,
+                                artworkUrl100 = null,
+                            ),
+                            Song(
+                                2L,
+                                "Off the Wall",
+                                "Michael Jackson",
+                                "Off the Wall",
+                                collectionId = 2L,
+                                artworkUrl100 = null,
+                            ),
+                        ),
+                ),
             onIntent = {},
             onNavigateToAlbum = {},
-            onNavigateToPlayer = { _, _ -> }
+            onNavigateToPlayer = { _, _ -> },
         )
     }
 }

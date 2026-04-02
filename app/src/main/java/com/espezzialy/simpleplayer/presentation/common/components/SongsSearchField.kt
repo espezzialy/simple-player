@@ -21,7 +21,7 @@ import com.espezzialy.simpleplayer.R
 fun SongsSearchField(
     query: String,
     onQueryChange: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
@@ -36,7 +36,7 @@ fun SongsSearchField(
             Text(
                 text = stringResource(R.string.songs_search_placeholder),
                 style = typography.bodyLarge,
-                color = colorScheme.onSurfaceVariant
+                color = colorScheme.onSurfaceVariant,
             )
         },
         leadingIcon = {
@@ -44,25 +44,26 @@ fun SongsSearchField(
                 painter = painterResource(R.drawable.ic_search),
                 contentDescription = null,
                 tint = colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(22.dp)
+                modifier = Modifier.size(22.dp),
             )
         },
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = colorScheme.surface,
-            unfocusedContainerColor = colorScheme.surface,
-            disabledContainerColor = colorScheme.surface,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-            disabledIndicatorColor = Color.Transparent,
-            errorIndicatorColor = Color.Transparent,
-            cursorColor = colorScheme.onSurface,
-            focusedTextColor = colorScheme.onSurface,
-            unfocusedTextColor = colorScheme.onSurface,
-            focusedLeadingIconColor = colorScheme.onSurfaceVariant,
-            unfocusedLeadingIconColor = colorScheme.onSurfaceVariant,
-            focusedPlaceholderColor = colorScheme.onSurfaceVariant,
-            unfocusedPlaceholderColor = colorScheme.onSurfaceVariant
-        ),
-        textStyle = typography.bodyLarge.merge(TextStyle(color = colorScheme.onSurface))
+        colors =
+            TextFieldDefaults.colors(
+                focusedContainerColor = colorScheme.surface,
+                unfocusedContainerColor = colorScheme.surface,
+                disabledContainerColor = colorScheme.surface,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent,
+                errorIndicatorColor = Color.Transparent,
+                cursorColor = colorScheme.onSurface,
+                focusedTextColor = colorScheme.onSurface,
+                unfocusedTextColor = colorScheme.onSurface,
+                focusedLeadingIconColor = colorScheme.onSurfaceVariant,
+                unfocusedLeadingIconColor = colorScheme.onSurfaceVariant,
+                focusedPlaceholderColor = colorScheme.onSurfaceVariant,
+                unfocusedPlaceholderColor = colorScheme.onSurfaceVariant,
+            ),
+        textStyle = typography.bodyLarge.merge(TextStyle(color = colorScheme.onSurface)),
     )
 }
