@@ -97,6 +97,10 @@ fun SimplePlayerNavHost(modifier: Modifier = Modifier) {
                         type = NavType.LongType
                         defaultValue = PlayerNavigation.NO_COLLECTION_ID
                     },
+                    navArgument(PlayerNavigation.ARG_TRACK_TIME_MILLIS) {
+                        type = NavType.LongType
+                        defaultValue = PlayerNavigation.NO_TRACK_TIME_MILLIS
+                    },
                 ),
             enterTransition = {
                 slideInHorizontally(

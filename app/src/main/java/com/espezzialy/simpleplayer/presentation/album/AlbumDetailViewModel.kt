@@ -55,6 +55,7 @@ class AlbumDetailViewModel
                         collectionName = album.title,
                         collectionId = album.collectionId,
                         artworkUrl100 = track.artworkUrl100,
+                        trackTimeMillis = track.trackTimeMillis,
                     )
                 }
             playerSidePanelSession.setAlbumTracks(album.title, songs)

@@ -15,6 +15,7 @@ class RecentSongSnapshotTest {
                 collectionName = "LP",
                 collectionId = 20L,
                 artworkUrl100 = "https://is1-ssl.mzstatic.com/x/100x100bb.jpg",
+                trackTimeMillis = 200_000L,
             )
         val snapshot = RecentSongSnapshot.fromSong(song)
         assertEquals(song.trackId, snapshot.trackId)
@@ -23,6 +24,7 @@ class RecentSongSnapshotTest {
         assertEquals(song.collectionName, snapshot.collectionName)
         assertEquals(song.collectionId, snapshot.collectionId)
         assertEquals(song.artworkUrl100, snapshot.artworkUrlSmall)
+        assertEquals(200_000L, snapshot.trackTimeMillis)
         assertEquals(
             "https://is1-ssl.mzstatic.com/x/600x600bb.jpg",
             snapshot.artworkUrlLarge,

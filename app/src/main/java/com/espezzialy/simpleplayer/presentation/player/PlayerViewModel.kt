@@ -87,8 +87,6 @@ class PlayerViewModel
 
         val songsSearchEffect: SharedFlow<SongsEffect> = songsSearchRepository.effect
 
-        private val totalSeconds = MOCK_TOTAL_SECONDS
-
         private val _state =
             MutableStateFlow(
                 buildState(
@@ -104,6 +102,7 @@ class PlayerViewModel
                     progress = 0f,
                     isPlaying = true,
                     repeatEnabled = false,
+                    trackTimeMillis = trackMillisFromSavedState(savedStateHandle),
                 ),
             )
 
@@ -115,6 +114,7 @@ class PlayerViewModel
                     delay(MOCK_PROGRESS_TICK_MS)
                     val s = _state.value
                     if (!s.isPlaying || s.progress >= 1f) continue
+                    val totalSeconds = s.totalDurationSeconds.coerceAtLeast(1)
                     val delta = MOCK_PROGRESS_TICK_MS.toFloat() / 1000f / totalSeconds
                     val newP = (s.progress + delta).coerceAtMost(1f)
                     if (newP >= 1f) {
@@ -149,6 +149,7 @@ class PlayerViewModel
 
         private fun applyProgress(p: Float) {
             val clamped = p.coerceIn(0f, 1f)
+            val totalSeconds = _state.value.totalDurationSeconds.coerceAtLeast(1)
             val (current, remaining) = PlayerTimeFormatter.labelsForProgress(clamped, totalSeconds)
             _state.update {
                 it.copy(
@@ -189,6 +190,7 @@ class PlayerViewModel
         }
 
         private fun selectSong(song: Song) {
+            val totalSeconds = millisToTotalSeconds(song.trackTimeMillis)
             val (current, remaining) = PlayerTimeFormatter.labelsForProgress(0f, totalSeconds)
             _state.update {
                 it.copy(
@@ -201,6 +203,7 @@ class PlayerViewModel
                     currentTimeLabel = current,
                     remainingTimeLabel = remaining,
                     isPlaying = true,
+                    totalDurationSeconds = totalSeconds,
                 )
             }
         }
@@ -214,7 +217,9 @@ class PlayerViewModel
             progress: Float,
             isPlaying: Boolean,
             repeatEnabled: Boolean,
+            trackTimeMillis: Long?,
         ): PlayerUiState {
+            val totalSeconds = millisToTotalSeconds(trackTimeMillis)
             val (current, remaining) = PlayerTimeFormatter.labelsForProgress(progress, totalSeconds)
             return PlayerUiState(
                 trackId = trackId,
@@ -227,11 +232,22 @@ class PlayerViewModel
                 currentTimeLabel = current,
                 remainingTimeLabel = remaining,
                 repeatEnabled = repeatEnabled,
+                totalDurationSeconds = totalSeconds,
             )
         }
 
+        private fun trackMillisFromSavedState(savedStateHandle: SavedStateHandle): Long? {
+            val raw = savedStateHandle.get<Long>(PlayerNavigation.ARG_TRACK_TIME_MILLIS)
+            return raw?.takeUnless { it == PlayerNavigation.NO_TRACK_TIME_MILLIS }
+        }
+
+        private fun millisToTotalSeconds(millis: Long?): Int {
+            if (millis == null || millis <= 0L) return FALLBACK_DURATION_SECONDS
+            return (millis / 1000L).toInt().coerceAtLeast(1)
+        }
+
         private companion object {
-            const val MOCK_TOTAL_SECONDS = 260
+            const val FALLBACK_DURATION_SECONDS = 260
             const val MOCK_PROGRESS_TICK_MS = 250L
         }
     }

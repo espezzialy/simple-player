@@ -42,6 +42,7 @@ object ItunesAlbumMapper {
                         trackName = dto.trackName.orEmpty(),
                         artistName = dto.artistName.orEmpty(),
                         artworkUrl100 = dto.artworkUrl100?.takeIf { it.isNotBlank() },
+                        trackTimeMillis = dto.trackTimeMillis?.takeIf { it > 0L },
                     )
                 }
 

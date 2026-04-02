@@ -7,4 +7,5 @@ data class Song(
     val collectionName: String,
     val collectionId: Long?,
     val artworkUrl100: String?,
+    val trackTimeMillis: Long? = null,
 )

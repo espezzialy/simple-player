@@ -11,6 +11,7 @@ data class RecentSongSnapshot(
     val collectionId: Long?,
     val artworkUrlSmall: String?,
     val artworkUrlLarge: String?,
+    val trackTimeMillis: Long? = null,
 ) {
     fun toSong(): Song =
         Song(
@@ -20,6 +21,7 @@ data class RecentSongSnapshot(
             collectionName = collectionName,
             collectionId = collectionId,
             artworkUrl100 = artworkUrlSmall,
+            trackTimeMillis = trackTimeMillis,
         )
 
     companion object {
@@ -32,6 +34,7 @@ data class RecentSongSnapshot(
                 collectionId = song.collectionId,
                 artworkUrlSmall = song.artworkUrl100,
                 artworkUrlLarge = song.artworkUrl100.toItunesArtwork600(),
+                trackTimeMillis = song.trackTimeMillis,
             )
     }
 }

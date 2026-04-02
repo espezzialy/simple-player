@@ -25,6 +25,7 @@ class PlayerNavigationRouteTest {
         assertTrue(route.contains("A%2FB"))
         assertTrue(route.contains("C%26D"))
         assertTrue(route.contains("/7/"))
+        assertTrue(route.endsWith("/3/${PlayerNavigation.NO_TRACK_TIME_MILLIS}"))
     }
 
     @Test
@@ -39,6 +40,10 @@ class PlayerNavigationRouteTest {
                 artworkUrl100 = null,
             )
         val route = playerRouteFor(song)
-        assertTrue(route.endsWith("/${PlayerNavigation.NO_COLLECTION_ID}"))
+        assertTrue(
+            route.endsWith(
+                "/${PlayerNavigation.NO_COLLECTION_ID}/${PlayerNavigation.NO_TRACK_TIME_MILLIS}",
+            ),
+        )
     }
 }

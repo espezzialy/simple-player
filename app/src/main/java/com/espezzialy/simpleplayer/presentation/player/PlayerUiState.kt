@@ -13,6 +13,7 @@ data class PlayerUiState(
     val currentTimeLabel: String,
     val remainingTimeLabel: String,
     val repeatEnabled: Boolean,
+    val totalDurationSeconds: Int,
 )
 
 data class PlayerSidePanelUiState(

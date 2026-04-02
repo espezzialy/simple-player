@@ -22,6 +22,7 @@ class AlbumTrackMappingTest {
                 trackName = "Song",
                 artistName = "Feat",
                 artworkUrl100 = "http://thumb",
+                trackTimeMillis = 222_000L,
             )
         val song = track.toSong(album)
         assertEquals(5L, song.trackId)
@@ -30,5 +31,6 @@ class AlbumTrackMappingTest {
         assertEquals("Album Title", song.collectionName)
         assertEquals(99L, song.collectionId)
         assertEquals("http://thumb", song.artworkUrl100)
+        assertEquals(222_000L, song.trackTimeMillis)
     }
 }

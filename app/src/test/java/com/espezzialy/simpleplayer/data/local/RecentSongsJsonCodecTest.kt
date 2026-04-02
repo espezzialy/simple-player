@@ -38,6 +38,7 @@ class RecentSongsJsonCodecTest {
                     collectionId = 2L,
                     artworkUrlSmall = "http://s.jpg",
                     artworkUrlLarge = "http://l.jpg",
+                    trackTimeMillis = 180_000L,
                 ),
             )
         val json = codec.encode(snapshots)

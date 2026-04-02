@@ -16,6 +16,7 @@ class ItunesSongMapperTest {
                 collectionName = "Album",
                 collectionId = 3L,
                 artworkUrl100 = "http://img/100.jpg",
+                trackTimeMillis = 253_000L,
             )
         val song = ItunesSongMapper.toSong(dto)
         assertEquals(9L, song.trackId)
@@ -24,6 +25,15 @@ class ItunesSongMapperTest {
         assertEquals("Album", song.collectionName)
         assertEquals(3L, song.collectionId)
         assertEquals("http://img/100.jpg", song.artworkUrl100)
+        assertEquals(253_000L, song.trackTimeMillis)
+    }
+
+    @Test
+    fun toSong_zeroOrNegativeTrackTime_becomesNull() {
+        val zero = ItunesSongDto(trackId = 1L, trackTimeMillis = 0L)
+        assertNull(ItunesSongMapper.toSong(zero).trackTimeMillis)
+        val neg = ItunesSongDto(trackId = 1L, trackTimeMillis = -1L)
+        assertNull(ItunesSongMapper.toSong(neg).trackTimeMillis)
     }
 
     @Test
