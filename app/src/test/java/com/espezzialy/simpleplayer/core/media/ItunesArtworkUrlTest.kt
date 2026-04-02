@@ -43,4 +43,16 @@ class ItunesArtworkUrlTest {
         val url = "https://example.com/path/0.jpg/200x200bb.jpg"
         assertEquals(url, url.toItunesArtwork200())
     }
+
+    @Test
+    fun toItunesArtwork600_leavesUrlUnchanged_whenNoSizeSuffix() {
+        val url = "https://example.com/cover.jpg"
+        assertEquals(url, url.toItunesArtwork600())
+    }
+
+    @Test
+    fun toItunesArtwork200_replacesNonStandardDimensions() {
+        val input = "https://x.com/a/30x30bb.jpg"
+        assertEquals("https://x.com/a/200x200bb.jpg", input.toItunesArtwork200())
+    }
 }

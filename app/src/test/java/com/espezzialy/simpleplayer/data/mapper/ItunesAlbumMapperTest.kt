@@ -84,4 +84,111 @@ class ItunesAlbumMapperTest {
         assertEquals("Solo", album.artistName)
         assertEquals(1, album.tracks.size)
     }
+
+    @Test
+    fun mapLookupResultsToAlbumDetail_returnsNull_whenNoCollectionIdAnywhere() {
+        val bad =
+            ItunesSongDto(
+                kind = "song",
+                trackId = 0L,
+                collectionId = null,
+            )
+        assertNull(ItunesAlbumMapper.mapLookupResultsToAlbumDetail(listOf(bad)))
+    }
+
+    @Test
+    fun mapLookupResultsToAlbumDetail_filtersNonPositiveTrackIds() {
+        val invalid =
+            ItunesSongDto(
+                kind = "song",
+                trackId = 0L,
+                collectionId = 10L,
+                collectionName = "Alb",
+                artistName = "A",
+            )
+        val valid =
+            ItunesSongDto(
+                kind = "song",
+                trackId = 1L,
+                trackName = "Ok",
+                artistName = "A",
+                collectionId = 10L,
+                collectionName = "Alb",
+                trackNumber = 1,
+            )
+        val album =
+            ItunesAlbumMapper.mapLookupResultsToAlbumDetail(listOf(invalid, valid))
+        assertNotNull(album)
+        assertEquals(1, album!!.tracks.size)
+        assertEquals("Ok", album.tracks[0].trackName)
+    }
+
+    @Test
+    fun mapLookupResultsToAlbumDetail_sortsByDiscThenTrackNumber() {
+        val d2 =
+            ItunesSongDto(
+                kind = "song",
+                trackId = 2L,
+                trackName = "D2",
+                artistName = "A",
+                collectionId = 1L,
+                collectionName = "X",
+                discNumber = 2,
+                trackNumber = 1,
+            )
+        val d1t2 =
+            ItunesSongDto(
+                kind = "song",
+                trackId = 3L,
+                trackName = "D1T2",
+                artistName = "A",
+                collectionId = 1L,
+                collectionName = "X",
+                discNumber = 1,
+                trackNumber = 2,
+            )
+        val d1t1 =
+            ItunesSongDto(
+                kind = "song",
+                trackId = 1L,
+                trackName = "D1T1",
+                artistName = "A",
+                collectionId = 1L,
+                collectionName = "X",
+                discNumber = 1,
+                trackNumber = 1,
+            )
+        val album =
+            ItunesAlbumMapper.mapLookupResultsToAlbumDetail(listOf(d2, d1t2, d1t1))
+        assertNotNull(album)
+        assertEquals(listOf("D1T1", "D1T2", "D2"), album!!.tracks.map { it.trackName })
+    }
+
+    @Test
+    fun mapLookupResultsToAlbumDetail_prefersArtwork600OnCollection() {
+        val collection =
+            ItunesSongDto(
+                wrapperType = "collection",
+                collectionId = 1L,
+                collectionName = "A",
+                artistName = "B",
+                artworkUrl600 = "http://big.jpg",
+                artworkUrl100 = "http://small.jpg",
+            )
+        val album =
+            ItunesAlbumMapper.mapLookupResultsToAlbumDetail(
+                listOf(
+                    collection,
+                    ItunesSongDto(
+                        kind = "song",
+                        trackId = 1L,
+                        trackName = "T",
+                        artistName = "B",
+                        collectionId = 1L,
+                        collectionName = "A",
+                    ),
+                ),
+            )
+        assertEquals("http://big.jpg", album!!.artworkUrl)
+    }
 }

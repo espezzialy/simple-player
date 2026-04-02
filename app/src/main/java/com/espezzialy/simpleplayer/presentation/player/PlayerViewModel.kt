@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.espezzialy.simpleplayer.R
 import com.espezzialy.simpleplayer.core.player.PlayerTimeFormatter
+import com.espezzialy.simpleplayer.core.player.computeSkipTargetIndex
 import com.espezzialy.simpleplayer.data.session.PlayerSidePanelSession
 import com.espezzialy.simpleplayer.data.session.PlayerSidePanelSource
 import com.espezzialy.simpleplayer.data.songs.SongsSearchRepository
@@ -177,16 +178,13 @@ class PlayerViewModel
 
         private fun skipInQueue(delta: Int) {
             val queue = sidePanelUiState.value.songs
-            if (queue.isEmpty()) return
-            val idx = queue.indexOfFirst { it.trackId == _state.value.trackId }
-            if (idx < 0) return
-            val repeat = _state.value.repeatEnabled
             val newIdx =
-                when {
-                    delta > 0 && idx == queue.lastIndex && repeat -> 0
-                    else -> idx + delta
-                }
-            if (newIdx !in queue.indices) return
+                computeSkipTargetIndex(
+                    queue = queue,
+                    currentTrackId = _state.value.trackId,
+                    delta = delta,
+                    repeatPlaylist = _state.value.repeatEnabled,
+                ) ?: return
             selectSong(queue[newIdx])
         }
 

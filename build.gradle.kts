@@ -13,3 +13,9 @@ tasks.register("lintProject") {
     description = "Runs Android Lint and ktlint on the app module (style + platform checks)."
     dependsOn(":app:lint", ":app:ktlintCheck")
 }
+
+tasks.register("unitTest") {
+    group = "verification"
+    description = "Runs JVM unit tests for the app module (core, data, domain, di, etc.)."
+    dependsOn(":app:testDebugUnitTest")
+}
