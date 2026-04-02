@@ -106,12 +106,10 @@ fun PlayerRoute(
             viewModel.onIntent(PlayerIntent.SkipNextClicked)
         }
         transport.onPlayFromNotification = {
-            val s = viewModel.state.value
-            if (!s.isPlaying) viewModel.onIntent(PlayerIntent.PlayPauseClicked)
+            viewModel.setPlaybackPlaying(true)
         }
         transport.onPauseFromNotification = {
-            val s = viewModel.state.value
-            if (s.isPlaying) viewModel.onIntent(PlayerIntent.PlayPauseClicked)
+            viewModel.setPlaybackPlaying(false)
         }
         transport.onSeekFromNotification = { progress ->
             viewModel.onIntent(PlayerIntent.ProgressChanged(progress))

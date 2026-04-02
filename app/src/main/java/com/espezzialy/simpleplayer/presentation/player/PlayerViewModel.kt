@@ -16,6 +16,7 @@ import com.espezzialy.simpleplayer.domain.model.SongsIntent
 import com.espezzialy.simpleplayer.presentation.navigation.PlayerNavigation
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -128,6 +129,13 @@ class PlayerViewModel
 
         fun onSongsSearchIntent(intent: SongsIntent) {
             songsSearchRepository.onIntent(intent)
+        }
+
+        /** Applies play/pause from the media notification (explicit state, not toggle). */
+        fun setPlaybackPlaying(playing: Boolean) {
+            viewModelScope.launch(Dispatchers.Main.immediate) {
+                _state.update { it.copy(isPlaying = playing) }
+            }
         }
 
         fun onIntent(intent: PlayerIntent) {
