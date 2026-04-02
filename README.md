@@ -31,6 +31,7 @@ _Phone demo: With Swipe and notification_
 - [Architecture](#architecture)
 - [Tech stack & libraries](#tech-stack--libraries)
 - [Key decisions](#key-decisions)
+- [CI & GitHub Actions](#ci--github-actions)
 - [Reference documentation](#reference-documentation)
 - [Project commands](#project-commands)
 - [Compatibility & possibilities](#compatibility--possibilities)
@@ -68,22 +69,27 @@ The app is **not** a full music streaming client: playback is simulated in the U
 
 - **Seek bar**, time labels, **previous / next** in queue (domain logic in `PlayerQueueNavigation`).
 - **Repeat playlist** toggle (where exposed in UI state).
+- **Artwork gestures (phone & tablet):** horizontal **swipe** on the cover art — swipe **left** for **next** track, swipe **right** for **previous** (threshold in `SimplePlayerDimens.Player.artworkSwipeHorizontalThreshold`; RTL-aware).
 - **Side panel** with context-dependent content:
   - Search results when coming from search.
   - Album tracks when opened from an album.
   - **Recent songs** (persisted locally).
 - **Lottie** / artwork integration patterns as used in the project.
 
-### Recent songs
+### Recent songs & offline-friendly cache
 
-- Stored with **DataStore Preferences** and a small JSON codec (`RecentSongsRepository`, `RecentSongsJsonCodec`).
+- **DataStore Preferences** + JSON codec (`RecentSongsRepository`, `RecentSongsJsonCodec`) persist a **local list of recently played tracks** on device.
+- That list stays available **without network**: you can still open the player from **recent songs** when search/API calls are unavailable (e.g. no connectivity), as long as entries were saved earlier.
+- Songs screen can clear recents; selecting from recents wires the side panel session for queue context.
 
 ### Media notification & session (Media3)
 
-- When the player screen is active, a **foreground-style media notification** reflects title, artist, artwork-derived accent color, and transport controls.
-- **ExoPlayer** is used in an idle/synced configuration; **`UiSyncedForwardingPlayer`** maps Compose/UI state into `Player` API surface for `PlayerNotificationManager` / `MediaSession`.
-- Tapping the notification returns to the app with **`MainActivity`** `singleTop` and a pending route stored in **SharedPreferences** (consumed in `SimplePlayerNavHost`).
-- **POST_NOTIFICATIONS** permission requested on API 33+ from the player route.
+- When the player screen is active, a **foreground-style media notification** shows title, artist, **colorized** notification (accent from **Palette** over downloaded artwork), large icon, and transport controls (previous / play / pause / next).
+- **In-memory cache** in `PlayerNotificationController` for **artwork bitmap** and **accent color** (skips re-fetch when the URL is unchanged).
+- **ExoPlayer** backs a `ForwardingPlayer`; **`UiSyncedForwardingPlayer`** maps **Compose / `PlayerUiState`** into the Media3 `Player` surface for `PlayerNotificationManager` and `MediaSession`. A **listener filter** suppresses spurious “not playing / IDLE” events from the idle **ExoPlayer** (no real media) so notification **play/pause** stays in sync with the mock UI.
+- **Play / pause** from the notification apply explicit play/pause state to the ViewModel (not a blind toggle), matching Media3 callbacks.
+- Tapping the notification returns to the app via **`MainActivity`** `singleTop`; the deep-link **route** is stored in **SharedPreferences** and consumed in `SimplePlayerNavHost`.
+- **POST_NOTIFICATIONS** permission is requested on API 33+ from the player route.
 
 ### Adaptive UI
 
@@ -97,6 +103,15 @@ The app is **not** a full music streaming client: playback is simulated in the U
 
 ---
 
+## CI & GitHub Actions
+
+- **CI** (on every push / PR to `main`): runs **unit tests** and **ktlint** so `main` stays green.
+- **Build APK** (manual workflow or `v*` tags): produces a **debug** APK artifact for testing or attaching to a GitHub Release.
+
+See **[docs/GITHUB_ACTIONS.md](docs/GITHUB_ACTIONS.md)** for triggers, how to download artifacts, optional signed release setup, and branch protection tips.
+
+---
+
 ## Architecture
 
 High-level layers:
@@ -107,7 +122,7 @@ High-level layers:
 | **`domain/`** | `Song`, album models, `SongRepository` interface, use cases (`SearchSongsUseCase`, `GetAlbumDetailUseCase`). |
 | **`data/`** | `SongRepositoryImpl`, Retrofit `SongsRemoteDataSource`, DTOs & mappers, `SongsSearchRepository` (shared search state + effects), `PlayerSidePanelSession`, `RecentSongsRepository`. |
 | **`core/`** | Time formatting, queue skip index math, artwork URL helpers, orientation policy, coroutine dispatchers. |
-| **`media/`** | `PlayerNotificationController`, `UiSyncedForwardingPlayer`, `PlayerNotificationTransport`, palette accent, notification constants & Hilt entry point. |
+| **`media/`** | `PlayerNotificationController`, `UiSyncedForwardingPlayer`, `PlayerListenerForUiFilter`, `PlayerNotificationTransport`, palette accent, notification constants & Hilt entry point. |
 | **`di/`** | Hilt modules (`DataModule`, `NetworkModule`, `GsonModule`, `CoroutinesModule`). |
 | **`ui/theme/`** | Colors, typography (Articulat CF—see font licensing note in `Type.kt`), dimens, breakpoints, theme. |
 
@@ -151,7 +166,7 @@ Also uses **AndroidX Core KTX** and **Core Splashscreen** as configured in `app/
 
 1. **Mock playback instead of ExoPlayer audio pipeline** — Keeps the sample focused on UI, navigation, and MediaSession/notification integration without audio focus, DRM, or codec concerns.
 2. **No `PlayerNotificationController` inside `PlayerViewModel`** — Notification updates are driven from the Composable layer (`PlayerRoute`) via `LaunchedEffect` + `DisposableEffect` to avoid a past Hilt graph edge case; `PlayerNotificationController` remains a singleton `@Inject` from the application.
-3. **`UiSyncedForwardingPlayer` + mapping functions** — Bridges immutable UI state to Media3 `Player` APIs so the system notification and session stay consistent with the mock timeline.
+3. **`UiSyncedForwardingPlayer` + mapping** — Bridges UI state to Media3 `Player` APIs; **`PlayerListenerForUiFilter`** drops delegate idle/`isPlaying=false` noise from the idle **ExoPlayer** so the notification does not immediately undo mock play.
 4. **Explicit Retrofit query parameters** — All iTunes `search` / `lookup` query params are required in the API interface so Kotlin/Retrofit never omit them and change API behaviour.
 5. **Physical smallest width for orientation** — Avoids treating a tablet in split-screen as a phone for layout/orientation.
 6. **Fonts** — `Type.kt` documents that demo Articulat CF fonts require a proper license for Play Store release.
@@ -217,9 +232,8 @@ Run from the repository root (use the Gradle Wrapper):
 
 - Real playback with **ExoPlayer** + `MediaItem` from remote URLs (where permitted by ToS).
 - **Background** playback service and persistent `MediaSession` when the app leaves the foreground.
-- **Offline** cache and a local database (Room) instead of only DataStore for recents.
+- **Offline-first search** with a local database (Room) or full catalog cache in addition to **DataStore** recents.
 - **Instrumentation / screenshot** tests for critical flows.
-- CI: run `./gradlew :app:testDebugUnitTest :app:ktlintCheck` on every push.
 
 ---
 
