@@ -8,6 +8,7 @@ data class PlayerUiState(
     val artistName: String,
     val collectionId: Long?,
     val artworkUrl: String?,
+    val trackTimeMillis: Long?,
     val progress: Float,
     val isPlaying: Boolean,
     val currentTimeLabel: String,
@@ -15,6 +16,17 @@ data class PlayerUiState(
     val repeatEnabled: Boolean,
     val totalDurationSeconds: Int,
 )
+
+fun PlayerUiState.toSongForNotification(): Song =
+    Song(
+        trackId = trackId,
+        trackName = trackName,
+        artistName = artistName,
+        collectionName = "",
+        collectionId = collectionId,
+        artworkUrl100 = artworkUrl,
+        trackTimeMillis = trackTimeMillis,
+    )
 
 data class PlayerSidePanelUiState(
     val songs: List<Song>,

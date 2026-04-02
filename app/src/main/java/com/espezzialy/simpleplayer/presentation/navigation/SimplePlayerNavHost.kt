@@ -1,19 +1,26 @@
 package com.espezzialy.simpleplayer.presentation.navigation
 
+import android.content.Intent
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.espezzialy.simpleplayer.media.PlayerNotificationConstants
+import com.espezzialy.simpleplayer.media.PlayerNotificationEntryPoint
 import com.espezzialy.simpleplayer.presentation.album.AlbumDetailRoute
 import com.espezzialy.simpleplayer.presentation.player.PlayerRoute
 import com.espezzialy.simpleplayer.presentation.songs.SongsRoute
+import dagger.hilt.android.EntryPointAccessors
 
 private const val ROUTE_SONGS = "songs"
 private const val ROUTE_ALBUM = "album/{collectionId}"
@@ -22,8 +29,29 @@ private const val ARG_COLLECTION_ID = "collectionId"
 private const val SLIDE_DURATION_MS = 320
 
 @Composable
-fun SimplePlayerNavHost(modifier: Modifier = Modifier) {
+fun SimplePlayerNavHost(
+    modifier: Modifier = Modifier,
+    mainIntent: Intent,
+    onConsumedOpenPlayerIntent: () -> Unit,
+) {
     val navController = rememberNavController()
+    val appContext = LocalContext.current.applicationContext
+    val notificationController =
+        remember(appContext) {
+            EntryPointAccessors.fromApplication(
+                appContext,
+                PlayerNotificationEntryPoint::class.java,
+            ).playerNotificationController()
+        }
+
+    LaunchedEffect(mainIntent) {
+        if (!mainIntent.getBooleanExtra(PlayerNotificationConstants.EXTRA_OPEN_PLAYER, false)) return@LaunchedEffect
+        val route = notificationController.consumePendingPlayerRoute() ?: return@LaunchedEffect
+        navController.navigate(route) {
+            launchSingleTop = true
+        }
+        onConsumedOpenPlayerIntent()
+    }
 
     NavHost(
         navController = navController,

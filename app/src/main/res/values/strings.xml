@@ -13,6 +13,7 @@
     <string name="content_desc_more_options">More options</string>
 
     <string name="player_now_playing">Now playing</string>
+    <string name="player_notification_channel_name">Playback</string>
     <string name="content_desc_back">Back</string>
     <string name="content_desc_menu">Menu</string>
     <string name="content_desc_pause">Pause</string>

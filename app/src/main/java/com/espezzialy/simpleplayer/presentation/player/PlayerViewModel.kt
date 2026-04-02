@@ -99,10 +99,10 @@ class PlayerViewModel
                     artworkUrl =
                         savedStateHandle.get<String>(PlayerNavigation.ARG_ARTWORK_URL)
                             ?.takeIf { it.isNotBlank() },
+                    trackTimeMillis = trackMillisFromSavedState(savedStateHandle),
                     progress = 0f,
                     isPlaying = true,
                     repeatEnabled = false,
-                    trackTimeMillis = trackMillisFromSavedState(savedStateHandle),
                 ),
             )
 
@@ -199,6 +199,7 @@ class PlayerViewModel
                     artistName = song.artistName,
                     collectionId = song.collectionId,
                     artworkUrl = song.artworkUrl100,
+                    trackTimeMillis = song.trackTimeMillis,
                     progress = 0f,
                     currentTimeLabel = current,
                     remainingTimeLabel = remaining,
@@ -227,6 +228,7 @@ class PlayerViewModel
                 artistName = artistName,
                 collectionId = collectionId,
                 artworkUrl = artworkUrl,
+                trackTimeMillis = trackTimeMillis,
                 progress = progress,
                 isPlaying = isPlaying,
                 currentTimeLabel = current,

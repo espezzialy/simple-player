@@ -1,5 +1,10 @@
 package com.espezzialy.simpleplayer.presentation.player
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +27,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,16 +36,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.espezzialy.simpleplayer.R
 import com.espezzialy.simpleplayer.domain.model.Song
 import com.espezzialy.simpleplayer.domain.model.SongsEffect
 import com.espezzialy.simpleplayer.domain.model.SongsIntent
+import com.espezzialy.simpleplayer.media.PlayerNotificationEntryPoint
 import com.espezzialy.simpleplayer.presentation.common.components.TabletNavBarPaddingTop
 import com.espezzialy.simpleplayer.presentation.player.components.PlayerMainColumn
 import com.espezzialy.simpleplayer.presentation.player.components.PlayerOverflowSheetContent
@@ -51,6 +60,7 @@ import com.espezzialy.simpleplayer.ui.theme.SimplePlayerBreakpoints
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerColors
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerDimens
 import com.espezzialy.simpleplayer.ui.theme.SimplePlayerTheme
+import dagger.hilt.android.EntryPointAccessors
 import android.content.res.Configuration as AndroidConfiguration
 
 @Composable
@@ -61,6 +71,61 @@ fun PlayerRoute(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val sidePanelUiState by viewModel.sidePanelUiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val appContext = context.applicationContext
+    val notificationController =
+        remember(appContext) {
+            EntryPointAccessors.fromApplication(
+                appContext,
+                PlayerNotificationEntryPoint::class.java,
+            ).playerNotificationController()
+        }
+
+    val postNotificationsLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { }
+
+    LaunchedEffect(Unit) {
+        if (Build.VERSION.SDK_INT >= 33) {
+            val granted =
+                ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.POST_NOTIFICATIONS,
+                ) == PackageManager.PERMISSION_GRANTED
+            if (!granted) {
+                postNotificationsLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
+
+    DisposableEffect(notificationController, viewModel) {
+        val transport = notificationController.transport
+        transport.onSkipPrevious = {
+            viewModel.onIntent(PlayerIntent.SkipPreviousClicked)
+        }
+        transport.onSkipNext = {
+            viewModel.onIntent(PlayerIntent.SkipNextClicked)
+        }
+        transport.onPlayFromNotification = {
+            val s = viewModel.state.value
+            if (!s.isPlaying) viewModel.onIntent(PlayerIntent.PlayPauseClicked)
+        }
+        transport.onPauseFromNotification = {
+            val s = viewModel.state.value
+            if (s.isPlaying) viewModel.onIntent(PlayerIntent.PlayPauseClicked)
+        }
+        transport.onSeekFromNotification = { progress ->
+            viewModel.onIntent(PlayerIntent.ProgressChanged(progress))
+        }
+        notificationController.attach(state)
+        onDispose {
+            transport.clear()
+            notificationController.detach()
+        }
+    }
+
+    LaunchedEffect(state) {
+        notificationController.update(state)
+    }
 
     LaunchedEffect(Unit) {
         viewModel.songsSearchEffect.collect { effect ->
@@ -302,6 +367,7 @@ private fun PlayerScreenTabletPreview() {
                         artistName = "Ed Sheeran",
                         collectionId = 1L,
                         artworkUrl = null,
+                        trackTimeMillis = 260_000L,
                         progress = 0f,
                         isPlaying = true,
                         currentTimeLabel = "0:00",
@@ -357,6 +423,7 @@ private fun PlayerScreenPreview() {
                     artistName = "Daft Punk feat. Pharrell Williams",
                     collectionId = 1L,
                     artworkUrl = null,
+                    trackTimeMillis = 260_000L,
                     progress = 0f,
                     isPlaying = false,
                     currentTimeLabel = "0:00",
