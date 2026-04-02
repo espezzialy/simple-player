@@ -4,21 +4,23 @@ A Kotlin Android sample app that browses music metadata from the **iTunes Search
 
 ---
 
-## Demo videos *(add your recordings below)*
-
-<!-- Replace the placeholders with your embedded videos or links (e.g. GitHub uploads, YouTube, Loom). -->
-
-### Phone
-
-<!-- Example:
-[![Phone demo](https://img.youtube.com/vi/VIDEO_ID/0.jpg)](https://www.youtube.com/watch?v=VIDEO_ID)
--->
-
-_Phone demo: (to be added)_
+## Demo videos 
 
 ### Tablet
 
-_Tablet demo: (to be added)_
+https://github.com/user-attachments/assets/047fcd73-2ed0-4cb6-887f-d6282e2b0cd4
+
+_Tablet demo: With swipe side bar notification and playlist_
+
+
+### Phone
+
+
+https://github.com/user-attachments/assets/b7c99d0d-60aa-45c3-9190-969e67b30572
+
+
+
+_Phone demo: With Swipe and notification_
 
 ---
 
